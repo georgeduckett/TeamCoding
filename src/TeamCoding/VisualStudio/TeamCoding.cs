@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-// <copyright file="TeamCodingTextAdornment.cs" company="Company">
+// <copyright file="TeamCoding.cs" company="Company">
 //     Copyright (c) Company.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
@@ -14,19 +14,19 @@ using Microsoft.VisualStudio.Text.Formatting;
 namespace TeamCoding.VisualStudio
 {
     /// <summary>
-    /// TeamCodingTextAdornment places red boxes behind all the "a"s in the editor window
+    /// TeamCoding places red boxes behind all the "a"s in the editor window
     /// </summary>
-    internal sealed class TeamCodingTextAdornment
+    internal sealed class TeamCoding
     {
         /// <summary>
         /// The layer of the adornment.
         /// </summary>
-        private readonly IAdornmentLayer layer;
+        private readonly IAdornmentLayer Layer;
 
         /// <summary>
         /// Text view where the adornment is created.
         /// </summary>
-        private readonly IWpfTextView view;
+        private readonly IWpfTextView View;
 
         /// <summary>
         /// Adornment brush.
@@ -39,21 +39,20 @@ namespace TeamCoding.VisualStudio
         private readonly Pen pen;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamCodingTextAdornment"/> class.
+        /// Initializes a new instance of the <see cref="TeamCoding"/> class.
         /// </summary>
         /// <param name="view">Text view to create the adornment for</param>
-        public TeamCodingTextAdornment(IWpfTextView view)
+        public TeamCoding(IWpfTextView view)
         {
             if (view == null)
             {
                 throw new ArgumentNullException("view");
             }
 
-            this.layer = view.GetAdornmentLayer("TeamCodingTextAdornment");
+            this.Layer = view.GetAdornmentLayer("TeamCoding");
 
-            this.view = view;
-            //view.Caret.PositionChanged += OnCaretPositionChanged;
-            this.view.LayoutChanged += this.OnLayoutChanged;
+            this.View = view;
+            this.View.LayoutChanged += this.OnLayoutChanged;
 
             // Create the pen and brush to color the box behind the a's
             this.brush = new SolidColorBrush(Color.FromArgb(0x20, 0x00, 0x00, 0xff));
@@ -63,11 +62,6 @@ namespace TeamCoding.VisualStudio
             penBrush.Freeze();
             this.pen = new Pen(penBrush, 0.5);
             this.pen.Freeze();
-        }
-
-        private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-
         }
 
         /// <summary>
@@ -93,14 +87,14 @@ namespace TeamCoding.VisualStudio
         /// <param name="line">Line to add the adornments</param>
         private void CreateVisuals(ITextViewLine line)
         {
-            IWpfTextViewLineCollection textViewLines = this.view.TextViewLines;
+            IWpfTextViewLineCollection textViewLines = this.View.TextViewLines;
 
             // Loop through each character, and place a box around any 'a'
             for (int charIndex = line.Start; charIndex < line.End; charIndex++)
             {
-                if (this.view.TextSnapshot[charIndex] == 'a')
+                if (this.View.TextSnapshot[charIndex] == 'a')
                 {
-                    SnapshotSpan span = new SnapshotSpan(this.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
+                    SnapshotSpan span = new SnapshotSpan(this.View.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
                     Geometry geometry = textViewLines.GetMarkerGeometry(span);
                     if (geometry != null)
                     {
@@ -119,7 +113,7 @@ namespace TeamCoding.VisualStudio
                         Canvas.SetLeft(image, geometry.Bounds.Left);
                         Canvas.SetTop(image, geometry.Bounds.Top);
 
-                        this.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                        this.Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
                     }
                 }
             }
