@@ -6,6 +6,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using TeamCoding.Extensions;
 using LibGit2Sharp;
+using System.IO;
+using TeamCoding.SourceControl;
 
 namespace TeamCoding.VisualStudio
 {
@@ -33,12 +35,7 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
-                var RepoPath = Repository.Discover(textView.GetTextDocumentFilePath());
-
-                if (RepoPath != null)
-                {
-
-                }
+                IDEModel.OpenedTextView(textView);
                 
                 new TeamCoding(textView);
             }
@@ -47,12 +44,7 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView closed
-                var RepoPath = Repository.Discover(textView.GetTextDocumentFilePath());
-
-                if (RepoPath != null)
-                {
-
-                }
+                IDEModel.ClosedTextView(textView);
             }
         }
     }
