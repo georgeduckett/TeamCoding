@@ -8,25 +8,31 @@ using System.Threading.Tasks;
 using TeamCoding.Extensions;
 namespace TeamCoding.VisualStudio
 {
+    /// <summary>
+    /// Represents and maintains a model of the IDE
+    /// </summary>
     public class IDEModel
     {
-        static ConcurrentDictionary<IWpfTextView, string> _OpenFiles = new ConcurrentDictionary<IWpfTextView, string>();
+        private static IDEModel _Current = new IDEModel();
 
-        public static void OpenedTextView(IWpfTextView view)
+        private readonly ConcurrentDictionary<IWpfTextView, string> _OpenFiles = new ConcurrentDictionary<IWpfTextView, string>();
+
+        public void OpenedTextView(IWpfTextView view)
         {
             if (!_OpenFiles.ContainsKey(view))
             {
+                // TODO: Use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
                 _OpenFiles.AddOrUpdate(view, new SourceControl.SourceControlRepo().GetRelativePath(view.GetTextDocumentFilePath()), (v, e) => e);
             }
         }
 
-        public static void ClosedTextView(IWpfTextView view)
+        public void ClosedTextView(IWpfTextView view)
         {
             string tmp;
             _OpenFiles.TryRemove(view, out tmp);
         }
 
-        public static string[] OpenDocs()
+        public string[] OpenDocs()
         {
             return _OpenFiles.Values.ToArray();
         }

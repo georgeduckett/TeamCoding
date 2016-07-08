@@ -14,7 +14,6 @@ namespace TeamCoding.SourceControl
         {
             // TODO: Handle repositories other than Git
             var RepoPath = Repository.Discover(fullFilePath);
-
             if (RepoPath == null) return null;
 
             return fullFilePath.Substring(new DirectoryInfo(RepoPath).Parent.FullName.Length).TrimStart('\\');
