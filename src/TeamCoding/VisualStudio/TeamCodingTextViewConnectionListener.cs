@@ -9,6 +9,7 @@ using LibGit2Sharp;
 using System.IO;
 using TeamCoding.SourceControl;
 using Microsoft.VisualStudio.Shell;
+using EnvDTE;
 
 namespace TeamCoding.VisualStudio
 {
@@ -21,6 +22,10 @@ namespace TeamCoding.VisualStudio
     [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
     {
+        [Import]
+        internal SVsServiceProvider ServiceProvider = null;
+
+
         private readonly static IDEModel _IdeModel = new IDEModel();
         // Disable "Field is never assigned to..." and "Field is never used" compiler's warnings. Justification: the field is used by MEF.
 #pragma warning disable 649, 169
@@ -35,6 +40,8 @@ namespace TeamCoding.VisualStudio
 #pragma warning restore 649, 169
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
+            DTE dte = (DTE)ServiceProvider.GetService(typeof(DTE));
+
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 _IdeModel.OpenedTextView(textView);
