@@ -59,7 +59,7 @@
     <Compile Include="SourceControl\SourceControlRepo.cs" />
     <Compile Include="TeamCodingPackage.cs" />
     <Compile Include="VisualStudio\IDEModel.cs" />
-    <Compile Include="VisualStudio\TeamCoding.cs" />
+    <Compile Include="VisualStudio\TeamCodingViewLayer.cs" />
     <Compile Include="VisualStudio\TeamCodingTextViewConnectionListener.cs" />
   </ItemGroup>
   <ItemGroup>

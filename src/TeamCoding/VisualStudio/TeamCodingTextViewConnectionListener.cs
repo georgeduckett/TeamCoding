@@ -10,6 +10,8 @@ using System.IO;
 using TeamCoding.SourceControl;
 using Microsoft.VisualStudio.Shell;
 using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace TeamCoding.VisualStudio
 {
@@ -25,8 +27,8 @@ namespace TeamCoding.VisualStudio
         [Import]
         internal SVsServiceProvider ServiceProvider = null;
 
-
         private readonly static IDEModel _IdeModel = new IDEModel();
+        private readonly static ModelChangeManager _IdeChangeManager = new ModelChangeManager(_IdeModel);
         // Disable "Field is never assigned to..." and "Field is never used" compiler's warnings. Justification: the field is used by MEF.
 #pragma warning disable 649, 169
         /// <summary>
@@ -40,13 +42,10 @@ namespace TeamCoding.VisualStudio
 #pragma warning restore 649, 169
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
-            DTE dte = (DTE)ServiceProvider.GetService(typeof(DTE));
-
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 _IdeModel.OpenedTextView(textView);
-                
-                new TeamCoding(textView);
+                new TeamCodingViewLayer(textView);
             }
         }
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)

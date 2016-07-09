@@ -16,7 +16,7 @@ namespace TeamCoding.VisualStudio
     /// <summary>
     /// TeamCoding places red boxes behind all the "a"s in the editor window
     /// </summary>
-    internal sealed class TeamCoding
+    internal sealed class TeamCodingViewLayer
     {
         /// <summary>
         /// The layer of the adornment.
@@ -39,10 +39,10 @@ namespace TeamCoding.VisualStudio
         private readonly Pen pen;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamCoding"/> class.
+        /// Initializes a new instance of the <see cref="TeamCodingViewLayer"/> class.
         /// </summary>
         /// <param name="view">Text view to create the adornment for</param>
-        public TeamCoding(IWpfTextView view)
+        public TeamCodingViewLayer(IWpfTextView view)
         {
             if (view == null)
             {

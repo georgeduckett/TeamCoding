@@ -15,7 +15,9 @@ namespace TeamCoding.VisualStudio
     {
         private static IDEModel _Current = new IDEModel();
 
-        private readonly ConcurrentDictionary<IWpfTextView, string> _OpenFiles = new ConcurrentDictionary<IWpfTextView, string>();
+        private readonly ConcurrentDictionary<IWpfTextView, SourceControl.SourceControlRepo.RepoDocInfo> _OpenFiles = new ConcurrentDictionary<IWpfTextView, SourceControl.SourceControlRepo.RepoDocInfo>();
+
+        public event EventHandler Changed;
 
         public void OpenedTextView(IWpfTextView view)
         {
@@ -23,16 +25,18 @@ namespace TeamCoding.VisualStudio
             {
                 // TODO: Use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
                 _OpenFiles.AddOrUpdate(view, new SourceControl.SourceControlRepo().GetRelativePath(view.GetTextDocumentFilePath()), (v, e) => e);
+                Changed?.Invoke(this, new EventArgs());
             }
         }
 
         public void ClosedTextView(IWpfTextView view)
         {
-            string tmp;
+            SourceControl.SourceControlRepo.RepoDocInfo tmp;
             _OpenFiles.TryRemove(view, out tmp);
+            Changed?.Invoke(this, new EventArgs());
         }
 
-        public string[] OpenDocs()
+        public SourceControl.SourceControlRepo.RepoDocInfo[] OpenDocs()
         {
             return _OpenFiles.Values.ToArray();
         }

@@ -8,15 +8,25 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.SourceControl
 {
-    internal class SourceControlRepo
+    public class SourceControlRepo
     {
-        public string GetRelativePath(string fullFilePath)
+        public class RepoDocInfo
+        {
+            public string RelativePath { get; set; }
+            public bool BeingEdited { get; set; }
+        }
+        public RepoDocInfo GetRelativePath(string fullFilePath)
         {
             // TODO: Handle repositories other than Git
             var RepoPath = Repository.Discover(fullFilePath);
+            var IsEdited = new Repository(RepoPath).Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any();
             if (RepoPath == null) return null;
 
-            return fullFilePath.Substring(new DirectoryInfo(RepoPath).Parent.FullName.Length).TrimStart('\\');
+            return new RepoDocInfo()
+            {
+                RelativePath = fullFilePath.Substring(new DirectoryInfo(RepoPath).Parent.FullName.Length).TrimStart('\\'),
+                BeingEdited = IsEdited
+            };
         }
     }
 }

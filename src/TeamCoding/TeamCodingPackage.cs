@@ -69,8 +69,23 @@ namespace TeamCoding
             base.Initialize();
 
             var dte = (EnvDTE80.DTE2)GetService(typeof(EnvDTE80.DTE2));
-
-            throw new InvalidOperationException(); // TODO: Why isn't this called?!
+            
+            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+            
+            Guid clsid = Guid.Empty;
+            int result;
+            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
+                0,
+                ref clsid,
+                "FirstPackage",
+                 string.Format(CultureInfo.CurrentCulture, "Inside {0}.Initialize()", this.GetType().FullName),
+                string.Empty,
+                0,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+                OLEMSGICON.OLEMSGICON_INFO,
+                0,
+                out result)); // TODO: Why isn't this called?!
         }
 
         #endregion
