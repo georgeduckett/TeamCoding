@@ -6,16 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Extensions;
+using TeamCoding.SourceControl;
+
 namespace TeamCoding.VisualStudio
 {
     /// <summary>
     /// Represents and maintains a model of the IDE
     /// </summary>
-    public class IDEModel
+    public class LocalIDEModel
     {
-        private static IDEModel _Current = new IDEModel();
-
-        private readonly ConcurrentDictionary<IWpfTextView, SourceControl.SourceControlRepo.RepoDocInfo> _OpenFiles = new ConcurrentDictionary<IWpfTextView, SourceControl.SourceControlRepo.RepoDocInfo>();
+        private static LocalIDEModel _Current = new LocalIDEModel();
+        
+        private readonly ConcurrentDictionary<IWpfTextView, SourceControlRepo.RepoDocInfo> _OpenFiles = new ConcurrentDictionary<IWpfTextView, SourceControlRepo.RepoDocInfo>();
 
         public event EventHandler Changed;
 

@@ -5,11 +5,14 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
+using TeamCoding.Extensions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
+using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 
 namespace TeamCoding.VisualStudio
 {
@@ -38,12 +41,30 @@ namespace TeamCoding.VisualStudio
         /// </summary>
         private readonly Pen pen;
 
+        private readonly ExternalModelManager _ExternalModelManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingViewLayer"/> class.
         /// </summary>
         /// <param name="view">Text view to create the adornment for</param>
         public TeamCodingViewLayer(IWpfTextView view)
         {
+            _ExternalModelManager = TeamCodingPackage.Current.RemoteModelManager;
+
+            var test = TeamCodingPackage.Current.DocTabPanel;
+
+            //var test2 = test.FindChildren("TitleText");
+
+            //var RemoteOpenFiles = _ExternalModelManager.GetExternalModels().Where(m => m._OpenFiles.Select(f => f.RelativePath).Contains(new SourceControl.SourceControlRepo().GetRelativePath(view.GetTextDocumentFilePath()).RelativePath)).GroupBy(r => r.UserIdentity).Select(g => g.Key);
+
+            /*if (test2 != null)
+            {
+                foreach(var user in RemoteOpenFiles)
+                {
+                    test2.Text += $" [{user}]";
+                }
+            }*/
+
             if (view == null)
             {
                 throw new ArgumentNullException("view");

@@ -12,6 +12,9 @@ using Microsoft.VisualStudio.Shell;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using TeamCoding.Extensions;
+using System.Linq;
+using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 
 namespace TeamCoding.VisualStudio
 {
@@ -24,35 +27,37 @@ namespace TeamCoding.VisualStudio
     [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
     {
-        [Import]
-        internal SVsServiceProvider ServiceProvider = null;
-
-        private readonly static IDEModel _IdeModel = new IDEModel();
-        private readonly static ModelChangeManager _IdeChangeManager = new ModelChangeManager(_IdeModel);
-        // Disable "Field is never assigned to..." and "Field is never used" compiler's warnings. Justification: the field is used by MEF.
-#pragma warning disable 649, 169
-        /// <summary>
-        /// Defines the adornment layer for the adornment. This layer is ordered
-        /// after the selection layer in the Z-order
-        /// </summary>
-        [Export(typeof(AdornmentLayerDefinition))]
-        [Name("TeamCoding")]
-        [Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
-        private AdornmentLayerDefinition editorAdornmentLayer;
-#pragma warning restore 649, 169
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
-                _IdeModel.OpenedTextView(textView);
-                new TeamCodingViewLayer(textView);
+                TeamCodingPackage.Current.IdeModel.OpenedTextView(textView);
+                //new TeamCodingViewLayer(textView);
+
+                var ExternalModelManager = TeamCodingPackage.Current.RemoteModelManager;
+
+                var test = TeamCodingPackage.Current.DocTabPanel;
+
+                var test3 = test.Children.OfType<DocumentTabItem>().Select(c => c.Children().ToArray()).ToArray();
+                // TODO: Where is the tool-tip for the tab (to match with file name)
+                var test2 = test.FindChildren("TitleText").ToArray();
+
+                var RemoteOpenFiles = ExternalModelManager.GetExternalModels().Where(m => m._OpenFiles.Select(f => f.RelativePath).Contains(new SourceControlRepo().GetRelativePath(textView.GetTextDocumentFilePath()).RelativePath)).GroupBy(r => r.UserIdentity).Select(g => g.Key);
+                
+                /*if (test2 != null)
+                {
+                    foreach(var user in RemoteOpenFiles)
+                    {
+                        test2.Text += $" [{user}]";
+                    }
+                }*/
             }
         }
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView closed
-                _IdeModel.ClosedTextView(textView);
+                TeamCodingPackage.Current.IdeModel.ClosedTextView(textView);
             }
         }
     }

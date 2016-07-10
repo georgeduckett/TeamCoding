@@ -53,12 +53,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
+    <Compile Include="ExternalModelManager.cs" />
     <Compile Include="ModelChangeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceControl\MachineIdentityProvider.cs" />
     <Compile Include="SourceControl\SourceControlRepo.cs" />
     <Compile Include="TeamCodingPackage.cs" />
-    <Compile Include="VisualStudio\IDEModel.cs" />
+    <Compile Include="VisualStudio\LocalIDEModel.cs" />
+    <Compile Include="VisualStudio\RemoteIDEModel.cs" />
     <Compile Include="VisualStudio\TeamCodingViewLayer.cs" />
     <Compile Include="VisualStudio\TeamCodingTextViewConnectionListener.cs" />
   </ItemGroup>
@@ -167,6 +171,10 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\Microsoft.VisualStudio.Shell.Interop.9.0.9.0.30729\lib\Microsoft.VisualStudio.Shell.Interop.9.0.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.ViewManager, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Microsoft.VisualStudio.Shell.ViewManager.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Text.Data.14.3.25407\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>

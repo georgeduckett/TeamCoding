@@ -5,6 +5,7 @@
 //------------------------------------------------------------------------------
 
 using System;
+using TeamCoding.Extensions;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -16,6 +17,14 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using EnvDTE;
+using TeamCoding.VisualStudio;
+using TeamCoding.SourceControl;
+using System.Windows.Interop;
+using EnvDTE80;
+using System.Windows;
+using System.Windows.Media;
+using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
+using System.Collections.Generic;
 
 namespace TeamCoding
 {
@@ -40,6 +49,7 @@ namespace TeamCoding
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(TeamCodingPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids80.SolutionExists)]
     public sealed class TeamCodingPackage : Package
     {
         /// <summary>
@@ -47,18 +57,23 @@ namespace TeamCoding
         /// </summary>
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
 
+        public static TeamCodingPackage Current { get; private set; }
+
+        public readonly LocalIDEModel IdeModel = new LocalIDEModel();
+        internal ModelChangeManager IdeChangeManager { get; private set; }
+        public readonly MachineIdentityProvider IdentityProvider = new MachineIdentityProvider();
+        public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
+
+        // TODO: Update and cache this when opening/closing a solution
+        public DocumentTabPanel DocTabPanel => (DocumentTabPanel)GetWpfMainWindow((DTE)GetService(typeof(DTE))).FindChild("PART_TabPanel");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
         /// </summary>
         public TeamCodingPackage()
         {
-            // Inside this method you can place any initialization code that does not require
-            // any Visual Studio service because at this point the package object is created but
-            // not sited yet inside Visual Studio environment. The place to do all the other
-            // initialization is the Initialize method.
+            Current = this;
         }
-
-        #region Package Members
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -67,27 +82,44 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
+            
+            IdeChangeManager = new ModelChangeManager(IdeModel);
 
-            var dte = (EnvDTE80.DTE2)GetService(typeof(EnvDTE80.DTE2));
-            
-            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            
-            Guid clsid = Guid.Empty;
-            int result;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-                0,
-                ref clsid,
-                "FirstPackage",
-                 string.Format(CultureInfo.CurrentCulture, "Inside {0}.Initialize()", this.GetType().FullName),
-                string.Empty,
-                0,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                OLEMSGICON.OLEMSGICON_INFO,
-                0,
-                out result)); // TODO: Why isn't this called?!
+            System.Threading.Tasks.Task.Factory.StartNew(() =>
+            {
+                while (!Zombied)
+                {
+                    System.Threading.Thread.Sleep(10000);
+                    RemoteModelManager.SyncChanges();
+                }
+            });
         }
 
-        #endregion
+        protected override void Dispose(bool disposing)
+        {
+            RemoteModelManager.SyncChanges();
+            base.Dispose(disposing);
+        }
+        private System.Windows.Media.Visual GetWpfMainWindow(DTE dte)
+        {
+            if (dte == null)
+            {
+                throw new ArgumentNullException("dte");
+            }
+
+            var hwndMainWindow = (IntPtr)dte.MainWindow.HWnd;
+            if (hwndMainWindow == IntPtr.Zero)
+            {
+                throw new NullReferenceException("DTE.MainWindow.HWnd is null.");
+            }
+
+            var hwndSource = HwndSource.FromHwnd(hwndMainWindow);
+            if (hwndSource == null)
+            {
+                throw new NullReferenceException("HwndSource for DTE.MainWindow is null.");
+            }
+
+            return hwndSource.RootVisual;
+        }
     }
 }

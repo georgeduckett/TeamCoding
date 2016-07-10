@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 
 namespace TeamCoding
@@ -13,10 +14,10 @@ namespace TeamCoding
     /// </summary>
     internal class ModelChangeManager
     {
-        private const string PersistenceFile = "OpenDocs.txt";
-        private readonly IDEModel _IdeModel;
+        private string PersistenceFile = $"OpenDocs{System.Diagnostics.Process.GetCurrentProcess().Id}.txt";
+        private readonly LocalIDEModel _IdeModel;
 
-        public ModelChangeManager(IDEModel model)
+        public ModelChangeManager(LocalIDEModel model)
         {
             _IdeModel = model;
             _IdeModel.Changed += IdeModel_Changed;
@@ -30,8 +31,10 @@ namespace TeamCoding
                 File.Delete(PersistenceFile);
             }
 
-            File.WriteAllLines(PersistenceFile, NewItems.Select(i => i.BeingEdited.ToString() + " " + i.RelativePath));
-            var test = Environment.UserName;
+            if (NewItems.Length != 0)
+            {
+                File.WriteAllLines(PersistenceFile, Enumerable.Repeat(new MachineIdentityProvider().GetIdentity(), 1).Union(NewItems.Select(i => i.BeingEdited.ToString() + " " + i.RelativePath)));
+            }
         }
     }
 }
