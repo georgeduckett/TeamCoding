@@ -16,7 +16,6 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
-using EnvDTE;
 using TeamCoding.VisualStudio;
 using TeamCoding.SourceControl;
 using System.Windows.Interop;
@@ -25,6 +24,13 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Text.Editor;
+using System.Linq;
+using Microsoft.VisualStudio.Platform.WindowManagement;
+using System.Windows.Threading;
+using System.Windows.Controls;
+using TeamCoding.CredentialManagement;
 
 namespace TeamCoding
 {
@@ -61,11 +67,10 @@ namespace TeamCoding
 
         public readonly LocalIDEModel IdeModel = new LocalIDEModel();
         internal ModelChangeManager IdeChangeManager { get; private set; }
-        public readonly MachineIdentityProvider IdentityProvider = new MachineIdentityProvider();
+        public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
-
-        // TODO: Update and cache this when opening/closing a solution
-        public DocumentTabPanel DocTabPanel => (DocumentTabPanel)GetWpfMainWindow((DTE)GetService(typeof(DTE))).FindChild("PART_TabPanel");
+        
+        private EnvDTE.DTE _DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -82,17 +87,47 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
-            
-            IdeChangeManager = new ModelChangeManager(IdeModel);
 
-            System.Threading.Tasks.Task.Factory.StartNew(() =>
+            IdeChangeManager = new ModelChangeManager(IdeModel);
+            
+            DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Normal, GetWpfMainWindow(_DTE).Dispatcher);
+
+            Timer.Interval = TimeSpan.FromSeconds(10);
+
+            Timer.Tick += Timer_Tick;
+
+            Timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (!Zombied)
             {
-                while (!Zombied)
+                RemoteModelManager.SyncChanges();
+
+                // TODO: Is there a better way to get the tab's full file path than parsing the tooltip?
+
+                // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
+                var TabItems = GetWpfMainWindow(_DTE).FindChild<DocumentTabPanel>().FindChildren("TitleText").Cast<TabItemTextControl>().ToArray();
+
+                foreach (var tabItem in TabItems)
                 {
-                    System.Threading.Thread.Sleep(10000);
-                    RemoteModelManager.SyncChanges();
+                    (tabItem.DataContext as WindowFrameTitle).BindToolTip();
                 }
-            });
+
+                var TabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.DataContext as WindowFrameTitle).ToolTip }).ToArray();
+
+                var RemoteOpenFiles = RemoteModelManager.GetExternalModels().SelectMany(m => m._OpenFiles.Select(of => new { OpenFile = of, m.UserIdentity })).ToDictionary(g => g.OpenFile.RelativePath, g => g);
+
+                foreach (var tabItem in TabItemsWithFilePaths)
+                {
+                    var UserAppendString = $" [{RemoteOpenFiles[new SourceControlRepo().GetRelativePath(tabItem.File).RelativePath].UserIdentity}]";
+                    if (!tabItem.Item.Text.Contains(UserAppendString))
+                    {
+                        tabItem.Item.Text += UserAppendString;
+                    }
+                }
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -100,7 +135,7 @@ namespace TeamCoding
             RemoteModelManager.SyncChanges();
             base.Dispose(disposing);
         }
-        private System.Windows.Media.Visual GetWpfMainWindow(DTE dte)
+        private System.Windows.Media.Visual GetWpfMainWindow(EnvDTE.DTE dte)
         {
             if (dte == null)
             {

@@ -27,9 +27,9 @@ namespace TeamCoding.Extensions
             // confirm parent and name are valid.
             if (parent == null || string.IsNullOrEmpty(name)) yield break;
 
-            if (parent is FrameworkElement && (parent as FrameworkElement).Name == name) yield return parent;
+            if ((parent as FrameworkElement)?.Name == name) yield return parent;
 
-            if (parent is FrameworkElement) (parent as FrameworkElement).ApplyTemplate();
+            (parent as FrameworkElement)?.ApplyTemplate();
 
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
@@ -42,22 +42,26 @@ namespace TeamCoding.Extensions
             }
         }
 
-        public static DependencyObject FindChild(this DependencyObject parent, string name)
+        public static T FindChild<T>(this DependencyObject parent) where T : DependencyObject
+        {
+            return (T)FindChild(parent, p => p is T);
+        }
+        public static DependencyObject FindChild(this DependencyObject parent, Func<DependencyObject, bool> predicate)
         { // http://stackoverflow.com/a/19539095
             // confirm parent and name are valid.
-            if (parent == null || string.IsNullOrEmpty(name)) return null;
+            if (parent == null || predicate == null) return null;
 
-            if (parent is FrameworkElement && (parent as FrameworkElement).Name == name) return parent;
+            if (predicate(parent as FrameworkElement)) return parent;
 
             DependencyObject result = null;
 
-            if (parent is FrameworkElement) (parent as FrameworkElement).ApplyTemplate();
+            (parent as FrameworkElement)?.ApplyTemplate();
 
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
-                result = FindChild(child, name);
+                result = FindChild(child, predicate);
                 if (result != null) break;
             }
 
