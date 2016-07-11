@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.SourceControl
 {
-    public class MachineIdentityProvider : IIdentityProvider
+    public interface IIdentityProvider
     {
-        public string GetIdentity()
-        {
-            return Environment.UserName;
-        }
+        string GetIdentity();
     }
 }
