@@ -10,9 +10,12 @@ namespace TeamCoding.SourceControl
 {
     public class SourceControlRepo
     {
+        [ProtoBuf.ProtoContract]
         public class RepoDocInfo
         {
+            [ProtoBuf.ProtoMember(1)]
             public string RelativePath { get; set; }
+            [ProtoBuf.ProtoMember(2)]
             public bool BeingEdited { get; set; }
         }
         public RepoDocInfo GetRelativePath(string fullFilePath)
