@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamCoding.Identity
+namespace TeamCoding.VisualStudio.Identity
 {
     public interface IIdentityProvider
     {
-        string GetIdentity();
+        UserIdentity GetIdentity();
     }
 }

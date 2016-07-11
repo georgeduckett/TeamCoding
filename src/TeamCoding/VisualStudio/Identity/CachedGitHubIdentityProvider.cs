@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.CredentialManagement;
 
-namespace TeamCoding.Identity
+namespace TeamCoding.VisualStudio.Identity
 {
     public class CachedGitHubIdentityProvider : IIdentityProvider
     {
-        private readonly string _Identity;
-        public string GetIdentity() => _Identity;
+        private readonly UserIdentity _Identity;
+        public UserIdentity GetIdentity() => _Identity;
         public CachedGitHubIdentityProvider()
         {
             Credential credential = new Credential { Target = "git:https://github.com" };
@@ -25,15 +25,14 @@ namespace TeamCoding.Identity
                 credential.Load();
             }
 
-            _Identity = credential.Username;
-        }
-
-        //TODO: Make GetImageForIdentity part of the IIdentityProvider interface, and use it
-        public Image GetImageForIdentity(string identity)
+            _Identity = new UserIdentity() { DisplayName = credential.Username, ImageUrl = $"http://www.gravatar.com/avatar/{CalculateMD5Hash(credential.Username).ToLower()}" };
+            }
+        
+        public Image GetImageForIdentity(UserIdentity identity)
         {
             using (var wc = new WebClient())
             {
-                byte[] bytes = wc.DownloadData($"http://www.gravatar.com/avatar/{CalculateMD5Hash(identity).ToLower()}");
+                byte[] bytes = wc.DownloadData(identity.ImageUrl);
                 using (MemoryStream ms = new MemoryStream(bytes))
                 using (var img = Image.FromStream(ms))
                 {

@@ -6,32 +6,20 @@
 
 using System;
 using TeamCoding.Extensions;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
 using TeamCoding.VisualStudio;
 using TeamCoding.SourceControl;
 using System.Windows.Interop;
-using EnvDTE80;
-using System.Windows;
-using System.Windows.Media;
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 using System.Linq;
 using Microsoft.VisualStudio.Platform.WindowManagement;
 using System.Windows.Threading;
+using TeamCoding.VisualStudio.Identity;
+using System.IO;
 using System.Windows.Controls;
-using TeamCoding.CredentialManagement;
-using TeamCoding.Identity;
+using System.Windows.Media.Imaging;
 
 namespace TeamCoding
 {
@@ -104,30 +92,71 @@ namespace TeamCoding
         {
             if (!Zombied)
             {
+                // TODO: Make this react instantly to changes, rather than polling
                 RemoteModelManager.SyncChanges();
 
                 // TODO: Is there a better way to get the tab's full file path than parsing the tooltip?
 
                 // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-                var TabItems = GetWpfMainWindow(_DTE).FindChild<DocumentTabPanel>().FindChildren("TitleText").Cast<TabItemTextControl>().ToArray();
-
+                var TabItems = GetWpfMainWindow(_DTE).FindChild<DocumentTabPanel>().FindChildren("TitlePanel").Cast<DockPanel>()
+                                                     .Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
+                
                 foreach (var tabItem in TabItems)
                 {
-                    (tabItem.DataContext as WindowFrameTitle).BindToolTip();
+                    (tabItem.TitleText.DataContext as WindowFrameTitle).BindToolTip();
                 }
 
-                var TabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.DataContext as WindowFrameTitle).ToolTip }).ToArray();
+                var TabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip }).ToArray();
 
-                var RemoteOpenFiles = RemoteModelManager.GetExternalModels().SelectMany(m => m._OpenFiles.Select(of => new { OpenFile = of, m.UserIdentity })).ToDictionary(g => g.OpenFile.RelativePath, g => g);
+                var RemoteOpenFiles = RemoteModelManager.GetExternalModels().SelectMany(m => m.OpenFiles.Select(of => new { OpenFile = of, m.IDEUserIdentity })).ToDictionary(g => g.OpenFile.RelativePath, g => g);
 
                 foreach (var tabItem in TabItemsWithFilePaths)
                 {
-                    var UserAppendString = $" [{RemoteOpenFiles[new SourceControlRepo().GetRelativePath(tabItem.File).RelativePath].UserIdentity}]";
-                    if (!tabItem.Item.Text.Contains(UserAppendString))
+                    var relativePath = new SourceControlRepo().GetRelativePath(tabItem.File).RelativePath;
+                    if (RemoteOpenFiles.ContainsKey(relativePath))
                     {
-                        tabItem.Item.Text += UserAppendString;
+                        if (RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl == null)
+                        {
+                            var UserAppendString = $" [{RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName}]";
+                            if (!tabItem.Item.TitleText.Text.Contains(UserAppendString))
+                            {
+                                tabItem.Item.TitleText.Text += UserAppendString;
+                            }
+                        }
+                        else
+                        {
+                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.ToolTip == RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName))
+                            {
+                                // TODO: Handle spotty internet connection?
+                                // Insert the user image
+                                var imgUser = ImageFromUrl(RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl);
+                                if (imgUser != null)
+                                { // TODO: Add a generic icon with tooltip if we can't get the user (and until we async in the proper user image)
+                                    imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
+                                    imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
+                                    imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
+                                    imgUser.ToolTip = RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName;
+
+                                    tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
+                                }
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        private Image ImageFromUrl(string url)
+        {
+            // TODO: Make this async
+            var wc = new System.Net.WebClient();
+            var image = new Image();
+            using (MemoryStream stream = new MemoryStream(wc.DownloadData(url)))
+            {
+                image.Source = BitmapFrame.Create(stream,
+                                                  BitmapCreateOptions.None,
+                                                  BitmapCacheOption.OnLoad);
+                return image;
             }
         }
 

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamCoding.Identity
+namespace TeamCoding.VisualStudio.Identity
 {
     public class VSUIIdentityProvider : IIdentityProvider
     {
-        private readonly string _Identity;
+        private readonly UserIdentity _Identity;
 
         public VSUIIdentityProvider()
         {
@@ -16,6 +16,6 @@ namespace TeamCoding.Identity
             throw new NotImplementedException();
         }
 
-        public string GetIdentity() => _Identity;
+        public UserIdentity GetIdentity() => _Identity;
     }
 }

@@ -64,6 +64,7 @@
     <Compile Include="VisualStudio\Identity\IIdentityProvider.cs" />
     <Compile Include="VisualStudio\Identity\MachineIdentityProvider.cs" />
     <Compile Include="SourceControl\SourceControlRepo.cs" />
+    <Compile Include="VisualStudio\Identity\UserIdentity.cs" />
     <Compile Include="VisualStudio\Identity\VSUIIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
     <Compile Include="VisualStudio\LocalIDEModel.cs" />

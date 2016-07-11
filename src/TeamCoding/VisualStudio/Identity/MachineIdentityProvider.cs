@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamCoding.Identity
+namespace TeamCoding.VisualStudio.Identity
 {
     public class MachineIdentityProvider : IIdentityProvider
     {
-        public string GetIdentity()
+        public UserIdentity GetIdentity()
         {
-            return Environment.UserName;
+            return new UserIdentity() { DisplayName = Environment.UserName };
         }
     }
 }
