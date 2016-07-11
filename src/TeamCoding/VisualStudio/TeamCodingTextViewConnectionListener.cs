@@ -12,10 +12,9 @@ using Microsoft.VisualStudio.Shell;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using TeamCoding.Extensions;
 using System.Linq;
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
-using System.Windows.Controls;
-using Microsoft.VisualStudio.Platform.WindowManagement;
 
 namespace TeamCoding.VisualStudio
 {
@@ -33,6 +32,25 @@ namespace TeamCoding.VisualStudio
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 TeamCodingPackage.Current.IdeModel.OpenedTextView(textView);
+                //new TeamCodingViewLayer(textView);
+
+                var ExternalModelManager = TeamCodingPackage.Current.RemoteModelManager;
+
+                var test = TeamCodingPackage.Current.DocTabPanel;
+
+                var test3 = test.Children.OfType<DocumentTabItem>().Select(c => c.Children().ToArray()).ToArray();
+                // TODO: Where is the tool-tip for the tab (to match with file name)
+                var test2 = test.FindChildren("TitleText").ToArray();
+
+                var RemoteOpenFiles = ExternalModelManager.GetExternalModels().Where(m => m._OpenFiles.Select(f => f.RelativePath).Contains(new SourceControlRepo().GetRelativePath(textView.GetTextDocumentFilePath()).RelativePath)).GroupBy(r => r.UserIdentity).Select(g => g.Key);
+                
+                /*if (test2 != null)
+                {
+                    foreach(var user in RemoteOpenFiles)
+                    {
+                        test2.Text += $" [{user}]";
+                    }
+                }*/
             }
         }
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)

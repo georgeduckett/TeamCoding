@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.SourceControl
 {
-    public class MachineIdentityProvider : IIdentityProvider
+    public class MachineIdentityProvider
     {
         public string GetIdentity()
         {

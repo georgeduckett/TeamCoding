@@ -25,7 +25,6 @@ namespace TeamCoding
 
         private void IdeModel_Changed(object sender, EventArgs e)
         {
-            // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now)
             var NewItems = _IdeModel.OpenDocs();
             if (File.Exists(PersistenceFile))
             {
