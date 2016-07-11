@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.CredentialManagement;
 
-namespace TeamCoding.SourceControl
+namespace TeamCoding.Identity
 {
     public class CachedGitHubIdentityProvider : IIdentityProvider
     {

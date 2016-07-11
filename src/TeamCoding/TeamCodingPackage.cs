@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.Platform.WindowManagement;
 using System.Windows.Threading;
 using System.Windows.Controls;
 using TeamCoding.CredentialManagement;
+using TeamCoding.Identity;
 
 namespace TeamCoding
 {
