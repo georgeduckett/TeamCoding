@@ -17,13 +17,10 @@ namespace TeamCoding.VisualStudio
         public readonly List<SourceControlRepo.RepoDocInfo> _OpenFiles; // TODO: Make backing field so it handles null from protobuf
 
         public RemoteIDEModel() { }
-        public RemoteIDEModel(string[] fileLines)
+        public RemoteIDEModel(LocalIDEModel localModel)
         {
-            UserIdentity = fileLines[0];
-            _OpenFiles = fileLines.Skip(1)
-                                  .Where(s => !string.IsNullOrWhiteSpace(s))
-                                  .Select(s => new SourceControlRepo.RepoDocInfo() { BeingEdited = bool.Parse(s.Split(' ')[0]), RelativePath = s.Split(' ')[1] })
-                                  .ToList();
+            UserIdentity = TeamCodingPackage.Current.IdentityProvider.GetIdentity();
+            _OpenFiles = new List<SourceControlRepo.RepoDocInfo>(localModel.OpenDocs());
         }
     }
 }

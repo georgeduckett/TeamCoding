@@ -33,8 +33,7 @@ namespace TeamCoding
             }
 
             // Create a remote IDE model to send
-            // TODO: Make a better constructor for RemoteIDEModel and use it
-            var remoteModel = new RemoteIDEModel(Enumerable.Repeat(new MachineIdentityProvider().GetIdentity(), 1).Union(NewItems.Select(i => i.BeingEdited.ToString() + " " + i.RelativePath)).ToArray());
+            var remoteModel = new RemoteIDEModel(_IdeModel);
 
             if (NewItems.Length != 0)
             {
