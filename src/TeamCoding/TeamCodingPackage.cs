@@ -81,7 +81,7 @@ namespace TeamCoding
             
             DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Normal, GetWpfMainWindow(_DTE).Dispatcher);
 
-            Timer.Interval = TimeSpan.FromSeconds(10);
+            Timer.Interval = TimeSpan.FromSeconds(2);
 
             Timer.Tick += Timer_Tick;
 
@@ -125,7 +125,7 @@ namespace TeamCoding
                         }
                         else
                         {
-                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.ToolTip == RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName))
+                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.Tag == RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl))
                             {
                                 // TODO: Handle spotty internet connection?
                                 // Insert the user image
@@ -136,6 +136,7 @@ namespace TeamCoding
                                     imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
                                     imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
                                     imgUser.ToolTip = RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName;
+                                    imgUser.Tag = RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl;
 
                                     tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
                                 }
@@ -148,14 +149,11 @@ namespace TeamCoding
 
         private Image ImageFromUrl(string url)
         {
-            // TODO: Make this async
-            var wc = new System.Net.WebClient();
+            // TODO: Make loading an image from a url async
             var image = new Image();
-            using (MemoryStream stream = new MemoryStream(wc.DownloadData(url)))
+            using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
             {
-                image.Source = BitmapFrame.Create(stream,
-                                                  BitmapCreateOptions.None,
-                                                  BitmapCacheOption.OnLoad);
+                image.Source = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 return image;
             }
         }
