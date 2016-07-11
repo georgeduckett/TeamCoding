@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +8,15 @@ using TeamCoding.SourceControl;
 
 namespace TeamCoding.VisualStudio
 {
+    [ProtoContract]
     public class RemoteIDEModel
     {
+        [ProtoMember(1)]
         public readonly string UserIdentity;
-        public readonly List<SourceControlRepo.RepoDocInfo> _OpenFiles;
+        [ProtoMember(2)]
+        public readonly List<SourceControlRepo.RepoDocInfo> _OpenFiles; // TODO: Make backing field so it handles null from protobuf
 
+        public RemoteIDEModel() { }
         public RemoteIDEModel(string[] fileLines)
         {
             UserIdentity = fileLines[0];
