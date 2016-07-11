@@ -14,7 +14,7 @@ namespace TeamCoding
     /// </summary>
     internal class ModelChangeManager
     {
-        private string PersistenceFile = $"OpenDocs{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
+        private string PersistenceFile = $"OpenDocs{System.Diagnostics.Process.GetCurrentProcess().Id}.txt";
         private readonly LocalIDEModel _IdeModel;
 
         public ModelChangeManager(LocalIDEModel model)
@@ -31,16 +31,9 @@ namespace TeamCoding
                 File.Delete(PersistenceFile);
             }
 
-            // Create a remote IDE model to send
-            // TODO: Make a better constructor for RemoteIDEModel and use it
-            var remoteModel = new RemoteIDEModel(Enumerable.Repeat(new MachineIdentityProvider().GetIdentity(), 1).Union(NewItems.Select(i => i.BeingEdited.ToString() + " " + i.RelativePath)).ToArray());
-
             if (NewItems.Length != 0)
             {
-                using (var f = File.Create(PersistenceFile))
-                {
-                    ProtoBuf.Serializer.Serialize(f, remoteModel);
-                }
+                File.WriteAllLines(PersistenceFile, Enumerable.Repeat(new MachineIdentityProvider().GetIdentity(), 1).Union(NewItems.Select(i => i.BeingEdited.ToString() + " " + i.RelativePath)));
             }
         }
     }

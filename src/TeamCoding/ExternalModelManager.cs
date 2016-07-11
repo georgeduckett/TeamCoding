@@ -14,7 +14,8 @@ namespace TeamCoding
     /// </summary>
     public class ExternalModelManager
     {
-        private const string ModelSyncFileFormat = "OpenDocs*.bin";
+        private const string ModelSyncFileFormat = "OpenDocs*.txt";
+
         private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();
         public IEnumerable<RemoteIDEModel> GetExternalModels() => Models;
 
@@ -23,10 +24,11 @@ namespace TeamCoding
             Models.Clear();
             foreach(var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
             {
-                using(var f = File.OpenRead(modelSyncFile))
-                {
-                    Models.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
-                }
+                //if (modelSyncFile == $"OpenDocs{Process.GetCurrentProcess().Id}.txt") continue;
+
+                var Lines = File.ReadAllLines(modelSyncFile);
+
+                Models.Add(new RemoteIDEModel(Lines));
             }
         }
     }
