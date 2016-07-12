@@ -20,12 +20,29 @@ namespace TeamCoding
         public ModelChangeManager(LocalIDEModel model)
         {
             _IdeModel = model;
-            _IdeModel.Changed += IdeModel_Changed;
+            _IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
+            _IdeModel.TextContentChanged += IdeModel_TextContentChanged;
+            _IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
         }
 
-        private void IdeModel_Changed(object sender, EventArgs e)
+        private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
         {
-            // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now)
+            SendChanges();
+        }
+
+        private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
+        {
+            // TODO: Handle this to sync changes between instances (if enabled somehow?)
+            //SendChanges();
+        }
+        private void IdeModel_OpenViewsChanged(object sender, EventArgs e)
+        {
+            SendChanges();
+        }
+
+        private void SendChanges()
+        {
+            // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now, (or write to a file share?)
             var NewItems = _IdeModel.OpenDocs();
             if (File.Exists(PersistenceFile))
             {

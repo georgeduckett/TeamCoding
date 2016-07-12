@@ -20,6 +20,8 @@ using TeamCoding.VisualStudio.Identity;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace TeamCoding
 {
@@ -58,8 +60,14 @@ namespace TeamCoding
         internal ModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
-        
+
+        private readonly Image SharedUnknownUserImage = new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") };
+
+        private Dispatcher UIDispatcher;
+
         private EnvDTE.DTE _DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+
+        private readonly Dictionary<string, ImageSource> _UrlImages = new Dictionary<string, ImageSource>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -77,9 +85,11 @@ namespace TeamCoding
         {
             base.Initialize();
 
+            UIDispatcher = GetWpfMainWindow(_DTE).Dispatcher;
+
             IdeChangeManager = new ModelChangeManager(IdeModel);
             
-            DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Normal, GetWpfMainWindow(_DTE).Dispatcher);
+            DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Normal, UIDispatcher);
 
             Timer.Interval = TimeSpan.FromSeconds(2);
 
@@ -94,9 +104,7 @@ namespace TeamCoding
             {
                 // TODO: Make this react instantly to changes, rather than polling
                 RemoteModelManager.SyncChanges();
-
-                // TODO: Is there a better way to get the tab's full file path than parsing the tooltip?
-
+                
                 // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
                 var TabItems = GetWpfMainWindow(_DTE).FindChild<DocumentTabPanel>().FindChildren("TitlePanel").Cast<DockPanel>()
                                                      .Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
@@ -106,28 +114,31 @@ namespace TeamCoding
                     (tabItem.TitleText.DataContext as WindowFrameTitle).BindToolTip();
                 }
 
-                var TabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip }).ToArray();
+                // TODO: Is there a better way to get the tab's full file path than parsing the tooltip? (there must be!)
+                var TabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip.TrimEnd('*') }).ToArray();
 
                 var RemoteOpenFiles = RemoteModelManager.GetExternalModels()
                     .SelectMany(model => model.OpenFiles.SelectMany(of => of.RepoUrls.Select(repo => new
                     {
                         Repo = repo,
                         Identity = model.IDEUserIdentity,
-                        File = of.RelativePath
+                        File = of.RelativePath,
+                        of.BeingEdited
                     })));
 
                 foreach (var tabItem in TabItemsWithFilePaths)
                 {
                     var RepoInfo = new SourceControlRepo().GetRelativePath(tabItem.File);
                     var relativePath = RepoInfo.RelativePath;
-
+                    // TODO: *Remove items no-longer relevent
                     var RemoteTabItems = RemoteOpenFiles.Where(rof => RepoInfo.RepoUrls.Contains(rof.Repo) && rof.File == RepoInfo.RelativePath).ToArray();
 
                     foreach(var remoteTabItem in RemoteTabItems)
                     {
                         if (remoteTabItem.Identity.ImageUrl == null)
                         {
-                            var UserAppendString = $" [{remoteTabItem.Identity.DisplayName}]"; // TODO: Indicate whether they're editing or not
+                            // If the image is null use a placeholder
+                            var UserAppendString = $" [{remoteTabItem.Identity.DisplayName + (remoteTabItem.BeingEdited ? " (edited)" : string.Empty)}]"; // TODO: Indicate whether they're editing or not
                             if (!tabItem.Item.TitleText.Text.Contains(UserAppendString))
                             {
                                 tabItem.Item.TitleText.Text += UserAppendString;
@@ -135,18 +146,19 @@ namespace TeamCoding
                         }
                         else
                         {
-                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.Tag == remoteTabItem.Identity.ImageUrl))
+                            // TODO: Find a better way of determining if we've already added the item
+                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.Tag == remoteTabItem.Identity.ImageUrl + " " + remoteTabItem.BeingEdited.ToString()))
                             {
                                 // TODO: Handle spotty internet connection?
                                 // Insert the user image
-                                var imgUser = ImageFromUrl(remoteTabItem.Identity.ImageUrl);
+                                var imgUser = GetUserImageFromUrl(remoteTabItem.Identity.ImageUrl);
                                 if (imgUser != null)
                                 { // TODO: Add a generic icon with tooltip if we can't get the user (and until we async in the proper user image)
                                     imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
                                     imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
                                     imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
-                                    imgUser.ToolTip = remoteTabItem.Identity.DisplayName; // TODO: Indicate whether they're editing or not
-                                    imgUser.Tag = remoteTabItem.Identity.ImageUrl;
+                                    imgUser.ToolTip = remoteTabItem.Identity.DisplayName + (remoteTabItem.BeingEdited ? " [edited]" : string.Empty); // TODO: Indicate whether they're editing or not
+                                    imgUser.Tag = remoteTabItem.Identity.ImageUrl + " " + remoteTabItem.BeingEdited.ToString();
 
                                     tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
                                 }
@@ -157,18 +169,29 @@ namespace TeamCoding
             }
         }
 
-        private Image ImageFromUrl(string url)
+        private Image GetUserImageFromUrl(string url)
         {
-            // TODO: Make loading an image from a url async using the placeholder image below (make all Image controls reference this same resource, then when available change the image source)
-            var image = new Image();
-            using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
+            if (url == null) { return SharedUnknownUserImage; }
+            
+            if (_UrlImages.ContainsKey(url))
             {
-                // Could use BitmapFrame.DownloadCompleted event and the url directly
-                image.Source = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                return image;
+                return new Image() { Source = _UrlImages[url] };
             }
 
-            //return new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") };
+            var Result = new Image() { Source = SharedUnknownUserImage.Source };
+
+            UIDispatcher.InvokeAsync(() =>
+            {
+                using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
+                {
+                    Result.Source = _UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    
+                }
+            });
+
+            
+
+            return Result;
         }
 
         /// <summary>

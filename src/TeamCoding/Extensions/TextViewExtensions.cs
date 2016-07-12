@@ -13,8 +13,12 @@ namespace TeamCoding.Extensions
     {
         public static string GetTextDocumentFilePath(this IWpfTextView textView)
         {
+            return textView.TextBuffer.GetTextDocumentFilePath();
+        }
+        public static string GetTextDocumentFilePath(this ITextBuffer textBuffer)
+        {
             ITextDocument textDoc;
-            var rc = textView.TextBuffer.Properties.TryGetProperty(
+            var rc = textBuffer.Properties.TryGetProperty(
               typeof(ITextDocument), out textDoc);
             if (rc == true)
                 return Path.GetFullPath(textDoc.FilePath);
