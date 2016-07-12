@@ -14,19 +14,24 @@ namespace TeamCoding.SourceControl
         public class RepoDocInfo
         {
             [ProtoBuf.ProtoMember(1)]
-            public string RelativePath { get; set; }
+            public string[] RepoUrls { get; set; }
             [ProtoBuf.ProtoMember(2)]
+            public string RelativePath { get; set; }
+            [ProtoBuf.ProtoMember(3)]
             public bool BeingEdited { get; set; }
         }
         public RepoDocInfo GetRelativePath(string fullFilePath)
         {
             // TODO: Handle repositories other than Git
             var RepoPath = Repository.Discover(fullFilePath);
-            var IsEdited = new Repository(RepoPath).Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any();
-            if (RepoPath == null) return null;
 
+            var Repo = new Repository(RepoPath);
+
+            var IsEdited = Repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any();
+            if (RepoPath == null) return null;
             return new RepoDocInfo()
             {
+                RepoUrls = Repo.Network.Remotes.Select(r => r.Url).ToArray(),
                 RelativePath = fullFilePath.Substring(new DirectoryInfo(RepoPath).Parent.FullName.Length).TrimStart('\\'),
                 BeingEdited = IsEdited
             };

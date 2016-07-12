@@ -108,16 +108,26 @@ namespace TeamCoding
 
                 var TabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip }).ToArray();
 
-                var RemoteOpenFiles = RemoteModelManager.GetExternalModels().SelectMany(m => m.OpenFiles.Select(of => new { OpenFile = of, m.IDEUserIdentity })).ToDictionary(g => g.OpenFile.RelativePath, g => g);
+                var RemoteOpenFiles = RemoteModelManager.GetExternalModels()
+                    .SelectMany(model => model.OpenFiles.SelectMany(of => of.RepoUrls.Select(repo => new
+                    {
+                        Repo = repo,
+                        Identity = model.IDEUserIdentity,
+                        File = of.RelativePath
+                    })));
 
                 foreach (var tabItem in TabItemsWithFilePaths)
                 {
-                    var relativePath = new SourceControlRepo().GetRelativePath(tabItem.File).RelativePath;
-                    if (RemoteOpenFiles.ContainsKey(relativePath))
+                    var RepoInfo = new SourceControlRepo().GetRelativePath(tabItem.File);
+                    var relativePath = RepoInfo.RelativePath;
+
+                    var RemoteTabItems = RemoteOpenFiles.Where(rof => RepoInfo.RepoUrls.Contains(rof.Repo) && rof.File == RepoInfo.RelativePath).ToArray();
+
+                    foreach(var remoteTabItem in RemoteTabItems)
                     {
-                        if (RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl == null)
+                        if (remoteTabItem.Identity.ImageUrl == null)
                         {
-                            var UserAppendString = $" [{RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName}]";
+                            var UserAppendString = $" [{remoteTabItem.Identity.DisplayName}]"; // TODO: Indicate whether they're editing or not
                             if (!tabItem.Item.TitleText.Text.Contains(UserAppendString))
                             {
                                 tabItem.Item.TitleText.Text += UserAppendString;
@@ -125,18 +135,18 @@ namespace TeamCoding
                         }
                         else
                         {
-                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.Tag == RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl))
+                            if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (string)i.Tag == remoteTabItem.Identity.ImageUrl))
                             {
                                 // TODO: Handle spotty internet connection?
                                 // Insert the user image
-                                var imgUser = ImageFromUrl(RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl);
+                                var imgUser = ImageFromUrl(remoteTabItem.Identity.ImageUrl);
                                 if (imgUser != null)
                                 { // TODO: Add a generic icon with tooltip if we can't get the user (and until we async in the proper user image)
                                     imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
                                     imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
                                     imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
-                                    imgUser.ToolTip = RemoteOpenFiles[relativePath].IDEUserIdentity.DisplayName;
-                                    imgUser.Tag = RemoteOpenFiles[relativePath].IDEUserIdentity.ImageUrl;
+                                    imgUser.ToolTip = remoteTabItem.Identity.DisplayName; // TODO: Indicate whether they're editing or not
+                                    imgUser.Tag = remoteTabItem.Identity.ImageUrl;
 
                                     tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
                                 }
@@ -149,13 +159,31 @@ namespace TeamCoding
 
         private Image ImageFromUrl(string url)
         {
-            // TODO: Make loading an image from a url async
+            // TODO: Make loading an image from a url async using the placeholder image below (make all Image controls reference this same resource, then when available change the image source)
             var image = new Image();
             using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
             {
+                // Could use BitmapFrame.DownloadCompleted event and the url directly
                 image.Source = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 return image;
             }
+
+            //return new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") };
+        }
+
+        /// <summary>
+        /// Load a resource WPF-BitmapImage (png, bmp, ...) from embedded resource defined as 'Resource' not as 'Embedded resource'.
+        /// </summary>
+        /// <param name="pathInApplication">Path without starting slash</param>
+        /// <param name="assembly">Usually 'Assembly.GetExecutingAssembly()'. If not mentionned, I will use the calling assembly</param>
+        /// <returns></returns>
+        public static BitmapImage LoadBitmapFromResource(string pathInApplication)
+        { // http://stackoverflow.com/a/9737958
+            if (pathInApplication[0] == '/')
+            {
+                pathInApplication = pathInApplication.Substring(1);
+            }
+            return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
 
         protected override void Dispose(bool disposing)
