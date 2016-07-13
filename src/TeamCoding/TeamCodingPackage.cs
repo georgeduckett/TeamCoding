@@ -4,24 +4,24 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-using System;
-using TeamCoding.Extensions;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell;
-using TeamCoding.VisualStudio;
-using TeamCoding.SourceControl;
-using System.Windows.Interop;
-using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
-using System.Linq;
 using Microsoft.VisualStudio.Platform.WindowManagement;
-using System.Windows.Threading;
-using TeamCoding.VisualStudio.Identity;
-using System.IO;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
+using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
+using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using TeamCoding.Extensions;
+using TeamCoding.SourceControl;
+using TeamCoding.VisualStudio;
+using TeamCoding.VisualStudio.Identity;
 
 namespace TeamCoding
 {
@@ -76,7 +76,6 @@ namespace TeamCoding
         {
             Current = this;
         }
-
         
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -135,12 +134,12 @@ namespace TeamCoding
                     var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrls.Contains(rof.Repository) && rof.RelativePath == repoInfo.RelativePath).ToArray();
 
                     // TODO: Don't just remove all images then add them in later
-                    foreach(var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
+                    foreach (var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
                     {
                         image.Remove();
                     }
 
-                    foreach(var remoteTabItem in remoteDocuments)
+                    foreach (var remoteTabItem in remoteDocuments)
                     {
                         var imgUser = GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
 

@@ -23,11 +23,11 @@ namespace TeamCoding
             if (other == null)
                 return false;
 
-            return (Repository == other.Repository &&
-                    RelativePath == other.RelativePath &&
-                    IdeUserIdentity.DisplayName == IdeUserIdentity.DisplayName &&
-                    IdeUserIdentity.ImageUrl == IdeUserIdentity.ImageUrl &&
-                    BeingEdited == other.BeingEdited);
+            return Repository == other.Repository &&
+                   RelativePath == other.RelativePath &&
+                   IdeUserIdentity.DisplayName == IdeUserIdentity.DisplayName &&
+                   IdeUserIdentity.ImageUrl == IdeUserIdentity.ImageUrl &&
+                   BeingEdited == other.BeingEdited;
         }
 
         public override bool Equals(object obj)

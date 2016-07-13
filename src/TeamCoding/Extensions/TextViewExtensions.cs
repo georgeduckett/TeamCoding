@@ -18,12 +18,14 @@ namespace TeamCoding.Extensions
         public static string GetTextDocumentFilePath(this ITextBuffer textBuffer)
         {
             ITextDocument textDoc;
-            var rc = textBuffer.Properties.TryGetProperty(
-              typeof(ITextDocument), out textDoc);
-            if (rc == true)
+            if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDoc))
+            {
                 return Path.GetFullPath(textDoc.FilePath);
+            }
             else
+            {
                 return null;
+            }
         }
     }
 }

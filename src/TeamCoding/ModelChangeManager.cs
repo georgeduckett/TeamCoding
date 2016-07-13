@@ -14,7 +14,7 @@ namespace TeamCoding
     /// </summary>
     internal class ModelChangeManager
     {
-        private string PersistenceFile = $"OpenDocs{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
+        private readonly string _PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel _IdeModel;
 
         public ModelChangeManager(LocalIDEModel model)
@@ -33,7 +33,7 @@ namespace TeamCoding
         private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
         {
             // TODO: Handle IdeModel_TextContentChanged to sync changes between instances (if enabled in some setting somehow?), maybe also to allow quick notifications of editing a document
-            //SendChanges();
+            // SendChanges();
         }
         private void IdeModel_OpenViewsChanged(object sender, EventArgs e)
         {
@@ -44,17 +44,17 @@ namespace TeamCoding
         {
             // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now, (or write to a file share?)
             var NewItems = _IdeModel.OpenDocs();
-            if (File.Exists(PersistenceFile))
+            if (File.Exists(_PersistenceFile))
             {
-                File.Delete(PersistenceFile);
+                File.Delete(_PersistenceFile);
             }
-
+            // TODO: Somewhere we need to clean-up old files from crashed IDEs - possibly we use a heartbeat method and delete old files order than that
             // Create a remote IDE model to send
             var remoteModel = new RemoteIDEModel(_IdeModel);
 
             if (NewItems.Length != 0)
             {
-                using (var f = File.Create(PersistenceFile))
+                using (var f = File.Create(_PersistenceFile))
                 {
                     ProtoBuf.Serializer.Serialize(f, remoteModel);
                 }

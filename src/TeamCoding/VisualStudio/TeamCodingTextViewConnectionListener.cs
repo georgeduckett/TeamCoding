@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Text;
+﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using TeamCoding.Extensions;
-using LibGit2Sharp;
-using System.IO;
-using TeamCoding.SourceControl;
-using Microsoft.VisualStudio.Shell;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell.Interop;
-using System.Linq;
-using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
-using System.Windows.Controls;
-using Microsoft.VisualStudio.Platform.WindowManagement;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
 
 namespace TeamCoding.VisualStudio
 {
@@ -39,7 +26,7 @@ namespace TeamCoding.VisualStudio
                 ITextDocument textDoc;
                 _TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
 
-                if(textDoc != null)
+                if (textDoc != null)
                 {
                     textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
                 }
@@ -48,7 +35,7 @@ namespace TeamCoding.VisualStudio
 
         private void TextDoc_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if(e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
             {
                 TeamCodingPackage.Current.IdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
             }

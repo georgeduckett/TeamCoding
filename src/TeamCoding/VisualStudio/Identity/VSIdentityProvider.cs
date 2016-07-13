@@ -14,7 +14,7 @@ namespace TeamCoding.VisualStudio.Identity
         public VSIdentityProvider()
         {
             // TODO: Flesh out the VSIdentityProvider class using SVsConnectedUserService (undocumented?)
-            //IVsConnectedIdeUserContext vsConnectedIdeUserContext = Package.GetGlobalService(typeof(SVsConnectedUserService)) as IVsConnectedIdeUserContext;
+            // IVsConnectedIdeUserContext vsConnectedIdeUserContext = Package.GetGlobalService(typeof(SVsConnectedUserService)) as IVsConnectedIdeUserContext;
             // Microsoft.VisualStudio.Shell.Connected.dll (in GAC)
             _Identity = null;
             throw new NotImplementedException();

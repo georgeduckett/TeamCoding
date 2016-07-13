@@ -1,10 +1,7 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using static TeamCoding.CredentialManagement.Credential;
 
 namespace TeamCoding.CredentialManagement
@@ -38,8 +35,7 @@ namespace TeamCoding.CredentialManagement
             [MarshalAs(UnmanagedType.LPWStr)]
             public string UserName;
         }
-
-
+        
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct CREDUI_INFO
         {
@@ -145,7 +141,7 @@ namespace TeamCoding.CredentialManagement
         internal static extern bool CredRead(string target, CredentialType type, int reservedFlag, out IntPtr CredentialPtr);
 
         [DllImport("Advapi32.dll", EntryPoint = "CredWriteW", CharSet = CharSet.Unicode, SetLastError = true)]
-        internal static extern bool CredWrite([In] ref CREDENTIAL userCredential, [In] UInt32 flags);
+        internal static extern bool CredWrite([In] ref CREDENTIAL userCredential, [In] uint flags);
 
         [DllImport("Advapi32.dll", EntryPoint = "CredFree", SetLastError = true)]
         internal static extern bool CredFree([In] IntPtr cred);
@@ -166,7 +162,7 @@ namespace TeamCoding.CredentialManagement
         internal static extern void CoTaskMemFree(IntPtr ptr);
 
         [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        internal static extern Boolean CredPackAuthenticationBuffer(int dwFlags, StringBuilder pszUserName, StringBuilder pszPassword, IntPtr pPackedCredentials, ref int pcbPackedCredentials);
+        internal static extern bool CredPackAuthenticationBuffer(int dwFlags, StringBuilder pszUserName, StringBuilder pszPassword, IntPtr pPackedCredentials, ref int pcbPackedCredentials);
 
         [DllImport("credui.dll", CharSet = CharSet.Auto)]
         internal static extern bool CredUnPackAuthenticationBuffer(int dwFlags, IntPtr pAuthBuffer, uint cbAuthBuffer, StringBuilder pszUserName, ref int pcchMaxUserName, StringBuilder pszDomainName, ref int pcchMaxDomainame, StringBuilder pszPassword, ref int pcchMaxPassword);
@@ -195,7 +191,6 @@ namespace TeamCoding.CredentialManagement
             // Perform any specific actions to release the handle in the ReleaseHandle method.
             // Often, you need to use Pinvoke to make a call into the Win32 API to release the 
             // handle. In this case, however, we can use the Marshal class to release the unmanaged memory.
-
             override protected bool ReleaseHandle()
             {
                 // If the handle was set, free it. Return success.

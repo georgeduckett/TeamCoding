@@ -18,12 +18,12 @@ namespace TeamCoding.CredentialManagement
             DomainVisiblePassword = 4
         }
 
-        static object _lockObject = new object();
+        private static object _lockObject = new object();
 
-        static SecurityPermission _unmanagedCodePermission;
+        private static SecurityPermission _unmanagedCodePermission;
         public string Target { get; set; }
-        public string Username;
-        public string Description;
+        public string Username { get; set; }
+        public string Description { get; set; }
 
         static Credential()
         {
