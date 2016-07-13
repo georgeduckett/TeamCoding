@@ -67,6 +67,7 @@ namespace TeamCoding
 
         private EnvDTE.DTE _DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
+        // TODO: Make this and related methods it's own class
         private readonly Dictionary<string, ImageSource> _UrlImages = new Dictionary<string, ImageSource>();
 
         /// <summary>
@@ -131,31 +132,55 @@ namespace TeamCoding
                     var repoInfo = new SourceControlRepo().GetRelativePath(tabItem.File);
                     var relativePath = repoInfo.RelativePath;
 
-                    var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrls.Contains(rof.Repository) && rof.RelativePath == repoInfo.RelativePath).ToArray();
+                    var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrls.Contains(rof.Repository) && rof.RelativePath == repoInfo.RelativePath).ToList();
 
                     // TODO: Don't just remove all images then add them in later
                     foreach (var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
                     {
-                        image.Remove();
+                        var imageDocData = (RemoteDocumentData)image.Tag;
+                        // Check whether this image should be removed
+                        var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
+                                                                                     rd.IdeUserIdentity.DisplayName == imageDocData.IdeUserIdentity.DisplayName);
+
+                        if(matchedRemoteDoc == null)
+                        {
+                            image.Remove();
+                        }
+                        else
+                        {
+                            if(imageDocData.BeingEdited != matchedRemoteDoc.BeingEdited)
+                            {
+                                imageDocData.BeingEdited = matchedRemoteDoc.BeingEdited;
+                                SetImageTooltip(image, matchedRemoteDoc);
+                            }
+                        }
                     }
 
                     foreach (var remoteTabItem in remoteDocuments)
                     {
-                        var imgUser = GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
-
-                        if (imgUser != null)
+                        if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
                         {
-                            imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
-                            imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
-                            imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
-                            imgUser.ToolTip = remoteTabItem.IdeUserIdentity.DisplayName + (remoteTabItem.BeingEdited ? " [edited]" : string.Empty);
-                            imgUser.Tag = remoteTabItem;
+                            var imgUser = GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
 
-                            tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
+                            if (imgUser != null)
+                            {
+                                imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
+                                imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
+                                imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
+                                SetImageTooltip(imgUser, remoteTabItem);
+                                imgUser.Tag = remoteTabItem;
+
+                                tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
+                            }
                         }
                     }
                 }
             }
+        }
+
+        private static void SetImageTooltip(Image image, RemoteDocumentData matchedRemoteDoc)
+        {
+            image.ToolTip = matchedRemoteDoc.IdeUserIdentity.DisplayName + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
         }
 
         private Image GetUserImageFromUrl(string url)
