@@ -27,16 +27,15 @@ namespace TeamCoding.VisualStudio
     [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
-    { // TODO: Also hook into the text changed event so I can track whether the content has changed or not (could be edited different, also could be edited back to be the same)
+    {
         [Import]
-        private readonly ITextDocumentFactoryService _TextDocFactory;
+        private readonly ITextDocumentFactoryService _TextDocFactory = null;
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 TeamCodingPackage.Current.IdeModel.OnOpenedTextView(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
-                // TODO: Handle saved event
                 ITextDocument textDoc;
                 _TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
 
@@ -57,8 +56,6 @@ namespace TeamCoding.VisualStudio
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            // TODO: Persist/send across line changes here
-
             TeamCodingPackage.Current.IdeModel.OnTextBufferChanged(sender as ITextBuffer, e);
         }
 

@@ -32,7 +32,7 @@ namespace TeamCoding
 
         private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
         {
-            // TODO: Handle this to sync changes between instances (if enabled somehow?)
+            // TODO: Handle IdeModel_TextContentChanged to sync changes between instances (if enabled in some setting somehow?), maybe also to allow quick notifications of editing a document
             //SendChanges();
         }
         private void IdeModel_OpenViewsChanged(object sender, EventArgs e)

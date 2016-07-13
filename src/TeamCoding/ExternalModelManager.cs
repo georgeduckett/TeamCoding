@@ -21,9 +21,9 @@ namespace TeamCoding
         public void SyncChanges()
         {
             Models.Clear();
-            foreach(var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
+            foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
             {
-                using(var f = File.OpenRead(modelSyncFile))
+                using (var f = File.OpenRead(modelSyncFile))
                 {
                     Models.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
                 }

@@ -49,7 +49,6 @@ namespace TeamCoding.VisualStudio
 
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
         {
-            // TODO: *Check it marks edits straight away
             var SourceControlInfo = new SourceControlRepo().GetRelativePath(textBuffer.GetTextDocumentFilePath());
             _OpenFiles.AddOrUpdate(textBuffer.GetTextDocumentFilePath(), SourceControlInfo, (v, r) => SourceControlInfo);
 
@@ -58,6 +57,9 @@ namespace TeamCoding.VisualStudio
 
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
         {
+            var SourceControlInfo = new SourceControlRepo().GetRelativePath(textDocument.FilePath);
+            _OpenFiles.AddOrUpdate(textDocument.FilePath, SourceControlInfo, (v, r) => SourceControlInfo);
+
             TextDocumentSaved?.Invoke(textDocument, e);
         }
     }

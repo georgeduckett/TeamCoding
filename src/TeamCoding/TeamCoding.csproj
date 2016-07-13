@@ -57,7 +57,9 @@
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
+    <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="ExternalModelManager.cs" />
+    <Compile Include="RemoteDocumentData.cs" />
     <Compile Include="ModelChangeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisualStudio\Identity\CachedGitHubIdentityProvider.cs" />
