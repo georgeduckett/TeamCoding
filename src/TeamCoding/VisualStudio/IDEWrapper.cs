@@ -9,17 +9,47 @@ using System.Windows.Controls;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio.Identity.UserImages;
 using TeamCoding.Extensions;
+using System.Windows.Media;
+using System.Windows.Interop;
+using System.Windows.Threading;
 
 namespace TeamCoding.VisualStudio
 {
     public class IDEWrapper
     {
         private readonly UserImageCache UserImages = new UserImageCache();
+        public Dispatcher UIDispatcher;
 
-        public void UpdateIDE()
+        public Visual GetWpfMainWindow()
         {
+            var DTE = TeamCodingPackage.Current.DTE;
+
+            if (DTE == null)
+            {
+                throw new ArgumentNullException(nameof(DTE));
+            }
+
+            var hwndMainWindow = (IntPtr)DTE.MainWindow.HWnd;
+            if (hwndMainWindow == IntPtr.Zero)
+            {
+                throw new NullReferenceException("DTE.MainWindow.HWnd is null.");
+            }
+
+            var hwndSource = HwndSource.FromHwnd(hwndMainWindow);
+            if (hwndSource == null)
+            {
+                throw new NullReferenceException("HwndSource for DTE.MainWindow is null.");
+            }
+
+            return hwndSource.RootVisual;
+        }
+
+        public void UpdateIDE(ExternalModelManager remoteModelManager)
+        {
+            remoteModelManager.SyncChanges();
+
             // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-            var documentTabPanel = TeamCodingPackage.Current.GetWpfMainWindow().FindChild<DocumentTabPanel>();
+            var documentTabPanel = GetWpfMainWindow().FindChild<DocumentTabPanel>();
 
             if (documentTabPanel == null)
             { // We don't have a doc panel ATM (no docs are open)
@@ -48,43 +78,53 @@ namespace TeamCoding.VisualStudio
 
                 var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrl == rof.Repository && rof.RelativePath == repoInfo.RelativePath).ToList();
 
-                foreach (var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
-                {
-                    var imageDocData = (RemoteDocumentData)image.Tag;
-                    // Check whether this image should be removed
-                    var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
-                                                                                 rd.IdeUserIdentity.DisplayName == imageDocData.IdeUserIdentity.DisplayName);
+                UpdateOrRemoveImages(tabItem.Item.TitlePanel, remoteDocuments);
 
-                    if (matchedRemoteDoc == null)
+                AddImages(tabItem.Item.TitlePanel, remoteDocuments);
+            }
+        }
+
+        private void UpdateOrRemoveImages(DockPanel tabPanel, List<RemoteDocumentData> remoteDocuments)
+        {
+            foreach (var image in tabPanel.Children.OfType<Image>().ToArray())
+            {
+                var imageDocData = (RemoteDocumentData)image.Tag;
+
+                var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
+                                                                             rd.IdeUserIdentity.DisplayName == imageDocData.IdeUserIdentity.DisplayName);
+
+                if (matchedRemoteDoc == null)
+                {
+                    image.Remove();
+                }
+                else
+                {
+                    if (imageDocData.BeingEdited != matchedRemoteDoc.BeingEdited)
                     {
-                        image.Remove();
-                    }
-                    else
-                    {
-                        if (imageDocData.BeingEdited != matchedRemoteDoc.BeingEdited)
-                        {
-                            imageDocData.BeingEdited = matchedRemoteDoc.BeingEdited;
-                            UserImages.SetImageTooltip(image, matchedRemoteDoc);
-                        }
+                        imageDocData.BeingEdited = matchedRemoteDoc.BeingEdited;
+                        UserImages.SetImageTooltip(image, matchedRemoteDoc);
                     }
                 }
+            }
+        }
 
-                foreach (var remoteTabItem in remoteDocuments)
+        private void AddImages(DockPanel tabPanel, List<RemoteDocumentData> remoteDocuments)
+        {
+            foreach (var remoteTabItem in remoteDocuments)
+            {
+                if (!tabPanel.Children.OfType<Image>().Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
                 {
-                    if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
+                    var imgUser = UserImages.GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
+
+                    if (imgUser != null)
                     {
-                        var imgUser = UserImages.GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
+                        imgUser.Width = (tabPanel.Children[0] as GlyphButton).Width;
+                        imgUser.Height = (tabPanel.Children[0] as GlyphButton).Height;
+                        imgUser.Margin = (tabPanel.Children[0] as GlyphButton).Margin;
+                        UserImages.SetImageTooltip(imgUser, remoteTabItem);
+                        imgUser.Tag = remoteTabItem;
 
-                        if (imgUser != null)
-                        {
-                            imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
-                            imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
-                            imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
-                            UserImages.SetImageTooltip(imgUser, remoteTabItem);
-                            imgUser.Tag = remoteTabItem;
-
-                            tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
-                        }
+                        tabPanel.Children.Insert(tabPanel.Children.Count, imgUser);
                     }
                 }
             }

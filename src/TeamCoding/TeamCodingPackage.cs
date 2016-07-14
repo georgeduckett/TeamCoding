@@ -38,10 +38,9 @@ namespace TeamCoding
         internal ModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
-
-        public Dispatcher UIDispatcher;
+        private readonly IDEWrapper IDEWrapper = new IDEWrapper();
         
-        private EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+        public EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -50,7 +49,6 @@ namespace TeamCoding
         {
             Current = this;
         }
-        
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -59,52 +57,25 @@ namespace TeamCoding
         {
             base.Initialize();
 
-            UIDispatcher = GetWpfMainWindow().Dispatcher;
-
             IdeChangeManager = new ModelChangeManager(IdeModel);
             
-            var timer = new DispatcherTimer(DispatcherPriority.Normal, UIDispatcher);
+            var timer = new DispatcherTimer(DispatcherPriority.Normal, IDEWrapper.UIDispatcher);
             // TODO: Make this react instantly to changes, rather than polling
             timer.Interval = TimeSpan.FromSeconds(2);
             timer.Tick += Timer_Tick;
             timer.Start();
         }
-
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (!Zombied)
             {
-                RemoteModelManager.SyncChanges();
-
-                new IDEWrapper().UpdateIDE();
+                IDEWrapper.UpdateIDE(RemoteModelManager);
             }
         }
-
         protected override void Dispose(bool disposing)
         {
             RemoteModelManager.SyncChanges();
             base.Dispose(disposing);
-        }
-        public Visual GetWpfMainWindow()
-        {
-            if (DTE == null)
-            {
-                throw new ArgumentNullException(nameof(DTE));
-            }
-
-            var hwndMainWindow = (IntPtr)DTE.MainWindow.HWnd;
-            if (hwndMainWindow == IntPtr.Zero)
-            {
-                throw new NullReferenceException("DTE.MainWindow.HWnd is null.");
-            }
-
-            var hwndSource = HwndSource.FromHwnd(hwndMainWindow);
-            if (hwndSource == null)
-            {
-                throw new NullReferenceException("HwndSource for DTE.MainWindow is null.");
-            }
-
-            return hwndSource.RootVisual;
         }
     }
 }
