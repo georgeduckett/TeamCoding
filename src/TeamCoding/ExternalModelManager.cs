@@ -18,13 +18,13 @@ namespace TeamCoding
     {
         private const string ModelSyncFileFormat = "OpenDocs*.bin";
         private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();
-        public IEnumerable<RemoteDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.SelectMany(of => of.RepoUrls.Select(repo => new RemoteDocumentData()
+        public IEnumerable<RemoteDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.Select(of => new RemoteDocumentData()
                                                                     {
-                                                                        Repository = repo,
+                                                                        Repository = of.RepoUrl,
                                                                         IdeUserIdentity = model.IDEUserIdentity,
                                                                         RelativePath = of.RelativePath,
                                                                         BeingEdited = of.BeingEdited
-                                                                    })));
+                                                                    }));
 
         public void SyncChanges()
         {

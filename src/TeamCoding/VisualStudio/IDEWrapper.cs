@@ -46,7 +46,7 @@ namespace TeamCoding.VisualStudio
 
                 var relativePath = repoInfo.RelativePath;
 
-                var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrls.Contains(rof.Repository) && rof.RelativePath == repoInfo.RelativePath).ToList();
+                var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrl == rof.Repository && rof.RelativePath == repoInfo.RelativePath).ToList();
 
                 foreach (var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
                 {
