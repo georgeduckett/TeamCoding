@@ -23,17 +23,17 @@ namespace TeamCoding.SourceControl
         public RepoDocInfo GetRelativePath(string fullFilePath)
         {
             // TODO: Handle repositories other than Git
-            var RepoPath = Repository.Discover(fullFilePath);
+            var repoPath = Repository.Discover(fullFilePath);
 
-            var Repo = new Repository(RepoPath);
+            var repo = new Repository(repoPath);
 
-            var IsEdited = Repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any();
-            if (RepoPath == null) return null;
+            var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any();
+            if (repoPath == null) return null;
             return new RepoDocInfo()
             {
-                RepoUrls = Repo.Network.Remotes.Select(r => r.Url).ToArray(),
-                RelativePath = fullFilePath.Substring(new DirectoryInfo(RepoPath).Parent.FullName.Length).TrimStart('\\'),
-                BeingEdited = IsEdited
+                RepoUrls = repo.Network.Remotes.Select(r => r.Url).ToArray(),
+                RelativePath = fullFilePath.Substring(new DirectoryInfo(repoPath).Parent.FullName.Length).TrimStart('\\'),
+                BeingEdited = isEdited
             };
         }
     }

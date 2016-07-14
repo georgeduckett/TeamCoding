@@ -49,8 +49,6 @@ namespace TeamCoding.Extensions
                 }
                 return;
             }
-
-            // maybe more
         }
 
         public static IEnumerable<DependencyObject> Children(this DependencyObject obj)
@@ -65,50 +63,23 @@ namespace TeamCoding.Extensions
                 yield return child;
             }
         }
-        public static IEnumerable<DependencyObject> FindChildren(this DependencyObject parent, string name)
-        { // http://stackoverflow.com/a/19539095
-            // confirm parent and name are valid.
-            if (parent == null || string.IsNullOrEmpty(name)) yield break;
-
-            if ((parent as FrameworkElement)?.Name == name) yield return parent;
+        public static IEnumerable<DependencyObject> FindChildren(this DependencyObject parent, string name) => FindChildren(parent, (d => (d as FrameworkElement)?.Name == name));
+        public static IEnumerable<DependencyObject> FindChildren(this DependencyObject parent, Func<DependencyObject, bool> predicate)
+        {
+            if (predicate(parent)) yield return parent;
 
             (parent as FrameworkElement)?.ApplyTemplate();
 
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < childrenCount; i++)
+            foreach (var child in parent.Children())
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                foreach (var c in FindChildren(child, name))
+                foreach (var c in FindChildren(child, predicate))
                 {
                     yield return c;
                 }
             }
         }
 
-        public static T FindChild<T>(this DependencyObject parent) where T : DependencyObject
-        {
-            return (T)FindChild(parent, p => p is T);
-        }
-        public static DependencyObject FindChild(this DependencyObject parent, Func<DependencyObject, bool> predicate)
-        { // http://stackoverflow.com/a/19539095
-            // confirm parent and name are valid.
-            if (parent == null || predicate == null) return null;
-
-            if (predicate(parent as FrameworkElement)) return parent;
-
-            DependencyObject result = null;
-
-            (parent as FrameworkElement)?.ApplyTemplate();
-
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < childrenCount; i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                result = FindChild(child, predicate);
-                if (result != null) break;
-            }
-
-            return result;
-        }
+        public static T FindChild<T>(this DependencyObject parent) where T : DependencyObject => (T)FindChild(parent, p => p is T);
+        public static DependencyObject FindChild(this DependencyObject parent, Func<DependencyObject, bool> predicate) => FindChildren(parent, predicate).FirstOrDefault();
     }
 }

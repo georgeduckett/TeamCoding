@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="TeamCodingPackage.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using Microsoft.VisualStudio.Platform.WindowManagement;
+﻿using Microsoft.VisualStudio.Platform.WindowManagement;
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 using Microsoft.VisualStudio.Shell;
 using System;
@@ -25,26 +19,9 @@ using TeamCoding.VisualStudio.Identity;
 
 namespace TeamCoding
 {
-    /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the
-    /// IVsPackage interface and uses the registration attributes defined in the framework to
-    /// register itself and its components with the shell. These attributes tell the pkgdef creation
-    /// utility what data to put into .pkgdef file.
-    /// </para>
-    /// <para>
-    /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
-    /// </para>
-    /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [Guid(TeamCodingPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids80.SolutionExists)]
     public sealed class TeamCodingPackage : Package
@@ -65,10 +42,10 @@ namespace TeamCoding
 
         private Dispatcher UIDispatcher;
 
-        private EnvDTE.DTE _DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+        private EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
         // TODO: Make this and related methods it's own class
-        private readonly Dictionary<string, ImageSource> _UrlImages = new Dictionary<string, ImageSource>();
+        private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -86,17 +63,14 @@ namespace TeamCoding
         {
             base.Initialize();
 
-            UIDispatcher = GetWpfMainWindow(_DTE).Dispatcher;
+            UIDispatcher = GetWpfMainWindow(DTE).Dispatcher;
 
             IdeChangeManager = new ModelChangeManager(IdeModel);
             
-            DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Normal, UIDispatcher);
-
-            Timer.Interval = TimeSpan.FromSeconds(2);
-
-            Timer.Tick += Timer_Tick;
-
-            Timer.Start();
+            var timer = new DispatcherTimer(DispatcherPriority.Normal, UIDispatcher);
+            timer.Interval = TimeSpan.FromSeconds(2);
+            timer.Tick += Timer_Tick;
+            timer.Start();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -107,16 +81,16 @@ namespace TeamCoding
                 RemoteModelManager.SyncChanges();
                 
                 // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-                var TabItems = GetWpfMainWindow(_DTE).FindChild<DocumentTabPanel>().FindChildren("TitlePanel").Cast<DockPanel>()
+                var tabItems = GetWpfMainWindow(DTE).FindChild<DocumentTabPanel>().FindChildren("TitlePanel").Cast<DockPanel>()
                                                      .Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
                 
-                foreach (var tabItem in TabItems)
+                foreach (var tabItem in tabItems)
                 {
                     (tabItem.TitleText.DataContext as WindowFrameTitle).BindToolTip();
                 }
 
                 // TODO: Is there a better way to get the tab's full file path than parsing the tooltip? (there must be!)
-                var tabItemsWithFilePaths = TabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip.TrimEnd('*') }).ToArray();
+                var tabItemsWithFilePaths = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip.TrimEnd('*') }).ToArray();
 
                 var remoteOpenFiles = RemoteModelManager.GetExternalModels()
                     .SelectMany(model => model.OpenFiles.SelectMany(of => of.RepoUrls.Select(repo => new RemoteDocumentData()
@@ -133,8 +107,7 @@ namespace TeamCoding
                     var relativePath = repoInfo.RelativePath;
 
                     var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrls.Contains(rof.Repository) && rof.RelativePath == repoInfo.RelativePath).ToList();
-
-                    // TODO: Don't just remove all images then add them in later
+                    
                     foreach (var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
                     {
                         var imageDocData = (RemoteDocumentData)image.Tag;
@@ -187,22 +160,22 @@ namespace TeamCoding
         {
             if (url == null) { return new Image() { Source = SharedUnknownUserImage.Source }; }
             
-            if (_UrlImages.ContainsKey(url))
+            if (UrlImages.ContainsKey(url))
             {
-                return new Image() { Source = _UrlImages[url] };
+                return new Image() { Source = UrlImages[url] };
             }
 
-            var Result = new Image() { Source = SharedUnknownUserImage.Source };
+            var result = new Image() { Source = SharedUnknownUserImage.Source };
 
             UIDispatcher.InvokeAsync(() =>
             {
                 using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
                 {
-                    Result.Source = _UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    result.Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 }
             });
             
-            return Result;
+            return result;
         }
 
         /// <summary>
@@ -225,11 +198,11 @@ namespace TeamCoding
             RemoteModelManager.SyncChanges();
             base.Dispose(disposing);
         }
-        private System.Windows.Media.Visual GetWpfMainWindow(EnvDTE.DTE dte)
+        private Visual GetWpfMainWindow(EnvDTE.DTE dte)
         {
             if (dte == null)
             {
-                throw new ArgumentNullException("dte");
+                throw new ArgumentNullException(nameof(dte));
             }
 
             var hwndMainWindow = (IntPtr)dte.MainWindow.HWnd;

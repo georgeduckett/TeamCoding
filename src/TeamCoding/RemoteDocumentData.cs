@@ -13,7 +13,6 @@ namespace TeamCoding
         public string RelativePath { get; set; }
         public UserIdentity IdeUserIdentity { get; set; }
         public bool BeingEdited { get; set; }
-
         public override int GetHashCode()
         {
             return Repository.GetHashCode() ^ Repository.GetHashCode() ^ IdeUserIdentity.GetHashCode() ^ BeingEdited.GetHashCode();
@@ -29,14 +28,10 @@ namespace TeamCoding
                    IdeUserIdentity.ImageUrl == IdeUserIdentity.ImageUrl &&
                    BeingEdited == other.BeingEdited;
         }
-
         public override bool Equals(object obj)
         {
-            if (obj == null)
-                return false;
-
-            var tObj = obj as RemoteDocumentData;
-            return Equals(tObj);
+            var typedObj = obj as RemoteDocumentData;
+            return Equals(typedObj);
         }
     }
 }

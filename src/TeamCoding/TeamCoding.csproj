@@ -56,6 +56,7 @@
     <Compile Include="CredentialManagement\NativeMethods.cs" />
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
+    <Compile Include="Extensions\ITextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="ExternalModelManager.cs" />

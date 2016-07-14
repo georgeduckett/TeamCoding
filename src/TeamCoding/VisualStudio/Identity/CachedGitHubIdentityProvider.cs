@@ -12,8 +12,8 @@ namespace TeamCoding.VisualStudio.Identity
 {
     public class CachedGitHubIdentityProvider : IIdentityProvider
     {
-        private readonly UserIdentity _Identity;
-        public UserIdentity GetIdentity() => _Identity;
+        private readonly UserIdentity Identity;
+        public UserIdentity GetIdentity() => Identity;
         public CachedGitHubIdentityProvider()
         {
             Credential credential = new Credential { Target = "git:https://github.com" };
@@ -25,22 +25,12 @@ namespace TeamCoding.VisualStudio.Identity
                 credential.Load();
             }
 
-            _Identity = new UserIdentity() { DisplayName = credential.Username, ImageUrl = $"http://www.gravatar.com/avatar/{CalculateMD5Hash(credential.Username).ToLower()}" };
-            }
-        
-        public Image GetImageForIdentity(UserIdentity identity)
-        {
-            using (var wc = new WebClient())
+            Identity = new UserIdentity()
             {
-                byte[] bytes = wc.DownloadData(identity.ImageUrl);
-                using (MemoryStream ms = new MemoryStream(bytes))
-                using (var img = Image.FromStream(ms))
-                {
-                    return (Image)img.Clone();
-                }
-            }
+                DisplayName = credential.Username,
+                ImageUrl = $"http://www.gravatar.com/avatar/{CalculateMD5Hash(credential.Username).ToLower()}"
+            };
         }
-
         private string CalculateMD5Hash(string input)
         {
             var md5 = System.Security.Cryptography.MD5.Create();

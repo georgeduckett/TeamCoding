@@ -16,7 +16,7 @@ namespace TeamCoding.VisualStudio
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
     {
         [Import]
-        private readonly ITextDocumentFactoryService _TextDocFactory = null;
+        private readonly ITextDocumentFactoryService TextDocFactory = null;
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             if (reason == ConnectionReason.TextViewLifetime)
@@ -24,7 +24,7 @@ namespace TeamCoding.VisualStudio
                 TeamCodingPackage.Current.IdeModel.OnOpenedTextView(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;
-                _TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
+                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
 
                 if (textDoc != null)
                 {

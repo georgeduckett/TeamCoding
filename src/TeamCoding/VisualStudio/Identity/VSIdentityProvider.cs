@@ -9,17 +9,17 @@ namespace TeamCoding.VisualStudio.Identity
 {
     public class VSIdentityProvider : IIdentityProvider
     {
-        private readonly UserIdentity _Identity;
+        private readonly UserIdentity Identity;
 
         public VSIdentityProvider()
         {
             // TODO: Flesh out the VSIdentityProvider class using SVsConnectedUserService (undocumented?)
             // IVsConnectedIdeUserContext vsConnectedIdeUserContext = Package.GetGlobalService(typeof(SVsConnectedUserService)) as IVsConnectedIdeUserContext;
             // Microsoft.VisualStudio.Shell.Connected.dll (in GAC)
-            _Identity = null;
+            Identity = null;
             throw new NotImplementedException();
         }
 
-        public UserIdentity GetIdentity() => _Identity;
+        public UserIdentity GetIdentity() => Identity;
     }
 }

@@ -18,23 +18,22 @@ namespace TeamCoding.CredentialManagement
             DomainVisiblePassword = 4
         }
 
-        private static object _lockObject = new object();
-
-        private static SecurityPermission _unmanagedCodePermission;
+        private static object LockObject = new object();
+        private static SecurityPermission UnmanagedCodePermission;
         public string Target { get; set; }
         public string Username { get; set; }
         public string Description { get; set; }
 
         static Credential()
         {
-            lock (_lockObject)
+            lock (LockObject)
             {
-                _unmanagedCodePermission = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+                UnmanagedCodePermission = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
             }
         }
         public bool Load()
         {
-            _unmanagedCodePermission.Demand();
+            UnmanagedCodePermission.Demand();
 
             IntPtr credPointer;
 
@@ -49,11 +48,9 @@ namespace TeamCoding.CredentialManagement
             }
             return true;
         }
-
         internal void LoadInternal(NativeMethods.CREDENTIAL credential)
         {
             Username = credential.UserName;
-
             Target = credential.TargetName;
             Description = credential.Comment;
         }
