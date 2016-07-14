@@ -10,6 +10,8 @@ namespace TeamCoding.SourceControl
 {
     public class SourceControlRepo
     {
+        private const string OriginBranchName = "origin/master";
+
         [ProtoBuf.ProtoContract]
         public class RepoDocInfo
         {
@@ -27,7 +29,15 @@ namespace TeamCoding.SourceControl
 
             var repo = new Repository(repoPath);
 
-            var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any();
+            var repoHeadTree = repo.Head.Tip.Tree;
+
+            var remoteMasterTree = repo.Branches[OriginBranchName].Tip.Tree;
+
+            // Check for local changes, then server changes.
+            // It's possible there is a local change that actually makes it the same as the remote, but I think that's ok to say the user is editing anyway
+            var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any() ||
+                           repo.Diff.Compare<TreeChanges>(remoteMasterTree, repoHeadTree, new[] { fullFilePath }).Any();
+
             if (repoPath == null) return null;
             return new RepoDocInfo()
             {
