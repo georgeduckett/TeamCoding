@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
+using TeamCoding.VisualStudio.Identity.UserImages;
 
 namespace TeamCoding
 {
@@ -16,7 +18,13 @@ namespace TeamCoding
     {
         private const string ModelSyncFileFormat = "OpenDocs*.bin";
         private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();
-        public IEnumerable<RemoteIDEModel> GetExternalModels() => Models;
+        public IEnumerable<RemoteDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.SelectMany(of => of.RepoUrls.Select(repo => new RemoteDocumentData()
+                                                                    {
+                                                                        Repository = repo,
+                                                                        IdeUserIdentity = model.IDEUserIdentity,
+                                                                        RelativePath = of.RelativePath,
+                                                                        BeingEdited = of.BeingEdited
+                                                                    })));
 
         public void SyncChanges()
         {

@@ -16,6 +16,7 @@ using TeamCoding.Extensions;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity;
+using TeamCoding.VisualStudio.Identity.UserImages;
 
 namespace TeamCoding
 {
@@ -38,14 +39,9 @@ namespace TeamCoding
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
 
-        private readonly Image SharedUnknownUserImage = new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") };
-
-        private Dispatcher UIDispatcher;
-
+        public Dispatcher UIDispatcher;
+        
         private EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
-
-        // TODO: Make this and related methods it's own class
-        private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -63,11 +59,12 @@ namespace TeamCoding
         {
             base.Initialize();
 
-            UIDispatcher = GetWpfMainWindow(DTE).Dispatcher;
+            UIDispatcher = GetWpfMainWindow().Dispatcher;
 
             IdeChangeManager = new ModelChangeManager(IdeModel);
             
             var timer = new DispatcherTimer(DispatcherPriority.Normal, UIDispatcher);
+            // TODO: Make this react instantly to changes, rather than polling
             timer.Interval = TimeSpan.FromSeconds(2);
             timer.Tick += Timer_Tick;
             timer.Start();
@@ -77,120 +74,10 @@ namespace TeamCoding
         {
             if (!Zombied)
             {
-                // TODO: Make this react instantly to changes, rather than polling
                 RemoteModelManager.SyncChanges();
-                
-                // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-                var tabItems = GetWpfMainWindow(DTE).FindChild<DocumentTabPanel>().FindChildren("TitlePanel").Cast<DockPanel>()
-                                                     .Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
-                
-                foreach (var tabItem in tabItems)
-                {
-                    (tabItem.TitleText.DataContext as WindowFrameTitle).BindToolTip();
-                }
 
-                // TODO: Is there a better way to get the tab's full file path than parsing the tooltip? (there must be!)
-                var tabItemsWithFilePaths = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).ToolTip.TrimEnd('*') }).ToArray();
-
-                var remoteOpenFiles = RemoteModelManager.GetExternalModels()
-                    .SelectMany(model => model.OpenFiles.SelectMany(of => of.RepoUrls.Select(repo => new RemoteDocumentData()
-                    {
-                        Repository = repo,
-                        IdeUserIdentity = model.IDEUserIdentity,
-                        RelativePath = of.RelativePath,
-                        BeingEdited = of.BeingEdited
-                    })));
-
-                foreach (var tabItem in tabItemsWithFilePaths)
-                {
-                    var repoInfo = new SourceControlRepo().GetRelativePath(tabItem.File);
-                    var relativePath = repoInfo.RelativePath;
-
-                    var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrls.Contains(rof.Repository) && rof.RelativePath == repoInfo.RelativePath).ToList();
-                    
-                    foreach (var image in tabItem.Item.TitlePanel.Children.OfType<Image>().ToArray())
-                    {
-                        var imageDocData = (RemoteDocumentData)image.Tag;
-                        // Check whether this image should be removed
-                        var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
-                                                                                     rd.IdeUserIdentity.DisplayName == imageDocData.IdeUserIdentity.DisplayName);
-
-                        if(matchedRemoteDoc == null)
-                        {
-                            image.Remove();
-                        }
-                        else
-                        {
-                            if(imageDocData.BeingEdited != matchedRemoteDoc.BeingEdited)
-                            {
-                                imageDocData.BeingEdited = matchedRemoteDoc.BeingEdited;
-                                SetImageTooltip(image, matchedRemoteDoc);
-                            }
-                        }
-                    }
-
-                    foreach (var remoteTabItem in remoteDocuments)
-                    {
-                        if (!tabItem.Item.TitlePanel.Children.OfType<Image>().Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
-                        {
-                            var imgUser = GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
-
-                            if (imgUser != null)
-                            {
-                                imgUser.Width = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Width;
-                                imgUser.Height = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Height;
-                                imgUser.Margin = (tabItem.Item.TitlePanel.Children[0] as GlyphButton).Margin;
-                                SetImageTooltip(imgUser, remoteTabItem);
-                                imgUser.Tag = remoteTabItem;
-
-                                tabItem.Item.TitlePanel.Children.Insert(tabItem.Item.TitlePanel.Children.Count, imgUser);
-                            }
-                        }
-                    }
-                }
+                new IDEWrapper().UpdateIDE();
             }
-        }
-
-        private static void SetImageTooltip(Image image, RemoteDocumentData matchedRemoteDoc)
-        {
-            image.ToolTip = matchedRemoteDoc.IdeUserIdentity.DisplayName + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
-        }
-
-        private Image GetUserImageFromUrl(string url)
-        {
-            if (url == null) { return new Image() { Source = SharedUnknownUserImage.Source }; }
-            
-            if (UrlImages.ContainsKey(url))
-            {
-                return new Image() { Source = UrlImages[url] };
-            }
-
-            var result = new Image() { Source = SharedUnknownUserImage.Source };
-
-            UIDispatcher.InvokeAsync(() =>
-            {
-                using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
-                {
-                    result.Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                }
-            });
-            
-            return result;
-        }
-
-        /// <summary>
-        /// Load a resource WPF-BitmapImage (png, bmp, ...) from embedded resource defined as 'Resource' not as 'Embedded resource'.
-        /// </summary>
-        /// <param name="pathInApplication">Path without starting slash</param>
-        /// <param name="assembly">Usually 'Assembly.GetExecutingAssembly()'. If not mentionned, I will use the calling assembly</param>
-        /// <returns></returns>
-        public static BitmapImage LoadBitmapFromResource(string pathInApplication)
-        { // http://stackoverflow.com/a/9737958
-            if (pathInApplication[0] == '/')
-            {
-                pathInApplication = pathInApplication.Substring(1);
-            }
-            return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
 
         protected override void Dispose(bool disposing)
@@ -198,14 +85,14 @@ namespace TeamCoding
             RemoteModelManager.SyncChanges();
             base.Dispose(disposing);
         }
-        private Visual GetWpfMainWindow(EnvDTE.DTE dte)
+        public Visual GetWpfMainWindow()
         {
-            if (dte == null)
+            if (DTE == null)
             {
-                throw new ArgumentNullException(nameof(dte));
+                throw new ArgumentNullException(nameof(DTE));
             }
 
-            var hwndMainWindow = (IntPtr)dte.MainWindow.HWnd;
+            var hwndMainWindow = (IntPtr)DTE.MainWindow.HWnd;
             if (hwndMainWindow == IntPtr.Zero)
             {
                 throw new NullReferenceException("DTE.MainWindow.HWnd is null.");

@@ -14,6 +14,7 @@ namespace TeamCoding
     /// </summary>
     internal class ModelChangeManager
     {
+        private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
         private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;
 
@@ -44,9 +45,12 @@ namespace TeamCoding
         {
             // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now, (or write to a file share?)
             var newItems = IdeModel.OpenDocs();
-            if (File.Exists(PersistenceFile))
+            foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
             {
-                File.Delete(PersistenceFile);
+                if (File.Exists(file))
+                {
+                    File.Delete(file);
+                }
             }
             // TODO: Somewhere we need to clean-up old files from crashed IDEs - possibly we use a heartbeat method and delete old files order than that
             // Create a remote IDE model to send

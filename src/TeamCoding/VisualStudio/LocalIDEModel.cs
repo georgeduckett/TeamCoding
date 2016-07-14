@@ -27,17 +27,19 @@ namespace TeamCoding.VisualStudio
         public void OnOpenedTextView(IWpfTextView view)
         {
             var filePath = view.GetTextDocumentFilePath();
-            if (!OpenFiles.ContainsKey(filePath))
+            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
+            if (!OpenFiles.ContainsKey(filePath) && sourceControlInfo != null)
             {
-                // TODO: Use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
-                OpenFiles.AddOrUpdate(filePath, new SourceControl.SourceControlRepo().GetRelativePath(filePath), (v, e) => e);
+                // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
+                
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => e);
                 OpenViewsChanged?.Invoke(this, new EventArgs());
             }
         }
 
         public void OnClosedTextView(IWpfTextView view)
         {
-            SourceControl.SourceControlRepo.RepoDocInfo tmp;
+            SourceControlRepo.RepoDocInfo tmp;
             OpenFiles.TryRemove(view.GetTextDocumentFilePath() ?? string.Empty, out tmp);
             OpenViewsChanged?.Invoke(this, new EventArgs());
         }
@@ -49,15 +51,23 @@ namespace TeamCoding.VisualStudio
 
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
         {
-            var sourceControlInfo = new SourceControlRepo().GetRelativePath(textBuffer.GetTextDocumentFilePath());
-            OpenFiles.AddOrUpdate(textBuffer.GetTextDocumentFilePath(), sourceControlInfo, (v, r) => sourceControlInfo);
+            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textBuffer.GetTextDocumentFilePath());
+            if (sourceControlInfo == null)
+            {
+                // The file could have just been put on the ignore list, so remove it from the list
+                OpenFiles.TryRemove(textBuffer.GetTextDocumentFilePath() ?? string.Empty, out sourceControlInfo);
+            }
+            else
+            {
+                OpenFiles.AddOrUpdate(textBuffer.GetTextDocumentFilePath(), sourceControlInfo, (v, r) => sourceControlInfo);
+            }
 
             TextContentChanged?.Invoke(textBuffer, e);
         }
 
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
         {
-            var sourceControlInfo = new SourceControlRepo().GetRelativePath(textDocument.FilePath);
+            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textDocument.FilePath);
             OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => sourceControlInfo);
 
             TextDocumentSaved?.Invoke(textDocument, e);

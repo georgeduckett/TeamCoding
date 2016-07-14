@@ -60,7 +60,7 @@
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="ExternalModelManager.cs" />
-    <Compile Include="RemoteDocumentData.cs" />
+    <Compile Include="SourceControl\RemoteDocumentData.cs" />
     <Compile Include="ModelChangeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisualStudio\Identity\CachedGitHubIdentityProvider.cs" />
@@ -68,8 +68,10 @@
     <Compile Include="VisualStudio\Identity\MachineIdentityProvider.cs" />
     <Compile Include="SourceControl\SourceControlRepo.cs" />
     <Compile Include="VisualStudio\Identity\UserIdentity.cs" />
+    <Compile Include="VisualStudio\Identity\UserImages\UserImageCache.cs" />
     <Compile Include="VisualStudio\Identity\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
+    <Compile Include="VisualStudio\IDEWrapper.cs" />
     <Compile Include="VisualStudio\LocalIDEModel.cs" />
     <Compile Include="VisualStudio\RemoteIDEModel.cs" />
     <Compile Include="VisualStudio\TeamCodingTextViewConnectionListener.cs" />
