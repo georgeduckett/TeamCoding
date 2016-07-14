@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 
-namespace TeamCoding
+namespace TeamCoding.VisualStudio.Models
 {
     /// <summary>
     /// Handles persisting changes to the IDEModel. For now just persist to disk as a test

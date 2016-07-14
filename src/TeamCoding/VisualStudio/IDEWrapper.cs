@@ -17,10 +17,18 @@ namespace TeamCoding.VisualStudio
 {
     public class IDEWrapper
     {
-        private readonly UserImageCache UserImages = new UserImageCache();
-        public Dispatcher UIDispatcher;
+        private Visual _WpfWindow;
 
-        public Visual GetWpfMainWindow()
+        private readonly UserImageCache UserImages = new UserImageCache();
+        private Visual WpfWindow => _WpfWindow;
+        public Dispatcher UIDispatcher => _WpfWindow.Dispatcher;
+
+        public IDEWrapper()
+        {
+            _WpfWindow = GetWpfMainWindow();
+        }
+
+        private Visual GetWpfMainWindow()
         {
             var DTE = TeamCodingPackage.Current.DTE;
 

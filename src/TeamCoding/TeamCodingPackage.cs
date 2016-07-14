@@ -17,6 +17,7 @@ using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity;
 using TeamCoding.VisualStudio.Identity.UserImages;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding
 {
@@ -38,7 +39,7 @@ namespace TeamCoding
         internal ModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
-        private readonly IDEWrapper IDEWrapper = new IDEWrapper();
+        public IDEWrapper IDEWrapper;
         
         public EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
@@ -57,6 +58,7 @@ namespace TeamCoding
         {
             base.Initialize();
 
+            IDEWrapper = new IDEWrapper();
             IdeChangeManager = new ModelChangeManager(IdeModel);
             
             var timer = new DispatcherTimer(DispatcherPriority.Normal, IDEWrapper.UIDispatcher);

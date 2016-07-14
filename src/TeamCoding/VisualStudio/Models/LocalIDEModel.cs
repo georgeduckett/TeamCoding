@@ -9,7 +9,7 @@ using TeamCoding.Extensions;
 using TeamCoding.SourceControl;
 using Microsoft.VisualStudio.Text;
 
-namespace TeamCoding.VisualStudio
+namespace TeamCoding.VisualStudio.Models
 {
     /// <summary>
     /// Represents and maintains a model of the IDE

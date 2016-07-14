@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity.UserImages;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding
 {

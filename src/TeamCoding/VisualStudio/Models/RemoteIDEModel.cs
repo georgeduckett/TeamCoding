@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio.Identity;
 
-namespace TeamCoding.VisualStudio
+namespace TeamCoding.VisualStudio.Models
 {
     [ProtoContract]
     public class RemoteIDEModel
