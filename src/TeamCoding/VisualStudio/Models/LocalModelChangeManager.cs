@@ -12,13 +12,13 @@ namespace TeamCoding.VisualStudio.Models
     /// <summary>
     /// Handles persisting changes to the IDEModel. For now just persist to disk as a test
     /// </summary>
-    internal class ModelChangeManager
+    internal class LocalModelChangeManager
     {
         private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
         private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;
 
-        public ModelChangeManager(LocalIDEModel model)
+        public LocalModelChangeManager(LocalIDEModel model)
         {
             IdeModel = model;
             IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
@@ -47,7 +47,7 @@ namespace TeamCoding.VisualStudio.Models
             var newItems = IdeModel.OpenDocs();
             foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
             {
-                if (File.Exists(file))
+                if (File.Exists(file) && file != PersistenceFile)
                 {
                     File.Delete(file);
                 }

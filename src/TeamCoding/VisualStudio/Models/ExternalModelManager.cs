@@ -10,7 +10,7 @@ using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity.UserImages;
 using TeamCoding.VisualStudio.Models;
 
-namespace TeamCoding
+namespace TeamCoding.Models
 {
     /// <summary>
     /// Responsible for managing external/remote models

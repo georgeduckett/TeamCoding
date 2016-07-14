@@ -12,6 +12,7 @@ using TeamCoding.Extensions;
 using System.Windows.Media;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using TeamCoding.Models;
 
 namespace TeamCoding.VisualStudio
 {
@@ -21,13 +22,15 @@ namespace TeamCoding.VisualStudio
 
         private readonly UserImageCache UserImages = new UserImageCache();
         private Visual WpfWindow => _WpfWindow;
-        public Dispatcher UIDispatcher => _WpfWindow.Dispatcher;
 
-        public IDEWrapper()
+        public IDEWrapper(ExternalModelManager remoteModelManager)
         {
             _WpfWindow = GetWpfMainWindow();
         }
-
+        public DispatcherOperation InvokeAsync(Action callback)
+        {
+            return _WpfWindow.Dispatcher.InvokeAsync(callback);
+        }
         private Visual GetWpfMainWindow()
         {
             var DTE = TeamCodingPackage.Current.DTE;
@@ -54,11 +57,18 @@ namespace TeamCoding.VisualStudio
 
         public void UpdateIDE(ExternalModelManager remoteModelManager)
         {
+            // TODO: Pass a cancellation token so we can cancel when disposed. Dispose of this in the package dispose method
+            WpfWindow.Dispatcher.InvokeAsync(() => UpdateIDE_Internal(remoteModelManager));
+        }
+        private void UpdateIDE_Internal(ExternalModelManager remoteModelManager)
+        {
             remoteModelManager.SyncChanges();
+
+            // TODO: Handle a new tab being opened (see what icons we should add)
 
             // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
             var documentTabPanel = GetWpfMainWindow().FindChild<DocumentTabPanel>();
-
+            
             if (documentTabPanel == null)
             { // We don't have a doc panel ATM (no docs are open)
                 return;

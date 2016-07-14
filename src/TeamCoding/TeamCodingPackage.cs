@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using TeamCoding.Extensions;
+using TeamCoding.Models;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity;
@@ -36,10 +37,11 @@ namespace TeamCoding
         public static TeamCodingPackage Current { get; private set; }
 
         public readonly LocalIDEModel IdeModel = new LocalIDEModel();
-        internal ModelChangeManager IdeChangeManager { get; private set; }
+        internal LocalModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
         public IDEWrapper IDEWrapper;
+        private RemoteModelChangeManager RemoteModelChangeManager;
         
         public EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
@@ -57,22 +59,11 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
-
-            IDEWrapper = new IDEWrapper();
-            IdeChangeManager = new ModelChangeManager(IdeModel);
             
-            var timer = new DispatcherTimer(DispatcherPriority.Normal, IDEWrapper.UIDispatcher);
-            // TODO: Make this react instantly to changes, rather than polling
-            timer.Interval = TimeSpan.FromSeconds(2);
-            timer.Tick += Timer_Tick;
-            timer.Start();
-        }
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (!Zombied)
-            {
-                IDEWrapper.UpdateIDE(RemoteModelManager);
-            }
+            IDEWrapper = new IDEWrapper(RemoteModelManager);
+            IdeChangeManager = new LocalModelChangeManager(IdeModel);
+
+            RemoteModelChangeManager = new RemoteModelChangeManager(IDEWrapper, RemoteModelManager);
         }
         protected override void Dispose(bool disposing)
         {

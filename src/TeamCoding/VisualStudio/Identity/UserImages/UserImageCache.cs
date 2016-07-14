@@ -27,7 +27,7 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
 
             var result = new Image() { Source = SharedUnknownUserImage.Source };
 
-            TeamCodingPackage.Current.IDEWrapper.UIDispatcher.InvokeAsync(() =>
+            TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
             {
                 using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
                 {

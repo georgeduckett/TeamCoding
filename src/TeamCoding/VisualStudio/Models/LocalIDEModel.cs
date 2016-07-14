@@ -18,7 +18,7 @@ namespace TeamCoding.VisualStudio.Models
     {
         private static LocalIDEModel Current = new LocalIDEModel();
         
-        private readonly ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo> OpenFiles = new ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo>();
+        private readonly ConcurrentDictionary<ITextBuffer, SourceControlRepo.RepoDocInfo> OpenFiles = new ConcurrentDictionary<ITextBuffer, SourceControlRepo.RepoDocInfo>();
 
         public event EventHandler OpenViewsChanged;
         public event EventHandler<TextContentChangedEventArgs> TextContentChanged;
@@ -28,11 +28,11 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
-            if (!OpenFiles.ContainsKey(filePath) && sourceControlInfo != null)
+            if (!OpenFiles.ContainsKey(view.TextBuffer) && sourceControlInfo != null)
             {
                 // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
                 
-                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => e);
+                OpenFiles.AddOrUpdate(view.TextBuffer, sourceControlInfo, (v, e) => e);
                 OpenViewsChanged?.Invoke(this, new EventArgs());
             }
         }
@@ -40,7 +40,8 @@ namespace TeamCoding.VisualStudio.Models
         public void OnClosedTextView(IWpfTextView view)
         {
             SourceControlRepo.RepoDocInfo tmp;
-            OpenFiles.TryRemove(view.GetTextDocumentFilePath() ?? string.Empty, out tmp);
+            
+            OpenFiles.TryRemove(view.TextBuffer, out tmp);
             OpenViewsChanged?.Invoke(this, new EventArgs());
         }
 
@@ -55,11 +56,11 @@ namespace TeamCoding.VisualStudio.Models
             if (sourceControlInfo == null)
             {
                 // The file could have just been put on the ignore list, so remove it from the list
-                OpenFiles.TryRemove(textBuffer.GetTextDocumentFilePath() ?? string.Empty, out sourceControlInfo);
+                OpenFiles.TryRemove(textBuffer, out sourceControlInfo);
             }
             else
             {
-                OpenFiles.AddOrUpdate(textBuffer.GetTextDocumentFilePath(), sourceControlInfo, (v, r) => sourceControlInfo);
+                OpenFiles.AddOrUpdate(textBuffer, sourceControlInfo, (v, r) => sourceControlInfo);
             }
 
             TextContentChanged?.Invoke(textBuffer, e);
@@ -68,7 +69,7 @@ namespace TeamCoding.VisualStudio.Models
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
         {
             var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textDocument.FilePath);
-            OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => sourceControlInfo);
+            OpenFiles.AddOrUpdate(textDocument.TextBuffer, sourceControlInfo, (v, r) => sourceControlInfo);
 
             TextDocumentSaved?.Invoke(textDocument, e);
         }
