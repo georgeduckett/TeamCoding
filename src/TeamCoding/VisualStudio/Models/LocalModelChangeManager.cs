@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Models
     /// <summary>
     /// Handles persisting changes to the IDEModel. For now just persist to disk as a test
     /// </summary>
-    internal class LocalModelChangeManager
+    internal class LocalModelChangeManager : IDisposable
     {
         private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
         private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
@@ -47,21 +47,26 @@ namespace TeamCoding.VisualStudio.Models
             var newItems = IdeModel.OpenDocs();
             foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
             {
-                if (File.Exists(file) && file != PersistenceFile)
+                if (Path.GetFileName(file) != PersistenceFile)
                 {
                     File.Delete(file);
                 }
             }
-            // TODO: Somewhere we need to clean-up old files from crashed IDEs - possibly we use a heartbeat method and delete old files order than that
+
             // Create a remote IDE model to send
             var remoteModel = new RemoteIDEModel(IdeModel);
-
-            if (newItems.Length != 0)
+            
+            using (var f = File.Create(PersistenceFile))
             {
-                using (var f = File.Create(PersistenceFile))
-                {
-                    ProtoBuf.Serializer.Serialize(f, remoteModel);
-                }
+                ProtoBuf.Serializer.Serialize(f, remoteModel);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
+            {
+                File.Delete(file);
             }
         }
     }

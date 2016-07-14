@@ -24,7 +24,8 @@ namespace TeamCoding.Models
                                                                         Repository = of.RepoUrl,
                                                                         IdeUserIdentity = model.IDEUserIdentity,
                                                                         RelativePath = of.RelativePath,
-                                                                        BeingEdited = of.BeingEdited
+                                                                        BeingEdited = of.BeingEdited,
+                                                                        HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
                                                                     }));
 
         public void SyncChanges()

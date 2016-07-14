@@ -19,17 +19,23 @@ namespace TeamCoding.SourceControl
             public string RelativePath { get; set; }
             [ProtoBuf.ProtoMember(3)]
             public bool BeingEdited { get; set; }
+            [ProtoBuf.ProtoMember(4)]
+            public DateTime LastActioned { get; set; }
         }
-        public RepoDocInfo GetRepoDocInfo(string fullFilePath)
+        public string GetRepoPath(string fullFilePath)
         {
-            // TODO: Handle repositories other than Git
             var repoPath = Repository.Discover(fullFilePath);
 
             if (repoPath == null) return null; // No repository for file
 
-            var relativePath = fullFilePath.Substring(new DirectoryInfo(repoPath).Parent.FullName.Length).TrimStart('\\');
+            return fullFilePath.Substring(new DirectoryInfo(repoPath).Parent.FullName.Length).TrimStart('\\');
+        }
+        public RepoDocInfo GetRepoDocInfo(string fullFilePath)
+        {
+            // TODO: Handle repositories other than Git
+            var relativePath = GetRepoPath(fullFilePath);
 
-            var repo = new Repository(repoPath);
+            var repo = new Repository(Repository.Discover(fullFilePath));
 
             if (repo.Ignore.IsPathIgnored(relativePath)) return null;
 
@@ -40,13 +46,13 @@ namespace TeamCoding.SourceControl
             // It's possible there is a local change that actually makes it the same as the remote, but I think that's ok to say the user is editing anyway
             var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any() ||
                            repo.Diff.Compare<TreeChanges>(remoteMasterTree, repoHeadTree, new[] { fullFilePath }).Any();
-
-            if (repoPath == null) return null;
+            
             return new RepoDocInfo()
             {
                 RepoUrl = repo.Head.TrackedBranch.Remote.Url,
                 RelativePath = relativePath,
-                BeingEdited = isEdited
+                BeingEdited = isEdited,
+                LastActioned = DateTime.UtcNow
             };
         }
     }

@@ -13,25 +13,26 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
 {
     public class UserImageCache
     {
-        private readonly Image SharedUnknownUserImage = new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") };
+        private static readonly Brush BorderBrush = Brushes.White;
+        private readonly Border SharedUnknownUserImage = new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") } };
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
 
-        public Image GetUserImageFromUrl(string url)
+        public Border GetUserImageFromUrl(string url)
         {
-            if (url == null) { return new Image() { Source = SharedUnknownUserImage.Source }; }
+            if (url == null) { return new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = (SharedUnknownUserImage.Child as Image).Source } }; }
 
             if (UrlImages.ContainsKey(url))
             {
-                return new Image() { Source = UrlImages[url] };
+                return new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = UrlImages[url] } };
             }
 
-            var result = new Image() { Source = SharedUnknownUserImage.Source };
+            var result = new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = (SharedUnknownUserImage.Child as Image).Source } };
 
             TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
             {
                 using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
                 {
-                    result.Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    (result.Child as Image).Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 }
             });
 
@@ -51,9 +52,18 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
             }
             return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
-        public void SetImageTooltip(Image image, RemoteDocumentData matchedRemoteDoc)
+        internal void SetImageProperties(Border image, RemoteDocumentData matchedRemoteDoc)
         {
             image.ToolTip = matchedRemoteDoc.IdeUserIdentity.DisplayName + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+            // TODO: Give the image a border or not
+            if (matchedRemoteDoc.HasFocus)
+            {
+                image.BorderThickness = new System.Windows.Thickness(1.0);
+            }
+            else
+            {
+                image.BorderThickness = new System.Windows.Thickness(0.0);
+            }
         }
     }
 }

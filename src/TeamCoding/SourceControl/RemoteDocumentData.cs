@@ -13,9 +13,10 @@ namespace TeamCoding.SourceControl
         public string RelativePath { get; set; }
         public UserIdentity IdeUserIdentity { get; set; }
         public bool BeingEdited { get; set; }
+        public bool HasFocus { get; set; }
         public override int GetHashCode()
         {
-            return Repository.GetHashCode() ^ Repository.GetHashCode() ^ IdeUserIdentity.GetHashCode() ^ BeingEdited.GetHashCode();
+            return Repository.GetHashCode() ^ Repository.GetHashCode() ^ IdeUserIdentity.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode();
         }
         public bool Equals(RemoteDocumentData other)
         {
@@ -26,7 +27,8 @@ namespace TeamCoding.SourceControl
                    RelativePath == other.RelativePath &&
                    IdeUserIdentity.DisplayName == IdeUserIdentity.DisplayName &&
                    IdeUserIdentity.ImageUrl == IdeUserIdentity.ImageUrl &&
-                   BeingEdited == other.BeingEdited;
+                   BeingEdited == other.BeingEdited &&
+                   HasFocus == other.HasFocus;
         }
         public override bool Equals(object obj)
         {

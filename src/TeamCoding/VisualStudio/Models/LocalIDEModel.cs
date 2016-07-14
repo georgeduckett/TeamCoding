@@ -16,9 +16,15 @@ namespace TeamCoding.VisualStudio.Models
     /// </summary>
     public class LocalIDEModel
     {
+        public class FileFocusChangedEventArgs : EventArgs
+        {
+            public string LostFocusFile { get; set; }
+            public string GotFocusFile { get; set; }
+        }
+
         private static LocalIDEModel Current = new LocalIDEModel();
         
-        private readonly ConcurrentDictionary<ITextBuffer, SourceControlRepo.RepoDocInfo> OpenFiles = new ConcurrentDictionary<ITextBuffer, SourceControlRepo.RepoDocInfo>();
+        private readonly ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo> OpenFiles = new ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo>();
 
         public event EventHandler OpenViewsChanged;
         public event EventHandler<TextContentChangedEventArgs> TextContentChanged;
@@ -28,21 +34,28 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
-            if (!OpenFiles.ContainsKey(view.TextBuffer) && sourceControlInfo != null)
+            if (!OpenFiles.ContainsKey(filePath) && sourceControlInfo != null)
             {
                 // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
                 
-                OpenFiles.AddOrUpdate(view.TextBuffer, sourceControlInfo, (v, e) => e);
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => e);
                 OpenViewsChanged?.Invoke(this, new EventArgs());
             }
         }
 
-        public void OnClosedTextView(IWpfTextView view)
+        internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
             SourceControlRepo.RepoDocInfo tmp;
-            
-            OpenFiles.TryRemove(view.TextBuffer, out tmp);
+            OpenFiles.TryRemove(textDocument.FilePath, out tmp);
             OpenViewsChanged?.Invoke(this, new EventArgs());
+        }
+
+        internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
+        {
+            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textDocument.FilePath);
+            OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => sourceControlInfo);
+
+            TextDocumentSaved?.Invoke(textDocument, e);
         }
 
         public SourceControlRepo.RepoDocInfo[] OpenDocs()
@@ -52,26 +65,32 @@ namespace TeamCoding.VisualStudio.Models
 
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
         {
-            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textBuffer.GetTextDocumentFilePath());
+            var filePath = textBuffer.GetTextDocumentFilePath();
+            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
+
             if (sourceControlInfo == null)
             {
                 // The file could have just been put on the ignore list, so remove it from the list
-                OpenFiles.TryRemove(textBuffer, out sourceControlInfo);
+                OpenFiles.TryRemove(filePath, out sourceControlInfo);
             }
             else
             {
-                OpenFiles.AddOrUpdate(textBuffer, sourceControlInfo, (v, r) => sourceControlInfo);
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => sourceControlInfo);
             }
-
+            
             TextContentChanged?.Invoke(textBuffer, e);
         }
 
-        internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
+        internal void OnFileGotFocus(string filePath)
         {
-            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textDocument.FilePath);
-            OpenFiles.AddOrUpdate(textDocument.TextBuffer, sourceControlInfo, (v, r) => sourceControlInfo);
+            // Update this source control info to update the time
+            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
+            OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => sourceControlInfo);
+            OpenViewsChanged?.Invoke(this, new EventArgs());
+        }
 
-            TextDocumentSaved?.Invoke(textDocument, e);
+        internal void OnFileLostFocus(string filePath)
+        {
         }
     }
 }

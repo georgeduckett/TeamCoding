@@ -42,7 +42,8 @@ namespace TeamCoding
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
         public IDEWrapper IDEWrapper;
         private RemoteModelChangeManager RemoteModelChangeManager;
-        
+        public EnvDTE.DocumentEvents DocumentEvents;
+
         public EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
         /// <summary>
@@ -59,7 +60,8 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
-            
+
+            DocumentEvents = DTE.Events.DocumentEvents;
             IDEWrapper = new IDEWrapper(RemoteModelManager);
             IdeChangeManager = new LocalModelChangeManager(IdeModel);
 
@@ -67,7 +69,8 @@ namespace TeamCoding
         }
         protected override void Dispose(bool disposing)
         {
-            RemoteModelManager.SyncChanges();
+            RemoteModelChangeManager.Dispose();
+            IdeChangeManager.Dispose();
             base.Dispose(disposing);
         }
     }
