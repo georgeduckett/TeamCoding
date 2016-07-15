@@ -49,7 +49,7 @@ namespace TeamCoding
             base.Initialize();
 
             DocumentEvents = DTE.Events.DocumentEvents;
-            IDEWrapper = new IDEWrapper(RemoteModelManager);
+            IDEWrapper = new IDEWrapper();
             IdeChangeManager = new LocalModelChangeManager(IdeModel);
 
             RemoteModelChangeManager = new RemoteModelChangeManager(IDEWrapper, RemoteModelManager);

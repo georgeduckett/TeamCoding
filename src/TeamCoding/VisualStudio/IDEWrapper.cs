@@ -24,7 +24,7 @@ namespace TeamCoding.VisualStudio
         private readonly EnvDTE.WindowEvents WindowEvents;
         private readonly EnvDTE.SolutionEvents SolutionEvents;
 
-        public IDEWrapper(ExternalModelManager remoteModelManager)
+        public IDEWrapper()
         {
             _WpfWindow = GetWpfMainWindow();
             WindowEvents = TeamCodingPackage.Current.DTE.Events.WindowEvents;
