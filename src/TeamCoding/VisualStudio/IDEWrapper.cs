@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using TeamCoding.Models;
+using System.Windows;
 
 namespace TeamCoding.VisualStudio
 {
@@ -54,7 +55,6 @@ namespace TeamCoding.VisualStudio
 
         private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
         {
-            // TODO: Use this to show which window the user is focused on (delegate to Package.Current.IDEModel)
             var newFilePath = gotFocus?.Document?.FullName;
 
             if(newFilePath != null)
@@ -145,39 +145,38 @@ namespace TeamCoding.VisualStudio
 
         private void UpdateOrRemoveImages(DockPanel tabPanel, List<RemoteDocumentData> remoteDocuments)
         {
-            foreach (var border in tabPanel.Children.OfType<Border>().ToArray())
+            foreach (var userImageControl in tabPanel.Children.OfType<FrameworkElement>().Where(fe => fe.Tag is RemoteDocumentData).ToArray())
             {
-                var imageDocData = (RemoteDocumentData)border.Tag;
+                var imageDocData = (RemoteDocumentData)userImageControl.Tag;
 
                 var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
                                                                              rd.IdeUserIdentity.DisplayName == imageDocData.IdeUserIdentity.DisplayName);
 
                 if (matchedRemoteDoc == null)
                 {
-                    border.Remove();
+                    userImageControl.Remove();
                 }
                 else
                 {
                     if (imageDocData.BeingEdited != matchedRemoteDoc.BeingEdited)
                     {
                         imageDocData.BeingEdited = matchedRemoteDoc.BeingEdited;
-                        UserImages.SetImageProperties(border, matchedRemoteDoc);
+                        UserImages.SetImageProperties(userImageControl, matchedRemoteDoc);
                     }
 
                     if(imageDocData.HasFocus != matchedRemoteDoc.HasFocus)
                     {
                         imageDocData.HasFocus = matchedRemoteDoc.HasFocus;
-                        UserImages.SetImageProperties(border, matchedRemoteDoc);
+                        UserImages.SetImageProperties(userImageControl, matchedRemoteDoc);
                     }
                 }
             }
         }
-
         private void AddImages(DockPanel tabPanel, List<RemoteDocumentData> remoteDocuments)
         {
             foreach (var remoteTabItem in remoteDocuments)
             {
-                if (!tabPanel.Children.OfType<Border>().Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
+                if (!tabPanel.Children.OfType<FrameworkElement>().Where(fe => fe.Tag is RemoteDocumentData).Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
                 {
                     var imgUser = UserImages.GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
 

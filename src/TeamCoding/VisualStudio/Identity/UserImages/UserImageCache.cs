@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -13,26 +14,47 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
 {
     public class UserImageCache
     {
-        private static readonly Brush BorderBrush = Brushes.White;
-        private readonly Border SharedUnknownUserImage = new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = LoadBitmapFromResource("Resources/UnknownUserImage.png") } };
+        private static readonly Brush BorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
+        private readonly BitmapImage SharedUnknownUserImage = LoadBitmapFromResource("Resources/UnknownUserImage.png");
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
 
-        public Border GetUserImageFromUrl(string url)
+        private static Grid CreateGrid(ImageSource imageSource)
         {
-            if (url == null) { return new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = (SharedUnknownUserImage.Child as Image).Source } }; }
+            var grid = new Grid();
+
+            grid.Children.Add(new Image()
+            {
+                Source = imageSource,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
+            });
+            grid.Children.Add(new Border()
+            {
+                BorderBrush = BorderBrush,
+                BorderThickness = new Thickness(1),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
+            });
+
+            return grid;
+        }
+
+        public Grid GetUserImageFromUrl(string url)
+        {
+            if (url == null) { return CreateGrid(SharedUnknownUserImage); }
 
             if (UrlImages.ContainsKey(url))
             {
-                return new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = UrlImages[url] } };
+                return CreateGrid(UrlImages[url]);
             }
 
-            var result = new Border() { BorderBrush = BorderBrush, Child = new Image() { Source = (SharedUnknownUserImage.Child as Image).Source } };
+            var result = CreateGrid(SharedUnknownUserImage);
 
             TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
             {
                 using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
                 {
-                    (result.Child as Image).Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    result.Children.OfType<Image>().Single().Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 }
             });
 
@@ -52,17 +74,19 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
             }
             return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
-        internal void SetImageProperties(Border image, RemoteDocumentData matchedRemoteDoc)
+        internal void SetImageProperties(FrameworkElement parentControl, RemoteDocumentData matchedRemoteDoc)
         {
-            image.ToolTip = matchedRemoteDoc.IdeUserIdentity.DisplayName + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
-            // TODO: Give the image a border or not
+            var imageControl = parentControl as Panel;
+
+            imageControl.ToolTip = matchedRemoteDoc.IdeUserIdentity.DisplayName + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+
             if (matchedRemoteDoc.HasFocus)
             {
-                image.BorderThickness = new System.Windows.Thickness(1.0);
+                imageControl.Children.OfType<Border>().Single().Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
-                image.BorderThickness = new System.Windows.Thickness(0.0);
+                imageControl.Children.OfType<Border>().Single().Visibility = System.Windows.Visibility.Hidden;
             }
         }
     }

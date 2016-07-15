@@ -55,7 +55,7 @@ namespace TeamCoding.VisualStudio.Models
 
             // Create a remote IDE model to send
             var remoteModel = new RemoteIDEModel(IdeModel);
-            
+
             using (var f = File.Create(PersistenceFile))
             {
                 ProtoBuf.Serializer.Serialize(f, remoteModel);
