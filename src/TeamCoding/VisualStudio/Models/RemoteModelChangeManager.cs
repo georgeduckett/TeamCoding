@@ -21,16 +21,20 @@ namespace TeamCoding.VisualStudio.Models
             FileWatcher.Created += FileWatcher_Changed;
             FileWatcher.Deleted += FileWatcher_Changed;
             FileWatcher.Changed += FileWatcher_Changed;
+            FileWatcher.Renamed += FileWatcher_Changed;
 
-            FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
+            FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
             FileWatcher.EnableRaisingEvents = true;
         }
+
         private void FileWatcher_Changed(object sender, FileSystemEventArgs e)
         {
+            FileWatcher.EnableRaisingEvents = false;
             if(e.ChangeType != WatcherChangeTypes.Deleted)
             {
                 while (!IsFileReady(e.FullPath)) { }
             }
+            FileWatcher.EnableRaisingEvents = true;
             RemoteModelManager.SyncChanges();
             IDEWrapper.UpdateIDE();
         }

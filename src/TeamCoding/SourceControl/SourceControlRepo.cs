@@ -24,6 +24,11 @@ namespace TeamCoding.SourceControl
         }
         public string GetRepoPath(string fullFilePath)
         {
+            if(fullFilePath.ToLower() == fullFilePath)
+            {
+
+            }
+
             var repoPath = Repository.Discover(fullFilePath);
 
             if (repoPath == null) return null; // No repository for file

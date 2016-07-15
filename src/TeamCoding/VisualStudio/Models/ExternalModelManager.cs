@@ -27,6 +27,7 @@ namespace TeamCoding.Models
             Models.Clear();
             foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
             {
+                while (!RemoteModelChangeManager.IsFileReady(modelSyncFile)) { }
                 using (var f = File.OpenRead(modelSyncFile))
                 {
                     Models.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));

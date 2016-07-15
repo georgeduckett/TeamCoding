@@ -44,15 +44,7 @@ namespace TeamCoding.VisualStudio.Models
         private void SendChanges()
         {
             // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now, (or write to a file share?)
-            var newItems = IdeModel.OpenDocs();
-            foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
-            {
-                if (Path.GetFileName(file) != PersistenceFile)
-                {
-                    File.Delete(file);
-                }
-            }
-
+            
             // Create a remote IDE model to send
             var remoteModel = new RemoteIDEModel(IdeModel);
 
@@ -64,9 +56,9 @@ namespace TeamCoding.VisualStudio.Models
 
         public void Dispose()
         {
-            foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
+            if (File.Exists(PersistenceFile))
             {
-                File.Delete(file);
+                File.Delete(PersistenceFile);
             }
         }
     }

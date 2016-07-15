@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,7 +46,7 @@ namespace TeamCoding.VisualStudio
         {
             InvokeAsync(() =>
             {
-                var filePath = window.Document?.FullName;
+                var filePath = window.GetWindowsFilePath();
 
                 if (filePath == null) return;
 
@@ -55,7 +56,7 @@ namespace TeamCoding.VisualStudio
 
                 var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelManager.GetOpenFiles();
 
-                var tabItemWithFilePath = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetUpdatedTooltip().TrimEnd('*') }).Single(t => t.File == filePath);
+                var tabItemWithFilePath = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetRelatedFilePath() }).Single(t => t.File == filePath);
 
                 UpdateTabImages(tabItemWithFilePath.Item.TitlePanel, filePath, remoteOpenFiles);
             });
@@ -63,14 +64,14 @@ namespace TeamCoding.VisualStudio
 
         private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
         {
-            var newFilePath = gotFocus?.Document?.FullName;
+            var newFilePath = gotFocus.GetWindowsFilePath();
 
             if(newFilePath != null)
             {
                 TeamCodingPackage.Current.IdeModel.OnFileGotFocus(newFilePath);
             }
 
-            var oldFilePath = lostFocus?.Document?.FullName;
+            var oldFilePath = lostFocus.GetWindowsFilePath();
 
             if (oldFilePath != null)
             {
@@ -126,8 +127,7 @@ namespace TeamCoding.VisualStudio
 
             var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelManager.GetOpenFiles();
 
-            // TODO: Is there a better way to get the tab's full file path than parsing the tooltip? (there must be!)
-            var tabItemsWithFilePaths = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetUpdatedTooltip().TrimEnd('*') }).ToArray();
+            var tabItemsWithFilePaths = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetRelatedFilePath() }).ToArray();
 
             foreach (var tabItem in tabItemsWithFilePaths)
             {

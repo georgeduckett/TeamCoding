@@ -23,7 +23,8 @@ namespace TeamCoding.VisualStudio.Models
         }
 
         private static LocalIDEModel Current = new LocalIDEModel();
-        
+
+        private object OpenFilesLock = new object();
         private readonly ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo> OpenFiles = new ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo>();
 
         public event EventHandler OpenViewsChanged;
@@ -32,35 +33,47 @@ namespace TeamCoding.VisualStudio.Models
 
         public void OnOpenedTextView(IWpfTextView view)
         {
-            var filePath = view.GetTextDocumentFilePath();
-            var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
-            if (!OpenFiles.ContainsKey(filePath) && sourceControlInfo != null)
+            lock (OpenFilesLock)
             {
-                // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
-                
-                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => e);
-                OpenViewsChanged?.Invoke(this, new EventArgs());
+                var filePath = view.GetTextDocumentFilePath();
+                var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
+                if (!OpenFiles.ContainsKey(filePath) && sourceControlInfo != null)
+                {
+                    // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
+
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => e);
+                }
             }
+            OpenViewsChanged?.Invoke(this, new EventArgs());
         }
 
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
             SourceControlRepo.RepoDocInfo tmp;
-            OpenFiles.TryRemove(textDocument.FilePath, out tmp);
+            lock (OpenFilesLock)
+            {
+                OpenFiles.TryRemove(textDocument.FilePath, out tmp);
+            }
             OpenViewsChanged?.Invoke(this, new EventArgs());
         }
 
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
         {
             var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(textDocument.FilePath);
-            OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => sourceControlInfo);
+            lock (OpenFilesLock)
+            {
+                OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => sourceControlInfo);
+            }
 
             TextDocumentSaved?.Invoke(textDocument, e);
         }
 
         public SourceControlRepo.RepoDocInfo[] OpenDocs()
         {
-            return OpenFiles.Values.ToArray();
+            lock (OpenFilesLock)
+            {
+                return OpenFiles.Values.ToArray();
+            }
         }
 
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
@@ -68,14 +81,17 @@ namespace TeamCoding.VisualStudio.Models
             var filePath = textBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
 
-            if (sourceControlInfo == null)
+            lock (OpenFilesLock)
             {
-                // The file could have just been put on the ignore list, so remove it from the list
-                OpenFiles.TryRemove(filePath, out sourceControlInfo);
-            }
-            else
-            {
-                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => sourceControlInfo);
+                if (sourceControlInfo == null)
+                {
+                    // The file could have just been put on the ignore list, so remove it from the list
+                    OpenFiles.TryRemove(filePath, out sourceControlInfo);
+                }
+                else
+                {
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => sourceControlInfo);
+                }
             }
             
             TextContentChanged?.Invoke(textBuffer, e);
@@ -85,7 +101,10 @@ namespace TeamCoding.VisualStudio.Models
         {
             // Update this source control info to update the time
             var sourceControlInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
-            OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => sourceControlInfo);
+            lock (OpenFilesLock)
+            {
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => sourceControlInfo);
+            }
             OpenViewsChanged?.Invoke(this, new EventArgs());
         }
 
