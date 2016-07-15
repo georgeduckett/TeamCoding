@@ -1,23 +1,10 @@
-﻿using Microsoft.VisualStudio.Platform.WindowManagement;
-using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Controls;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
-using TeamCoding.Extensions;
 using TeamCoding.Models;
-using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity;
-using TeamCoding.VisualStudio.Identity.UserImages;
 using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding

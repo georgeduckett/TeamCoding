@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamCoding.SourceControl;
-using TeamCoding.VisualStudio;
-using TeamCoding.VisualStudio.Identity.UserImages;
 using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.Models

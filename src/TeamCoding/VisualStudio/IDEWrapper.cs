@@ -3,17 +3,14 @@ using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using TeamCoding.SourceControl;
-using TeamCoding.VisualStudio.Identity.UserImages;
-using TeamCoding.Extensions;
-using System.Windows.Media;
-using System.Windows.Interop;
-using System.Windows.Threading;
-using TeamCoding.Models;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Threading;
+using TeamCoding.Extensions;
+using TeamCoding.Models;
+using TeamCoding.SourceControl;
 
 namespace TeamCoding.VisualStudio
 {
@@ -24,13 +21,24 @@ namespace TeamCoding.VisualStudio
         private readonly UserImageCache UserImages = new UserImageCache();
         private Visual WpfWindow => _WpfWindow;
         private readonly EnvDTE.WindowEvents WindowEvents;
+        private readonly EnvDTE.SolutionEvents SolutionEvents;
 
         public IDEWrapper(ExternalModelManager remoteModelManager)
         {
             _WpfWindow = GetWpfMainWindow();
             WindowEvents = TeamCodingPackage.Current.DTE.Events.WindowEvents;
+            SolutionEvents = TeamCodingPackage.Current.DTE.Events.SolutionEvents;
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             WindowEvents.WindowCreated += WindowEvents_WindowCreated;
+            SolutionEvents.Opened += SolutionEvents_Opened;
+        }
+
+        private void SolutionEvents_Opened()
+        {
+            // TODO: Check all tabs properly get user images when the solution is initially opened
+            // It's ok that we're not saying that tabs without documents have been opened since if the document hasn't been opened the user isn't really looking at them yet anyway
+            // We do want to update the IDE though because we need to show user icons on tabs even thought the associated document window hasn't been created yet
+            UpdateIDE();
         }
 
         private void WindowEvents_WindowCreated(EnvDTE.Window window)
@@ -96,15 +104,13 @@ namespace TeamCoding.VisualStudio
 
             return hwndSource.RootVisual;
         }
-        public void UpdateIDE(ExternalModelManager remoteModelManager)
+        public void UpdateIDE()
         {
             // TODO: Pass a cancellation token so we can cancel when disposed. Dispose of this in the package dispose method
-            WpfWindow.Dispatcher.InvokeAsync(() => UpdateIDE_Internal(remoteModelManager));
+            WpfWindow.Dispatcher.InvokeAsync(UpdateIDE_Internal);
         }
-        private void UpdateIDE_Internal(ExternalModelManager remoteModelManager)
+        private void UpdateIDE_Internal()
         {
-            remoteModelManager.SyncChanges();
-
             // TODO: Handle a new tab being opened (see what icons we should add)
 
             // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
@@ -145,7 +151,7 @@ namespace TeamCoding.VisualStudio
 
         private void UpdateOrRemoveImages(DockPanel tabPanel, List<RemoteDocumentData> remoteDocuments)
         {
-            foreach (var userImageControl in tabPanel.Children.OfType<FrameworkElement>().Where(fe => fe.Tag is RemoteDocumentData).ToArray())
+            foreach (var userImageControl in tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is RemoteDocumentData).ToArray())
             {
                 var imageDocData = (RemoteDocumentData)userImageControl.Tag;
 
@@ -176,9 +182,9 @@ namespace TeamCoding.VisualStudio
         {
             foreach (var remoteTabItem in remoteDocuments)
             {
-                if (!tabPanel.Children.OfType<FrameworkElement>().Where(fe => fe.Tag is RemoteDocumentData).Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
+                if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is RemoteDocumentData).Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
                 {
-                    var imgUser = UserImages.GetUserImageFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
+                    var imgUser = UserImages.GetUserImageControlFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
 
                     if (imgUser != null)
                     {

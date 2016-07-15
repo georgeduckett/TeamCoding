@@ -31,7 +31,8 @@ namespace TeamCoding.VisualStudio.Models
             {
                 while (!IsFileReady(e.FullPath)) { }
             }
-            IDEWrapper.UpdateIDE(RemoteModelManager);
+            RemoteModelManager.SyncChanges();
+            IDEWrapper.UpdateIDE();
         }
         public void Dispose()
         {

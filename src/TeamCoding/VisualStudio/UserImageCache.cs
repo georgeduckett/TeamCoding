@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TeamCoding.SourceControl;
 
-namespace TeamCoding.VisualStudio.Identity.UserImages
+namespace TeamCoding.VisualStudio
 {
     public class UserImageCache
     {
@@ -18,7 +18,7 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
         private readonly BitmapImage SharedUnknownUserImage = LoadBitmapFromResource("Resources/UnknownUserImage.png");
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
 
-        private static Grid CreateGrid(ImageSource imageSource)
+        private static Panel CreateUserImageControl(ImageSource imageSource)
         {
             var grid = new Grid();
 
@@ -39,16 +39,16 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
             return grid;
         }
 
-        public Grid GetUserImageFromUrl(string url)
+        public Panel GetUserImageControlFromUrl(string url)
         {
-            if (url == null) { return CreateGrid(SharedUnknownUserImage); }
+            if (url == null) { return CreateUserImageControl(SharedUnknownUserImage); }
 
             if (UrlImages.ContainsKey(url))
             {
-                return CreateGrid(UrlImages[url]);
+                return CreateUserImageControl(UrlImages[url]);
             }
 
-            var result = CreateGrid(SharedUnknownUserImage);
+            var result = CreateUserImageControl(SharedUnknownUserImage);
 
             TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
             {
@@ -74,7 +74,7 @@ namespace TeamCoding.VisualStudio.Identity.UserImages
             }
             return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
-        internal void SetImageProperties(FrameworkElement parentControl, RemoteDocumentData matchedRemoteDoc)
+        internal void SetImageProperties(Panel parentControl, RemoteDocumentData matchedRemoteDoc)
         {
             var imageControl = parentControl as Panel;
 

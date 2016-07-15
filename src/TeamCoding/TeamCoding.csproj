@@ -69,7 +69,7 @@
     <Compile Include="VisualStudio\Identity\MachineIdentityProvider.cs" />
     <Compile Include="SourceControl\SourceControlRepo.cs" />
     <Compile Include="VisualStudio\Identity\UserIdentity.cs" />
-    <Compile Include="VisualStudio\Identity\UserImages\UserImageCache.cs" />
+    <Compile Include="VisualStudio\UserImageCache.cs" />
     <Compile Include="VisualStudio\Identity\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
     <Compile Include="VisualStudio\IDEWrapper.cs" />
