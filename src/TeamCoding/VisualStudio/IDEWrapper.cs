@@ -112,8 +112,6 @@ namespace TeamCoding.VisualStudio
         }
         private void UpdateIDE_Internal()
         {
-            // TODO: Handle a new tab being opened (see what icons we should add)
-
             // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
             var documentTabPanel = _WpfWindow.FindChild<DocumentTabPanel>();
             

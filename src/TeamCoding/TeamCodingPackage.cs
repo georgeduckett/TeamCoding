@@ -22,7 +22,7 @@ namespace TeamCoding
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
 
         public static TeamCodingPackage Current { get; private set; }
-
+        
         public readonly LocalIDEModel IdeModel = new LocalIDEModel();
         internal LocalModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();

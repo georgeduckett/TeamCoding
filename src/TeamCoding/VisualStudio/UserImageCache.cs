@@ -13,7 +13,7 @@ using TeamCoding.SourceControl;
 namespace TeamCoding.VisualStudio
 {
     public class UserImageCache
-    {
+    { // TODO: See how github tools for visual studio gets/caches user images
         private static readonly Brush BorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private readonly BitmapImage SharedUnknownUserImage = LoadBitmapFromResource("Resources/UnknownUserImage.png");
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
