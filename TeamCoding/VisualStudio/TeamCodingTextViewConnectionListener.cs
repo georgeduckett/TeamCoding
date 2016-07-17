@@ -27,7 +27,7 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
-                TeamCodingPackage.Current.IdeModel.OnOpenedTextView(textView);
+                TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;
                 TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
@@ -40,20 +40,20 @@ namespace TeamCoding.VisualStudio
 
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)
         {
-            TeamCodingPackage.Current.IdeModel.OnTextDocumentDisposed(e.TextDocument, e);
+            TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentDisposed(e.TextDocument, e);
         }
 
         private void TextDoc_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
             {
-                TeamCodingPackage.Current.IdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
+                TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
             }
         }
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            TeamCodingPackage.Current.IdeModel.OnTextBufferChanged(sender as ITextBuffer, e);
+            TeamCodingPackage.Current.LocalIdeModel.OnTextBufferChanged(sender as ITextBuffer, e);
         }
 
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)

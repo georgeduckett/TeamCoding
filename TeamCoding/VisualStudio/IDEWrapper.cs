@@ -23,23 +23,22 @@ namespace TeamCoding.VisualStudio
         private readonly EnvDTE.WindowEvents WindowEvents;
         private readonly EnvDTE.SolutionEvents SolutionEvents;
         private readonly Visual WpfMainWindow;
+        private readonly EnvDTE.DTE DTE;
+        private bool EventsAreBound = false;
 
         public IDEWrapper(EnvDTE.DTE dte)
         {
+            DTE = dte;
             UserImages = new UserImageCache(this);
             WpfMainWindow = GetWpfMainWindow(dte);
             WindowEvents = dte.Events.WindowEvents;
             SolutionEvents = dte.Events.SolutionEvents;
+            SolutionEvents.Opened += SolutionEvents_Opened;
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             WindowEvents.WindowCreated += WindowEvents_WindowCreated;
-            SolutionEvents.Opened += SolutionEvents_Opened;
         }
-
         private void SolutionEvents_Opened()
         {
-            // TODO: Check whether this solution uses Git and disable it if not
-
-            // TODO: Check all tabs properly get user images when the solution is initially opened
             // It's ok that we're not saying that tabs without documents have been opened since if the document hasn't been opened the user isn't really looking at them yet anyway
             // We do want to update the IDE though because we need to show user icons on tabs even thought the associated document window hasn't been created yet
             UpdateIDE();
@@ -71,14 +70,14 @@ namespace TeamCoding.VisualStudio
 
             if(newFilePath != null)
             {
-                TeamCodingPackage.Current.IdeModel.OnFileGotFocus(newFilePath);
+                TeamCodingPackage.Current.LocalIdeModel.OnFileGotFocus(newFilePath);
             }
 
             var oldFilePath = lostFocus.GetWindowsFilePath();
 
             if (oldFilePath != null)
             {
-                TeamCodingPackage.Current.IdeModel.OnFileLostFocus(oldFilePath);
+                TeamCodingPackage.Current.LocalIdeModel.OnFileLostFocus(oldFilePath);
             }
         }
         public DispatcherOperation InvokeAsync(Action callback)
@@ -136,7 +135,7 @@ namespace TeamCoding.VisualStudio
 
         private void UpdateTabImages(DockPanel titlePanel, string filePath, IEnumerable<RemoteDocumentData> remoteOpenFiles)
         {
-            var repoInfo = new SourceControlRepo().GetRepoDocInfo(filePath);
+            var repoInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
             if (repoInfo == null) return;
 
             var relativePath = repoInfo.RelativePath;

@@ -24,21 +24,24 @@ namespace TeamCoding.SourceControl
         }
         public string GetRepoPath(string fullFilePath)
         {
-            if(fullFilePath.ToLower() == fullFilePath)
-            {
-
-            }
-
             var repoPath = Repository.Discover(fullFilePath);
 
             if (repoPath == null) return null; // No repository for file
 
             return fullFilePath.Substring(new DirectoryInfo(repoPath).Parent.FullName.Length).TrimStart('\\');
         }
+        public bool IsRepo(string fullFilePath)
+        {
+            return GetRepoPath(fullFilePath) != null;
+        }
         public RepoDocInfo GetRepoDocInfo(string fullFilePath)
         {
             // TODO: Handle repositories other than Git
             var relativePath = GetRepoPath(fullFilePath);
+
+            // It's ok to return null here since calling methods will handle it and it allows us to not have some global "is this a repository setting"
+            // Another reason it's better to do it this way is there's no "before loading a solution" event, meaning lots of listeners get the IsEnabled setting change too late (after docs are loaded)
+            if (relativePath == null) return null;
 
             var repo = new Repository(Repository.Discover(fullFilePath));
 

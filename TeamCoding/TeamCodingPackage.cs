@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity;
 using TeamCoding.VisualStudio.Models.Local;
@@ -20,10 +21,12 @@ namespace TeamCoding
         public static TeamCodingPackage Current { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly RemoteModelManager RemoteModelManager = new RemoteModelManager();
-        public readonly LocalIDEModel IdeModel = new LocalIDEModel();
-        public LocalModelChangeManager IdeChangeManager { get; private set; }
+        public readonly LocalIDEModel LocalIdeModel = new LocalIDEModel();
+        public readonly SourceControlRepo SourceControlRepo = new SourceControlRepo();
+        public LocalModelChangeManager LocalModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
         public RemoteModelChangeManager RemoteModelChangeManager { get; private set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
         /// </summary>
@@ -40,14 +43,14 @@ namespace TeamCoding
             base.Initialize();
 
             IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
-            IdeChangeManager = new LocalModelChangeManager(IdeModel);
+            LocalModelChangeManager = new LocalModelChangeManager(LocalIdeModel);
 
             RemoteModelChangeManager = new RemoteModelChangeManager(IDEWrapper, RemoteModelManager);
         }
         protected override void Dispose(bool disposing)
         {
             RemoteModelChangeManager.Dispose();
-            IdeChangeManager.Dispose();
+            LocalModelChangeManager.Dispose();
             base.Dispose(disposing);
         }
     }
