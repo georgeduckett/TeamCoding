@@ -35,6 +35,8 @@ namespace TeamCoding.VisualStudio
 
         private void SolutionEvents_Opened()
         {
+            // TODO: Check whether this solution uses Git and disable it if not
+
             // TODO: Check all tabs properly get user images when the solution is initially opened
             // It's ok that we're not saying that tabs without documents have been opened since if the document hasn't been opened the user isn't really looking at them yet anyway
             // We do want to update the IDE though because we need to show user icons on tabs even thought the associated document window hasn't been created yet
