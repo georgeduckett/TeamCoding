@@ -17,16 +17,15 @@ namespace TeamCoding.VisualStudio
 {
     public class IDEWrapper
     {
-        private Visual WpfWindow;
-
         private readonly UserImageCache UserImages;
         private readonly EnvDTE.WindowEvents WindowEvents;
         private readonly EnvDTE.SolutionEvents SolutionEvents;
+        private readonly Visual WpfMainWindow;
 
         public IDEWrapper(EnvDTE.DTE dte)
         {
             UserImages = new UserImageCache(this);
-            WpfWindow = GetWpfMainWindow();
+            WpfMainWindow = GetWpfMainWindow(dte);
             WindowEvents = dte.Events.WindowEvents;
             SolutionEvents = dte.Events.SolutionEvents;
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
@@ -50,7 +49,7 @@ namespace TeamCoding.VisualStudio
 
                 if (filePath == null) return;
 
-                var documentTabPanel = GetWpfMainWindow().FindChild<DocumentTabPanel>();
+                var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
                 var titlePanels = documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
                 var tabItems = titlePanels.Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
 
@@ -80,18 +79,16 @@ namespace TeamCoding.VisualStudio
         }
         public DispatcherOperation InvokeAsync(Action callback)
         {
-            return WpfWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+            return WpfMainWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
         }
-        private Visual GetWpfMainWindow()
+        private Visual GetWpfMainWindow(EnvDTE.DTE dte)
         {
-            var DTE = TeamCodingPackage.Current.DTE;
-
-            if (DTE == null)
+            if (dte == null)
             {
-                throw new ArgumentNullException(nameof(DTE));
+                throw new ArgumentNullException(nameof(dte));
             }
 
-            var hwndMainWindow = (IntPtr)DTE.MainWindow.HWnd;
+            var hwndMainWindow = (IntPtr)dte.MainWindow.HWnd;
             if (hwndMainWindow == IntPtr.Zero)
             {
                 throw new NullReferenceException("DTE.MainWindow.HWnd is null.");
@@ -108,12 +105,12 @@ namespace TeamCoding.VisualStudio
         public void UpdateIDE()
         {
             // TODO: Pass a cancellation token so we can cancel when disposed. Dispose of this in the package dispose method
-            WpfWindow.Dispatcher.InvokeAsync(UpdateIDE_Internal);
+            WpfMainWindow.Dispatcher.InvokeAsync(UpdateIDE_Internal);
         }
         private void UpdateIDE_Internal()
         {
             // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-            var documentTabPanel = WpfWindow.FindChild<DocumentTabPanel>();
+            var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
             
             if (documentTabPanel == null)
             { // We don't have a doc panel ATM (no docs are open)
