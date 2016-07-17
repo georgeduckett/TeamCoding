@@ -16,21 +16,14 @@ namespace TeamCoding
     [ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids80.SolutionExists)]
     public sealed class TeamCodingPackage : Package
     {
-        /// <summary>
-        /// TeamCodingPackage GUID string.
-        /// </summary>
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
-
         public static TeamCodingPackage Current { get; private set; }
-        
-        public readonly LocalIDEModel IdeModel = new LocalIDEModel();
-        public LocalModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
-        public IDEWrapper IDEWrapper;
-        public RemoteModelChangeManager RemoteModelChangeManager;
-        public EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
-
+        public readonly LocalIDEModel IdeModel = new LocalIDEModel();
+        public LocalModelChangeManager IdeChangeManager { get; private set; }
+        public IDEWrapper IDEWrapper { get; private set; }
+        public RemoteModelChangeManager RemoteModelChangeManager { get; private set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
         /// </summary>
