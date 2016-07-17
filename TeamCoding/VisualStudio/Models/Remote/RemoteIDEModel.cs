@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio.Identity;
 
-namespace TeamCoding.VisualStudio.Models
+namespace TeamCoding.VisualStudio.Models.Remote
 {
+    /// <summary>
+    /// Represents an IDE being used remotely
+    /// </summary>
     [ProtoContract]
     public class RemoteIDEModel
     {
@@ -23,8 +26,8 @@ namespace TeamCoding.VisualStudio.Models
             private set { _OpenFiles = value; }
         }
 
-        public RemoteIDEModel() { }
-        public RemoteIDEModel(LocalIDEModel localModel)
+        public RemoteIDEModel() { } // For protobuf
+        public RemoteIDEModel(Local.LocalIDEModel localModel)
         {
             IDEUserIdentity = TeamCodingPackage.Current.IdentityProvider.GetIdentity();
             OpenFiles = new List<SourceControlRepo.RepoDocInfo>(localModel.OpenDocs());

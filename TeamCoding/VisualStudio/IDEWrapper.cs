@@ -10,11 +10,13 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using TeamCoding.Extensions;
-using TeamCoding.Models;
 using TeamCoding.SourceControl;
 
 namespace TeamCoding.VisualStudio
 {
+    /// <summary>
+    /// Wraps the Visual Studio IDE, reacts to dev environment events, updates the UI in response to external events
+    /// </summary>
     public class IDEWrapper
     {
         private readonly UserImageCache UserImages;

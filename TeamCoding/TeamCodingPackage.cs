@@ -2,10 +2,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using TeamCoding.Models;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Identity;
-using TeamCoding.VisualStudio.Models;
+using TeamCoding.VisualStudio.Models.Local;
+using TeamCoding.VisualStudio.Models.Remote;
 
 namespace TeamCoding
 {
@@ -19,7 +19,7 @@ namespace TeamCoding
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
         public static TeamCodingPackage Current { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
-        public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
+        public readonly RemoteModelManager RemoteModelManager = new RemoteModelManager();
         public readonly LocalIDEModel IdeModel = new LocalIDEModel();
         public LocalModelChangeManager IdeChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }

@@ -9,10 +9,10 @@ using TeamCoding.Extensions;
 using TeamCoding.SourceControl;
 using Microsoft.VisualStudio.Text;
 
-namespace TeamCoding.VisualStudio.Models
+namespace TeamCoding.VisualStudio.Models.Local
 {
     /// <summary>
-    /// Represents and maintains a model of the IDE
+    /// Represents and maintains a model of the IDE, firing change events as appropriate
     /// </summary>
     public class LocalIDEModel
     {

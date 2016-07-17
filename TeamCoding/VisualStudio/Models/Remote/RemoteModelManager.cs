@@ -4,12 +4,12 @@ using System.Linq;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio.Models;
 
-namespace TeamCoding.Models
+namespace TeamCoding.VisualStudio.Models.Remote
 {
     /// <summary>
-    /// Responsible for managing external/remote models
+    /// Manages updating local models of remote IDEs
     /// </summary>
-    public class ExternalModelManager
+    public class RemoteModelManager
     {
         private const string ModelSyncFileFormat = "OpenDocs*.bin";
         private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();

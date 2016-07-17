@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
 
-namespace TeamCoding.VisualStudio.Models
+namespace TeamCoding.VisualStudio.Models.Local
 {
     /// <summary>
-    /// Handles persisting changes to the IDEModel. For now just persist to disk as a test
+    /// Handles sending local IDE model changes to other clients.
     /// </summary>
     public class LocalModelChangeManager : IDisposable
     {
@@ -46,7 +46,7 @@ namespace TeamCoding.VisualStudio.Models
             // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now, (or write to a file share?)
             
             // Create a remote IDE model to send
-            var remoteModel = new RemoteIDEModel(IdeModel);
+            var remoteModel = new Remote.RemoteIDEModel(IdeModel);
 
             using (var f = File.Create(PersistenceFile))
             {

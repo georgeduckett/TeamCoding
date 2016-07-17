@@ -5,16 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using TeamCoding.Models;
 
-namespace TeamCoding.VisualStudio.Models
+namespace TeamCoding.VisualStudio.Models.Remote
 {
+    /// <summary>
+    /// Manages receiving remote IDE model changes
+    /// </summary>
     public class RemoteModelChangeManager : IDisposable
     {
         private readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(Directory.GetCurrentDirectory(), "*.bin");
         private readonly IDEWrapper IDEWrapper;
-        private readonly ExternalModelManager RemoteModelManager;
-        public RemoteModelChangeManager(IDEWrapper ideWrapper, ExternalModelManager remoteModelManager)
+        private readonly RemoteModelManager RemoteModelManager;
+        public RemoteModelChangeManager(IDEWrapper ideWrapper, RemoteModelManager remoteModelManager)
         {
             RemoteModelManager = remoteModelManager;
             IDEWrapper = ideWrapper;
