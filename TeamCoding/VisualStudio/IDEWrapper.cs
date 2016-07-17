@@ -17,18 +17,18 @@ namespace TeamCoding.VisualStudio
 {
     public class IDEWrapper
     {
-        private Visual _WpfWindow;
+        private Visual WpfWindow;
 
-        private readonly UserImageCache UserImages = new UserImageCache();
-        private Visual WpfWindow => _WpfWindow;
+        private readonly UserImageCache UserImages;
         private readonly EnvDTE.WindowEvents WindowEvents;
         private readonly EnvDTE.SolutionEvents SolutionEvents;
 
-        public IDEWrapper()
+        public IDEWrapper(EnvDTE.DTE dte)
         {
-            _WpfWindow = GetWpfMainWindow();
-            WindowEvents = TeamCodingPackage.Current.DTE.Events.WindowEvents;
-            SolutionEvents = TeamCodingPackage.Current.DTE.Events.SolutionEvents;
+            UserImages = new UserImageCache(this);
+            WpfWindow = GetWpfMainWindow();
+            WindowEvents = dte.Events.WindowEvents;
+            SolutionEvents = dte.Events.SolutionEvents;
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             WindowEvents.WindowCreated += WindowEvents_WindowCreated;
             SolutionEvents.Opened += SolutionEvents_Opened;
@@ -80,7 +80,7 @@ namespace TeamCoding.VisualStudio
         }
         public DispatcherOperation InvokeAsync(Action callback)
         {
-            return _WpfWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+            return WpfWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
         }
         private Visual GetWpfMainWindow()
         {
@@ -113,7 +113,7 @@ namespace TeamCoding.VisualStudio
         private void UpdateIDE_Internal()
         {
             // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-            var documentTabPanel = _WpfWindow.FindChild<DocumentTabPanel>();
+            var documentTabPanel = WpfWindow.FindChild<DocumentTabPanel>();
             
             if (documentTabPanel == null)
             { // We don't have a doc panel ATM (no docs are open)

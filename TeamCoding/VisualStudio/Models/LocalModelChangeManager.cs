@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Models
     /// <summary>
     /// Handles persisting changes to the IDEModel. For now just persist to disk as a test
     /// </summary>
-    internal class LocalModelChangeManager : IDisposable
+    public class LocalModelChangeManager : IDisposable
     {
         private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
         private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";

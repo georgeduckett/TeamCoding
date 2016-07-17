@@ -17,7 +17,12 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush BorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private readonly BitmapImage SharedUnknownUserImage = LoadBitmapFromResource("Resources/UnknownUserImage.png");
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
+        private readonly IDEWrapper IdeWrapper;
 
+        public UserImageCache(IDEWrapper ideWrapper)
+        {
+            IdeWrapper = ideWrapper;
+        }
         private static Panel CreateUserImageControl(ImageSource imageSource)
         {
             var grid = new Grid();
@@ -50,7 +55,7 @@ namespace TeamCoding.VisualStudio
 
             var result = CreateUserImageControl(SharedUnknownUserImage);
 
-            TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
+            IdeWrapper.InvokeAsync(() =>
             {
                 using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
                 {

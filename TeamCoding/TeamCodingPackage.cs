@@ -24,13 +24,11 @@ namespace TeamCoding
         public static TeamCodingPackage Current { get; private set; }
         
         public readonly LocalIDEModel IdeModel = new LocalIDEModel();
-        internal LocalModelChangeManager IdeChangeManager { get; private set; }
+        public LocalModelChangeManager IdeChangeManager { get; private set; }
         public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly ExternalModelManager RemoteModelManager = new ExternalModelManager();
         public IDEWrapper IDEWrapper;
-        private RemoteModelChangeManager RemoteModelChangeManager;
-        public EnvDTE.DocumentEvents DocumentEvents;
-
+        public RemoteModelChangeManager RemoteModelChangeManager;
         public EnvDTE.DTE DTE => (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
         /// <summary>
@@ -48,8 +46,7 @@ namespace TeamCoding
         {
             base.Initialize();
 
-            DocumentEvents = DTE.Events.DocumentEvents;
-            IDEWrapper = new IDEWrapper();
+            IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
             IdeChangeManager = new LocalModelChangeManager(IdeModel);
 
             RemoteModelChangeManager = new RemoteModelChangeManager(IDEWrapper, RemoteModelManager);
