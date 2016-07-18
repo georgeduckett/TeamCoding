@@ -13,6 +13,7 @@ namespace TeamCoding.VisualStudio.Identity
         private const string SubKey = "Software\\Microsoft\\VSCommon\\ConnectedUser\\IdeUser\\Cache";
         private const string EmailAddressKeyName = "EmailAddress";
         private const string UserNameKeyName = "DisplayName";
+        private const string ImageKeyname = "Avatar.Small";
         private readonly UserIdentity Identity;
 
         public VSIdentityProvider()
@@ -24,16 +25,11 @@ namespace TeamCoding.VisualStudio.Identity
                 {
                     var email = (string)sk.GetValue(EmailAddressKeyName);
                     Identity = new UserIdentity()
-                    { // TODO: Maybe figure out a way of including the actual image in visual studio (available in the registry) without having to send it every time for the VSIdentityProvider
-                        Id = (string)sk.GetValue(UserNameKeyName),
-                        ImageUrl = UserIdentity.GetGravatarUrlFromEmail(email)
-                    };
-
-                    TeamCodingPackage.Current.IDEWrapper.InvokeAsync(async () =>
                     {
-                        Identity.Id = await UserIdentity.GetGravatarDisplayNameFromEmail(email);
-                        TeamCodingPackage.Current.LocalIdeModel.OnUserIdentityChanged();
-                    });
+                        Id = (string)sk.GetValue(UserNameKeyName),
+                        ImageUrl = UserIdentity.GetGravatarUrlFromEmail(email),
+                        ImageBytes = (byte[])sk.GetValue(ImageKeyname) // TODO: Detect if this is a simple initials image and don't use it if that's the case (it displays badly when small), maybe generate one client side instead
+                    };
                 }
             }
         }

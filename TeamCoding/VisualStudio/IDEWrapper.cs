@@ -24,7 +24,6 @@ namespace TeamCoding.VisualStudio
         private readonly EnvDTE.SolutionEvents SolutionEvents;
         private readonly Visual WpfMainWindow;
         private readonly EnvDTE.DTE DTE;
-        private bool EventsAreBound = false;
 
         public IDEWrapper(EnvDTE.DTE dte)
         {
@@ -194,7 +193,7 @@ namespace TeamCoding.VisualStudio
             {
                 if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is RemoteDocumentData).Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
                 {
-                    var imgUser = UserImages.GetUserImageControlFromUrl(remoteTabItem.IdeUserIdentity.ImageUrl);
+                    var imgUser = UserImages.GetUserImageControlFromUserIdentity(remoteTabItem.IdeUserIdentity);
 
                     if (imgUser != null)
                     {

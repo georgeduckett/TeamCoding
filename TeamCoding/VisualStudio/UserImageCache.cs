@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TeamCoding.SourceControl;
+using TeamCoding.VisualStudio.Identity;
 
 namespace TeamCoding.VisualStudio
 {
@@ -45,28 +46,46 @@ namespace TeamCoding.VisualStudio
             return grid;
         }
 
-        public Panel GetUserImageControlFromUrl(string url)
+        public Panel GetUserImageControlFromUserIdentity(UserIdentity userIdentity)
         {
-            if (url == null) { return CreateUserImageControl(SharedUnknownUserImage); }
-
-            if (UrlImages.ContainsKey(url))
+            Panel result;
+            if (userIdentity.ImageBytes == null)
             {
-                return CreateUserImageControl(UrlImages[url]);
-            }
+                var url = userIdentity.ImageUrl;
+                if (url == null) { return CreateUserImageControl(SharedUnknownUserImage); }
 
-            var result = CreateUserImageControl(SharedUnknownUserImage);
-
-            IdeWrapper.InvokeAsync(async () =>
-            {
-                try
+                if (UrlImages.ContainsKey(url))
                 {
-                    var request = await TeamCodingPackage.Current.HttpClient.GetAsync(url);
-                    if (!request.IsSuccessStatusCode) return;
-                    var imageStream = await request.Content.ReadAsStreamAsync();
-                    result.Children.OfType<Image>().Single().Source = UrlImages[url] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    return CreateUserImageControl(UrlImages[url]);
                 }
-                catch { } // Any failures don't matter, it just won't update the image
-            });
+
+                result = CreateUserImageControl(SharedUnknownUserImage);
+
+                IdeWrapper.InvokeAsync(async () =>
+                {
+                    try
+                    {
+                        var request = await TeamCodingPackage.Current.HttpClient.GetAsync(url);
+                        if (!request.IsSuccessStatusCode) return;
+                        var imageStream = await request.Content.ReadAsStreamAsync();
+                        result.Children.OfType<Image>().Single().Source = UrlImages[url] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    }
+                    catch { } // Any failures don't matter, it just won't update the image
+                });
+            }
+            else
+            {
+                // TODO: Maybe don't use the visual studio user image, as when it's just initials it's impossible to read. We also don't really want it sent across the wire every time either
+                using (var MS = new MemoryStream(userIdentity.ImageBytes.Skip(16).ToArray()))
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = MS;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit(); // TODO: Why doesn't the visual studio Avatar.Small load correctly?
+                    result = CreateUserImageControl(bitmap);
+                }
+            }
 
             return result;
         }

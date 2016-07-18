@@ -18,6 +18,8 @@ namespace TeamCoding.VisualStudio.Identity
         public string ImageUrl { get; set; }
         [ProtoBuf.ProtoMember(3)]
         public string DisplayName { get; set; }
+        [ProtoBuf.ProtoMember(4)]
+        public byte[] ImageBytes { get; set; }
         public static string GetGravatarUrlFromEmail(string email)
         {
             return $"https://www.gravatar.com/avatar/{CalculateMD5Hash(email).ToLower()}";
