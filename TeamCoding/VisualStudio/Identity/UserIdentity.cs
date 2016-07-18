@@ -22,7 +22,7 @@ namespace TeamCoding.VisualStudio.Identity
         public byte[] ImageBytes { get; set; }
         public static string GetGravatarUrlFromEmail(string email)
         {
-            return $"https://www.gravatar.com/avatar/{CalculateMD5Hash(email).ToLower()}";
+            return $"https://www.gravatar.com/avatar/{CalculateMD5Hash(email).ToLower()}?d=404";
         }
         public override string ToString()
         {
@@ -30,7 +30,7 @@ namespace TeamCoding.VisualStudio.Identity
         }
         public static async Task<string> GetGravatarDisplayNameFromEmail(string email)
         {
-            var result = await TeamCodingPackage.Current.HttpClient.GetAsync($"https://www.gravatar.com/{CalculateMD5Hash(email).ToLower()}.json");
+            var result = await TeamCodingPackage.Current.HttpClient.GetAsync($"https://www.gravatar.com/{CalculateMD5Hash(email).ToLower()}.json?d=404");
             if (!result.IsSuccessStatusCode) return null;
 
             var gravatarProfileJsonString = await result.Content.ReadAsStringAsync();

@@ -30,7 +30,7 @@ namespace TeamCoding.VisualStudio.Identity
                         {
                             Id = (string)sk.GetValue(UserNameKeyName),
                             ImageUrl = UserIdentity.GetGravatarUrlFromEmail(email),
-                            ImageBytes = (byte[])sk.GetValue(ImageKeyname) // TODO: Detect if this is a simple initials image and don't use it if that's the case (it displays badly when small), maybe generate one client side instead
+                            ImageBytes = ((byte[])sk.GetValue(ImageKeyname)).Skip(16).ToArray() // TODO: Detect if this is a simple initials image and don't use it if that's the case (it displays badly when small), maybe generate one client side instead
                         };
                     }
                 }
