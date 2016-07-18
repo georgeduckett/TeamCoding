@@ -193,7 +193,7 @@ namespace TeamCoding.VisualStudio
             {
                 if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is RemoteDocumentData).Any(i => (i.Tag as RemoteDocumentData).Equals(remoteTabItem)))
                 {
-                    var imgUser = UserImages.GetUserImageControlFromUserIdentity(remoteTabItem.IdeUserIdentity);
+                    var imgUser = UserImages.GetUserImageControlFromUserIdentity(remoteTabItem.IdeUserIdentity, (int)(tabPanel.Children[0] as GlyphButton).Width);
 
                     if (imgUser != null)
                     {

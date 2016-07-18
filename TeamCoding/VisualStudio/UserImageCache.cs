@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using TeamCoding.Extensions;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio.Identity;
 
@@ -45,24 +46,12 @@ namespace TeamCoding.VisualStudio
 
             return grid;
         }
-
-        public Panel GetUserImageControlFromUserIdentity(UserIdentity userIdentity)
+        public Panel GetUserImageControlFromUserIdentity(UserIdentity userIdentity, int desiredSize)
         {
             Panel result;
-            if (userIdentity.ImageBytes == null)
-            {
-                if (userIdentity.ImageUrl == null) { return CreateUserImageControl(SharedUnknownUserImage); }
 
-                if (UrlImages.ContainsKey(userIdentity.ImageUrl))
-                {
-                    return CreateUserImageControl(UrlImages[userIdentity.ImageUrl]);
-                }
-
-                result = CreateUserImageControl(SharedUnknownUserImage);
-            }
-            else
+            if (userIdentity.ImageBytes != null)
             {
-                // TODO: Maybe don't use the visual studio user image, as when it's just initials it's impossible to read. We also don't really want it sent across the wire every time either
                 using (var MS = new MemoryStream(userIdentity.ImageBytes))
                 {
                     // No idea what the first 16 bytes are, but after that we get a regular PNG
@@ -73,6 +62,20 @@ namespace TeamCoding.VisualStudio
                     bitmap.EndInit();
                     result = CreateUserImageControl(bitmap);
                 }
+
+            }
+            else if (userIdentity.ImageUrl != null)
+            {
+                if (UrlImages.ContainsKey(userIdentity.ImageUrl))
+                {
+                    return CreateUserImageControl(UrlImages[userIdentity.ImageUrl]);
+                }
+
+                result = CreateUserImageControl(SharedUnknownUserImage);
+            }
+            else
+            {
+                return CreateUserImageControl(SharedUnknownUserImage);
             }
 
             if (userIdentity.ImageUrl != null)

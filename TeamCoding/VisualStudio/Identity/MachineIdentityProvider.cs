@@ -10,7 +10,7 @@ namespace TeamCoding.VisualStudio.Identity
     {
         public UserIdentity GetIdentity()
         {
-            return new UserIdentity() { Id = Environment.UserName };
+            return new UserIdentity() { Id = Environment.UserName, DisplayName = Environment.UserName };
         }
     }
 }
