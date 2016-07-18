@@ -154,7 +154,7 @@ namespace TeamCoding.VisualStudio
                 var imageDocData = (RemoteDocumentData)userImageControl.Tag;
 
                 var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
-                                                                             rd.IdeUserIdentity.DisplayName == imageDocData.IdeUserIdentity.DisplayName);
+                                                                             rd.IdeUserIdentity.Id == imageDocData.IdeUserIdentity.Id);
 
                 if (matchedRemoteDoc == null)
                 {
@@ -162,15 +162,27 @@ namespace TeamCoding.VisualStudio
                 }
                 else
                 {
+                    var PropertiesUpdated = false;
                     if (imageDocData.BeingEdited != matchedRemoteDoc.BeingEdited)
                     {
                         imageDocData.BeingEdited = matchedRemoteDoc.BeingEdited;
-                        UserImages.SetImageProperties(userImageControl, matchedRemoteDoc);
+                        PropertiesUpdated = true;
                     }
 
                     if(imageDocData.HasFocus != matchedRemoteDoc.HasFocus)
                     {
                         imageDocData.HasFocus = matchedRemoteDoc.HasFocus;
+                        PropertiesUpdated = true;
+                    }
+
+                    if (imageDocData.IdeUserIdentity.DisplayName != matchedRemoteDoc.IdeUserIdentity.DisplayName)
+                    {
+                        imageDocData.IdeUserIdentity.DisplayName = matchedRemoteDoc.IdeUserIdentity.DisplayName;
+                        PropertiesUpdated = true;
+                    }
+
+                    if (PropertiesUpdated)
+                    {
                         UserImages.SetImageProperties(userImageControl, matchedRemoteDoc);
                     }
                 }

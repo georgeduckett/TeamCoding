@@ -51,6 +51,11 @@ namespace TeamCoding.VisualStudio.Models.Local
             }
         }
 
+        internal void OnUserIdentityChanged()
+        {
+            OpenViewsChanged?.Invoke(this, new EventArgs());
+        }
+
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
             SourceControlRepo.RepoDocInfo tmp;

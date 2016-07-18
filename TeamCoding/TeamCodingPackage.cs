@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using TeamCoding.SourceControl;
 using TeamCoding.VisualStudio;
@@ -19,13 +20,14 @@ namespace TeamCoding
     {
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
         public static TeamCodingPackage Current { get; private set; }
-        public readonly IIdentityProvider IdentityProvider = new CachedGitHubIdentityProvider();
         public readonly RemoteModelManager RemoteModelManager = new RemoteModelManager();
         public readonly LocalIDEModel LocalIdeModel = new LocalIDEModel();
         public readonly SourceControlRepo SourceControlRepo = new SourceControlRepo();
+        public readonly HttpClient HttpClient;
         public LocalModelChangeManager LocalModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
         public RemoteModelChangeManager RemoteModelChangeManager { get; private set; }
+        public IIdentityProvider IdentityProvider { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -33,6 +35,9 @@ namespace TeamCoding
         public TeamCodingPackage()
         {
             Current = this;
+            HttpClient = new HttpClient();
+            HttpClient.DefaultRequestHeaders.Add("User-Agent",
+                                                 "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
         }
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -41,8 +46,8 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
-
             IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
+            IdentityProvider = new CachedGitHubIdentityProvider();
             LocalModelChangeManager = new LocalModelChangeManager(LocalIdeModel);
 
             RemoteModelChangeManager = new RemoteModelChangeManager(IDEWrapper, RemoteModelManager);
@@ -51,6 +56,7 @@ namespace TeamCoding
         {
             RemoteModelChangeManager.Dispose();
             LocalModelChangeManager.Dispose();
+            HttpClient.Dispose();
             base.Dispose(disposing);
         }
     }

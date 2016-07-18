@@ -27,21 +27,16 @@ namespace TeamCoding.VisualStudio.Identity
 
             Identity = new UserIdentity()
             {
-                DisplayName = credential.Username,
-                ImageUrl = $"http://www.gravatar.com/avatar/{CalculateMD5Hash(credential.Username).ToLower()}"
+                Id = credential.Username,
+                ImageUrl = UserIdentity.GetGravatarUrlFromEmail(credential.Username)
             };
-        }
-        private string CalculateMD5Hash(string input)
-        {
-            var md5 = System.Security.Cryptography.MD5.Create();
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
+
+            TeamCodingPackage.Current.IDEWrapper.InvokeAsync(async () =>
             {
-                sb.Append(hash[i].ToString("X2"));
-            }
-            return sb.ToString();
+                Identity.Id = await UserIdentity.GetGravatarDisplayNameFromEmail(credential.Username);
+                TeamCodingPackage.Current.LocalIdeModel.OnUserIdentityChanged();
+            });
         }
+
     }
 }

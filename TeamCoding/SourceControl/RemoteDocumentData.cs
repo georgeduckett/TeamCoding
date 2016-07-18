@@ -25,7 +25,7 @@ namespace TeamCoding.SourceControl
 
             return Repository == other.Repository &&
                    RelativePath == other.RelativePath &&
-                   IdeUserIdentity.DisplayName == IdeUserIdentity.DisplayName &&
+                   IdeUserIdentity.Id == IdeUserIdentity.Id &&
                    IdeUserIdentity.ImageUrl == IdeUserIdentity.ImageUrl &&
                    BeingEdited == other.BeingEdited &&
                    HasFocus == other.HasFocus;

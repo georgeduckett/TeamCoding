@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -55,12 +56,16 @@ namespace TeamCoding.VisualStudio
 
             var result = CreateUserImageControl(SharedUnknownUserImage);
 
-            IdeWrapper.InvokeAsync(() =>
+            IdeWrapper.InvokeAsync(async () =>
             {
-                using (MemoryStream stream = new MemoryStream(new System.Net.WebClient().DownloadData(url)))
+                try
                 {
-                    result.Children.OfType<Image>().Single().Source = UrlImages[url] = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    var request = await TeamCodingPackage.Current.HttpClient.GetAsync(url);
+                    if (!request.IsSuccessStatusCode) return;
+                    var imageStream = await request.Content.ReadAsStreamAsync();
+                    result.Children.OfType<Image>().Single().Source = UrlImages[url] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 }
+                catch { } // Any failures don't matter, it just won't update the image
             });
 
             return result;
@@ -83,7 +88,7 @@ namespace TeamCoding.VisualStudio
         {
             var imageControl = parentControl as Panel;
 
-            imageControl.ToolTip = matchedRemoteDoc.IdeUserIdentity.DisplayName + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+            imageControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
 
             if (matchedRemoteDoc.HasFocus)
             {
