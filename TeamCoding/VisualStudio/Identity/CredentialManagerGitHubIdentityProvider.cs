@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Identity
 {
     public class CredentialManagerGitHubIdentityProvider : IIdentityProvider
     {
-        private static string[] GitHubCredentialTargets = new[] { "git:https://github.com", "https://github.com" };
+        private static string[] GitHubCredentialTargets = new[] { "git:https://github.com", "https://github.com/" };
 
         private readonly UserIdentity Identity;
         public UserIdentity GetIdentity() => Identity;

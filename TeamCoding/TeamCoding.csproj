@@ -62,7 +62,7 @@
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\WindowFrameTitleExtensions.cs" />
-    <Compile Include="VisualStudio\Identity\CachedIdentityProvider.cs" />
+    <Compile Include="VisualStudio\Identity\CachedFailoverIdentityProvider.cs" />
     <Compile Include="VisualStudio\Models\Remote\RemoteModelManager.cs" />
     <Compile Include="SourceControl\RemoteDocumentData.cs" />
     <Compile Include="VisualStudio\Models\Local\LocalModelChangeManager.cs" />

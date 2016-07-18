@@ -18,19 +18,26 @@ namespace TeamCoding.VisualStudio.Identity
 
         public VSIdentityProvider()
         {
-            RegistryKey root = Registry.CurrentUser;
-            using (var sk = root.OpenSubKey(SubKey))
+            try
             {
-                if (sk != null)
+                RegistryKey root = Registry.CurrentUser;
+                using (var sk = root.OpenSubKey(SubKey))
                 {
-                    var email = (string)sk.GetValue(EmailAddressKeyName);
-                    Identity = new UserIdentity()
+                    if (sk != null)
                     {
-                        Id = (string)sk.GetValue(UserNameKeyName),
-                        ImageUrl = UserIdentity.GetGravatarUrlFromEmail(email),
-                        ImageBytes = (byte[])sk.GetValue(ImageKeyname) // TODO: Detect if this is a simple initials image and don't use it if that's the case (it displays badly when small), maybe generate one client side instead
-                    };
+                        var email = (string)sk.GetValue(EmailAddressKeyName);
+                        Identity = new UserIdentity()
+                        {
+                            Id = (string)sk.GetValue(UserNameKeyName),
+                            ImageUrl = UserIdentity.GetGravatarUrlFromEmail(email),
+                            ImageBytes = (byte[])sk.GetValue(ImageKeyname) // TODO: Detect if this is a simple initials image and don't use it if that's the case (it displays badly when small), maybe generate one client side instead
+                        };
+                    }
                 }
+            }
+            catch
+            {
+                Identity = null;
             }
         }
 
