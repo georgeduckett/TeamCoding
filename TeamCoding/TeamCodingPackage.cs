@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using TeamCoding.Documents;
+using TeamCoding.IdentityManagement;
 using TeamCoding.VisualStudio;
-using TeamCoding.VisualStudio.Identity;
 using TeamCoding.VisualStudio.Models.Local;
 using TeamCoding.VisualStudio.Models.Remote;
 

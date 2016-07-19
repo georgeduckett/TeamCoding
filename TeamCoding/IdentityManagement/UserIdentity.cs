@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamCoding.VisualStudio.Identity
+namespace TeamCoding.IdentityManagement
 {
     [ProtoBuf.ProtoContract]
     public class UserIdentity

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamCoding.VisualStudio.Identity
+namespace TeamCoding.IdentityManagement
 {
     public class MachineIdentityProvider : IIdentityProvider
     {

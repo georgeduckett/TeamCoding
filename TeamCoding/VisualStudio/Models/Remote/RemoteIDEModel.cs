@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
-using TeamCoding.VisualStudio.Identity;
+using TeamCoding.IdentityManagement;
 
 namespace TeamCoding.VisualStudio.Models.Remote
 {

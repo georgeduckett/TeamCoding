@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.CredentialManagement;
 
-namespace TeamCoding.VisualStudio.Identity
+namespace TeamCoding.IdentityManagement
 {
     public class CredentialManagerGitHubIdentityProvider : IIdentityProvider
     {

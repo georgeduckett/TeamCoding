@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TeamCoding.Documents;
 using TeamCoding.Extensions;
-using TeamCoding.VisualStudio.Identity;
+using TeamCoding.IdentityManagement;
 
 namespace TeamCoding.VisualStudio
 {
