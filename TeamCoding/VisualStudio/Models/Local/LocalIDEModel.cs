@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Extensions;
-using TeamCoding.SourceControl;
 using Microsoft.VisualStudio.Text;
+using TeamCoding.Documents;
 
 namespace TeamCoding.VisualStudio.Models.Local
 {
@@ -25,7 +25,7 @@ namespace TeamCoding.VisualStudio.Models.Local
         private static LocalIDEModel Current = new LocalIDEModel();
 
         private object OpenFilesLock = new object();
-        private readonly ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo> OpenFiles = new ConcurrentDictionary<string, SourceControlRepo.RepoDocInfo>();
+        private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
 
         public event EventHandler OpenViewsChanged;
         public event EventHandler<TextContentChangedEventArgs> TextContentChanged;
@@ -58,7 +58,7 @@ namespace TeamCoding.VisualStudio.Models.Local
 
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
-            SourceControlRepo.RepoDocInfo tmp;
+            DocumentRepoMetaData tmp;
             lock (OpenFilesLock)
             {
                 OpenFiles.TryRemove(textDocument.FilePath, out tmp);
@@ -80,7 +80,7 @@ namespace TeamCoding.VisualStudio.Models.Local
             }
         }
 
-        public SourceControlRepo.RepoDocInfo[] OpenDocs()
+        public DocumentRepoMetaData[] OpenDocs()
         {
             lock (OpenFilesLock)
             {

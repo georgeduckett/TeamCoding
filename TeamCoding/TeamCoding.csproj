@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="CredentialManagement\NativeMethods.cs" />
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
+    <Compile Include="Documents\DocumentRepoMetaData.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Extensions\DTEExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
@@ -64,13 +65,13 @@
     <Compile Include="Extensions\WindowFrameTitleExtensions.cs" />
     <Compile Include="VisualStudio\Identity\CachedFailoverIdentityProvider.cs" />
     <Compile Include="VisualStudio\Models\Remote\RemoteModelManager.cs" />
-    <Compile Include="SourceControl\RemoteDocumentData.cs" />
+    <Compile Include="Documents\RemoteDocumentData.cs" />
     <Compile Include="VisualStudio\Models\Local\LocalModelChangeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisualStudio\Identity\CredentialManagerGitHubIdentityProvider.cs" />
     <Compile Include="VisualStudio\Identity\IIdentityProvider.cs" />
     <Compile Include="VisualStudio\Identity\MachineIdentityProvider.cs" />
-    <Compile Include="SourceControl\SourceControlRepo.cs" />
+    <Compile Include="Documents\GitRepository.cs" />
     <Compile Include="VisualStudio\Identity\UserIdentity.cs" />
     <Compile Include="VisualStudio\UserImageCache.cs" />
     <Compile Include="VisualStudio\Identity\VSIdentityProvider.cs" />

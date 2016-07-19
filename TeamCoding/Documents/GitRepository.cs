@@ -6,22 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamCoding.SourceControl
+namespace TeamCoding.Documents
 {
-    public class SourceControlRepo
+    public class GitRepository
     {
-        [ProtoBuf.ProtoContract]
-        public class RepoDocInfo
-        {
-            [ProtoBuf.ProtoMember(1)]
-            public string RepoUrl { get; set; }
-            [ProtoBuf.ProtoMember(2)]
-            public string RelativePath { get; set; }
-            [ProtoBuf.ProtoMember(3)]
-            public bool BeingEdited { get; set; }
-            [ProtoBuf.ProtoMember(4)]
-            public DateTime LastActioned { get; set; }
-        }
         public string GetRepoPath(string fullFilePath)
         {
             var repoPath = Repository.Discover(fullFilePath);
@@ -30,11 +18,7 @@ namespace TeamCoding.SourceControl
 
             return fullFilePath.Substring(new DirectoryInfo(repoPath).Parent.FullName.Length).TrimStart('\\');
         }
-        public bool IsRepo(string fullFilePath)
-        {
-            return GetRepoPath(fullFilePath) != null;
-        }
-        public RepoDocInfo GetRepoDocInfo(string fullFilePath)
+        public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
             // TODO: Handle repositories other than Git
             var relativePath = GetRepoPath(fullFilePath);
@@ -55,7 +39,7 @@ namespace TeamCoding.SourceControl
             var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any() ||
                            repo.Diff.Compare<TreeChanges>(remoteMasterTree, repoHeadTree, new[] { fullFilePath }).Any();
             
-            return new RepoDocInfo()
+            return new DocumentRepoMetaData()
             {
                 RepoUrl = repo.Head.TrackedBranch.Remote.Url,
                 RelativePath = relativePath,

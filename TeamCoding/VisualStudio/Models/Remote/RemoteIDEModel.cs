@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamCoding.SourceControl;
+using TeamCoding.Documents;
 using TeamCoding.VisualStudio.Identity;
 
 namespace TeamCoding.VisualStudio.Models.Remote
@@ -18,11 +18,11 @@ namespace TeamCoding.VisualStudio.Models.Remote
         [ProtoMember(1)]
         public readonly UserIdentity IDEUserIdentity;
         [ProtoIgnore]
-        private List<SourceControlRepo.RepoDocInfo> _OpenFiles;
+        private List<DocumentRepoMetaData> _OpenFiles;
         [ProtoMember(2)]
-        public List<SourceControlRepo.RepoDocInfo> OpenFiles
+        public List<DocumentRepoMetaData> OpenFiles
         {
-            get { return _OpenFiles ?? (_OpenFiles = new List<SourceControlRepo.RepoDocInfo>()); }
+            get { return _OpenFiles ?? (_OpenFiles = new List<DocumentRepoMetaData>()); }
             private set { _OpenFiles = value; }
         }
 
@@ -30,7 +30,7 @@ namespace TeamCoding.VisualStudio.Models.Remote
         public RemoteIDEModel(Local.LocalIDEModel localModel)
         {
             IDEUserIdentity = TeamCodingPackage.Current.IdentityProvider.GetIdentity();
-            OpenFiles = new List<SourceControlRepo.RepoDocInfo>(localModel.OpenDocs());
+            OpenFiles = new List<DocumentRepoMetaData>(localModel.OpenDocs());
         }
     }
 }

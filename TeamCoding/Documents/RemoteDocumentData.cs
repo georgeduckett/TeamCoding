@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.VisualStudio.Identity;
 
-namespace TeamCoding.SourceControl
+namespace TeamCoding.Documents
 {
     public class RemoteDocumentData : IEquatable<RemoteDocumentData>
     {

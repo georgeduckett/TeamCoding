@@ -9,8 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using TeamCoding.Documents;
 using TeamCoding.Extensions;
-using TeamCoding.SourceControl;
 
 namespace TeamCoding.VisualStudio
 {

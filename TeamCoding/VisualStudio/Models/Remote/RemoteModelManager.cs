@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TeamCoding.SourceControl;
+using TeamCoding.Documents;
 using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.VisualStudio.Models.Remote
