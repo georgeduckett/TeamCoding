@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Text;
 using TeamCoding.Documents;

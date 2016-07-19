@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using TeamCoding.Documents;
-using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.VisualStudio.Models.Remote
 {

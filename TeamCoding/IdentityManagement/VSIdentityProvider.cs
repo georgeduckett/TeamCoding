@@ -1,11 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Win32;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TeamCoding.IdentityManagement
 {
