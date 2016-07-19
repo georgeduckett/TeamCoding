@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.IdentityManagement
 {
+    /// <summary>
+    /// A user's identity
+    /// </summary>
     [ProtoBuf.ProtoContract]
     public class UserIdentity
     {

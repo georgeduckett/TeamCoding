@@ -1,5 +1,8 @@
 ﻿namespace TeamCoding.IdentityManagement
 {
+    /// <summary>
+    /// An identity provider that tries child identity providers in turn until we get a valid identity
+    /// </summary>
     public class CachedFailoverIdentityProvider : IIdentityProvider
     {
         private readonly UserIdentity Identity;

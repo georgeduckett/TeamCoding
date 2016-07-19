@@ -2,6 +2,9 @@
 
 namespace TeamCoding.Documents
 {
+    /// <summary>
+    /// Represents source control repository data about a document
+    /// </summary>
     [ProtoBuf.ProtoContract]
     public class DocumentRepoMetaData
     {

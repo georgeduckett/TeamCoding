@@ -65,10 +65,10 @@
     <Compile Include="Extensions\WindowFrameTitleExtensions.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
     <Compile Include="VisualStudio\Models\Remote\RemoteModelManager.cs" />
-    <Compile Include="Documents\RemoteDocumentData.cs" />
+    <Compile Include="Documents\SourceControlledDocumentData.cs" />
     <Compile Include="VisualStudio\Models\Local\LocalModelChangeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IdentityManagement\CredentialManagerGitHubIdentityProvider.cs" />
+    <Compile Include="IdentityManagement\CredentialManagerIdentityProvider.cs" />
     <Compile Include="IdentityManagement\IIdentityProvider.cs" />
     <Compile Include="IdentityManagement\MachineIdentityProvider.cs" />
     <Compile Include="Documents\GitRepository.cs" />

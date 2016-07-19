@@ -47,7 +47,9 @@ namespace TeamCoding
         {
             base.Initialize();
             IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
-            IdentityProvider = new CachedFailoverIdentityProvider(new CredentialManagerGitHubIdentityProvider(), new VSIdentityProvider(), new MachineIdentityProvider());
+            IdentityProvider = new CachedFailoverIdentityProvider(new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
+                                                                  new VSIdentityProvider(),
+                                                                  new MachineIdentityProvider());
             LocalModelChangeManager = new LocalModelChangeManager(LocalIdeModel);
 
             RemoteModelChangeManager = new RemoteModelChangeManager(IDEWrapper, RemoteModelManager);

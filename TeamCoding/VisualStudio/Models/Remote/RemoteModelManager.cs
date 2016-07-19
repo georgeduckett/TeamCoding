@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Models.Remote
     {
         private const string ModelSyncFileFormat = "OpenDocs*.bin";
         private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();
-        public IEnumerable<RemoteDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.Select(of => new RemoteDocumentData()
+        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
                                                                     {
                                                                         Repository = of.RepoUrl,
                                                                         IdeUserIdentity = model.IDEUserIdentity,

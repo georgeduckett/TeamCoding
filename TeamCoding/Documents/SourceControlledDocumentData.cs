@@ -3,7 +3,10 @@ using TeamCoding.IdentityManagement;
 
 namespace TeamCoding.Documents
 {
-    public class RemoteDocumentData : IEquatable<RemoteDocumentData>
+    /// <summary>
+    /// Contains data about a document belonging to source control
+    /// </summary>
+    public class SourceControlledDocumentData : IEquatable<SourceControlledDocumentData>
     {
         public string Repository { get; set; }
         public string RelativePath { get; set; }
@@ -14,7 +17,7 @@ namespace TeamCoding.Documents
         {
             return Repository.GetHashCode() ^ Repository.GetHashCode() ^ IdeUserIdentity.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode();
         }
-        public bool Equals(RemoteDocumentData other)
+        public bool Equals(SourceControlledDocumentData other)
         {
             if (other == null)
                 return false;
@@ -28,7 +31,7 @@ namespace TeamCoding.Documents
         }
         public override bool Equals(object obj)
         {
-            var typedObj = obj as RemoteDocumentData;
+            var typedObj = obj as SourceControlledDocumentData;
             return Equals(typedObj);
         }
     }

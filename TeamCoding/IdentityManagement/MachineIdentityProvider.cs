@@ -2,6 +2,9 @@
 
 namespace TeamCoding.IdentityManagement
 {
+    /// <summary>
+    /// Gets the machine names as the identity
+    /// </summary>
     public class MachineIdentityProvider : IIdentityProvider
     {
         public UserIdentity GetIdentity()

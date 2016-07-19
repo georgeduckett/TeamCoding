@@ -8,13 +8,10 @@ namespace TeamCoding.CredentialManagement
 {
     public class NativeMethods
     {
-
         public const int CREDUI_MAX_USERNAME_LENGTH = 513;
         public const int CREDUI_MAX_PASSWORD_LENGTH = 256;
         public const int CREDUI_MAX_MESSAGE_LENGTH = 32767;
         public const int CREDUI_MAX_CAPTION_LENGTH = 128;
-
-
         [StructLayout(LayoutKind.Sequential)]
         internal struct CREDENTIAL
         {
@@ -35,7 +32,6 @@ namespace TeamCoding.CredentialManagement
             [MarshalAs(UnmanagedType.LPWStr)]
             public string UserName;
         }
-        
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct CREDUI_INFO
         {
@@ -45,7 +41,6 @@ namespace TeamCoding.CredentialManagement
             public string pszCaptionText;
             public IntPtr hbmBanner;
         }
-
         [Flags]
         internal enum WINXP_CREDUI_FLAGS
         {
@@ -67,7 +62,6 @@ namespace TeamCoding.CredentialManagement
             USERNAME_TARGET_CREDENTIALS = 0x80000,
             KEEP_USERNAME = 0x100000,
         }
-
         [Flags]
         internal enum WINVISTA_CREDUI_FLAGS
         {
@@ -109,7 +103,6 @@ namespace TeamCoding.CredentialManagement
             /// </summary>
             CREDUIWIN_PACK_32_WOW = 0x10000000,
         }
-
         internal enum CredUIReturnCodes
         {
             NO_ERROR = 0,
@@ -122,7 +115,6 @@ namespace TeamCoding.CredentialManagement
             ERROR_INVALID_PARAMETER = 87,
             ERROR_INVALID_FLAGS = 1004,
         }
-
         internal enum CREDErrorCodes
         {
             NO_ERROR = 0,
@@ -136,37 +128,26 @@ namespace TeamCoding.CredentialManagement
             SCARD_W_REMOVED_CARD = (int)(0x80100069 - 0x100000000),
             SCARD_W_WRONG_CHV = (int)(0x8010006B - 0x100000000)
         }
-
         [DllImport("Advapi32.dll", EntryPoint = "CredReadW", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern bool CredRead(string target, CredentialType type, int reservedFlag, out IntPtr CredentialPtr);
-
         [DllImport("Advapi32.dll", EntryPoint = "CredWriteW", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern bool CredWrite([In] ref CREDENTIAL userCredential, [In] uint flags);
-
         [DllImport("Advapi32.dll", EntryPoint = "CredFree", SetLastError = true)]
         internal static extern bool CredFree([In] IntPtr cred);
-
         [DllImport("advapi32.dll", EntryPoint = "CredDeleteW", CharSet = CharSet.Unicode)]
         internal static extern bool CredDelete(StringBuilder target, CredentialType type, int flags);
-
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern bool CredEnumerateW(string filter, int flag, out uint count, out IntPtr pCredentials);
-
         [DllImport("credui.dll")]
         internal static extern CredUIReturnCodes CredUIPromptForCredentials(ref CREDUI_INFO creditUR, string targetName, IntPtr reserved1, int iError, StringBuilder userName, int maxUserName, StringBuilder password, int maxPassword, [MarshalAs(UnmanagedType.Bool)] ref bool pfSave, int flags);
-
         [DllImport("credui.dll", CharSet = CharSet.Unicode)]
         internal static extern CredUIReturnCodes CredUIPromptForWindowsCredentials(ref CREDUI_INFO notUsedHere, int authError, ref uint authPackage, IntPtr InAuthBuffer, uint InAuthBufferSize, out IntPtr refOutAuthBuffer, out uint refOutAuthBufferSize, ref bool fSave, int flags);
-
         [DllImport("ole32.dll")]
         internal static extern void CoTaskMemFree(IntPtr ptr);
-
         [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern bool CredPackAuthenticationBuffer(int dwFlags, StringBuilder pszUserName, StringBuilder pszPassword, IntPtr pPackedCredentials, ref int pcbPackedCredentials);
-
         [DllImport("credui.dll", CharSet = CharSet.Auto)]
         internal static extern bool CredUnPackAuthenticationBuffer(int dwFlags, IntPtr pAuthBuffer, uint cbAuthBuffer, StringBuilder pszUserName, ref int pcchMaxUserName, StringBuilder pszDomainName, ref int pcchMaxDomainame, StringBuilder pszPassword, ref int pcchMaxPassword);
-
         internal sealed class CriticalCredentialHandle : CriticalHandleZeroOrMinusOneIsInvalid
         {
             // Set the handle.

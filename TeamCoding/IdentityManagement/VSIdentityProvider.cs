@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace TeamCoding.IdentityManagement
 {
+    /// <summary>
+    /// Gets a user identity from the visual studio registry
+    /// </summary>
     public class VSIdentityProvider : IIdentityProvider
     {
         private const string SubKey = "Software\\Microsoft\\VSCommon\\ConnectedUser\\IdeUser\\Cache";

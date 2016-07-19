@@ -5,10 +5,13 @@ using System.Linq;
 
 namespace TeamCoding.Documents
 {
+    /// <summary>
+    /// Provides methods to get information about a file in a Git repository
+    /// </summary>
     public class GitRepository
     {
-        public string GetRepoPath(string fullFilePath)
-        {
+        private string GetRepoPath(string fullFilePath)
+        { // TODO: Make sure GetRepoPath handles branches / decide if we want to seperate out users working on the same doc in the same repo, but a different branch
             var repoPath = Repository.Discover(fullFilePath);
 
             if (repoPath == null) return null; // No repository for file

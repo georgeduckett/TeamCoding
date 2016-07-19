@@ -11,7 +11,10 @@ using TeamCoding.IdentityManagement;
 
 namespace TeamCoding.VisualStudio
 {
-    public class UserImageCache
+    /// <summary>
+    /// Maintains a cache of images of users
+    /// </summary>
+    public class UserImageCache // TODO: If we go with redis as a messaging option, maybe make it also a user image caching option
     { // TODO: See how github tools for visual studio gets/caches user images
         private static readonly Brush BorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private readonly BitmapImage SharedUnknownUserImage = LoadBitmapFromResource("Resources/UnknownUserImage.png");
@@ -105,7 +108,7 @@ namespace TeamCoding.VisualStudio
             }
             return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
-        internal void SetImageProperties(Panel parentControl, RemoteDocumentData matchedRemoteDoc)
+        internal void SetImageProperties(Panel parentControl, SourceControlledDocumentData matchedRemoteDoc)
         {
             var imageControl = parentControl as Panel;
 
