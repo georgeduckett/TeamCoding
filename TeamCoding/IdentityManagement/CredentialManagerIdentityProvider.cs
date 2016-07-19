@@ -2,18 +2,19 @@
 
 namespace TeamCoding.IdentityManagement
 {
-    public class CredentialManagerGitHubIdentityProvider : IIdentityProvider
+    /// <summary>
+    /// Gets crendials from the windows credential manager for a given set of credential targets (tried in turn)
+    /// </summary>
+    public class CredentialManagerIdentityProvider : IIdentityProvider
     {
-        private static string[] GitHubCredentialTargets = new[] { "git:https://github.com", "https://github.com/" };
-
         private readonly UserIdentity Identity;
         public UserIdentity GetIdentity() => Identity;
-        public CredentialManagerGitHubIdentityProvider()
+        public CredentialManagerIdentityProvider(string[] credentialTargets)
         {
             Credential credential = null;
-            foreach (var gitHubCredentialTarget in GitHubCredentialTargets)
+            foreach (var credentialTarget in credentialTargets)
             {
-                credential = new Credential { Target = gitHubCredentialTarget };
+                credential = new Credential { Target = credentialTarget };
                 if(credential.Load() && credential.Username != null)
                 {
                     break;
