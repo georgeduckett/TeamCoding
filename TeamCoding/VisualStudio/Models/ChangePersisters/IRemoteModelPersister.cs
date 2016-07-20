@@ -7,6 +7,9 @@ using TeamCoding.Documents;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters
 {
+    /// <summary>
+    /// Manages receiving remote IDE model changes.
+    /// </summary>
     public interface IRemoteModelPersister : IDisposable
     {
         IEnumerable<SourceControlledDocumentData> GetOpenFiles();

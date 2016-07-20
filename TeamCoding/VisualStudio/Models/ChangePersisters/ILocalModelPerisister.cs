@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters
 {
+    /// <summary>
+    /// Handles sending local IDE model changes to other clients.
+    /// </summary>
     public interface ILocalModelPerisister : IDisposable
     {
     }

@@ -7,7 +7,8 @@ using TeamCoding.Documents;
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
 {
     /// <summary>
-    /// Manages receiving remote IDE model changes
+    /// Manages receiving remote IDE model changes.
+    /// Used for debugging. Reads from the current directory, using protobuf.
     /// </summary>
     public class DebugRemoteModelPersister : IRemoteModelPersister
     {

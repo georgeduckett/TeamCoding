@@ -8,6 +8,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
 {
     /// <summary>
     /// Handles sending local IDE model changes to other clients.
+    /// Used for debugging. Writes the local model to the current directory, using protobuf.
     /// </summary>
     public class DebugLocalModelPersister : ILocalModelPerisister
     {
