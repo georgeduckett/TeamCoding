@@ -13,5 +13,20 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
         protected override string PersistenceFolderPath => Directory.GetCurrentDirectory();
 
         public DebugLocalModelPersister(LocalIDEModel model) : base(model) { }
+        protected override void SendChanges()
+        {
+            if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
+            {
+                // Delete any temporary persistence files
+                foreach (var file in Directory.EnumerateFiles(PersistenceFolderPath, PersistenceFileSearchFormat))
+                {
+                    if (File.Exists(file) && file != PersistenceFilePath)
+                    {
+                        File.Delete(file);
+                    }
+                }
+            }
+            base.SendChanges();
+        }
     }
 }

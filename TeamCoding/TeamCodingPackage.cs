@@ -10,9 +10,11 @@ using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Models;
 using TeamCoding.VisualStudio.Models.ChangePersisters;
 using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister;
 
 namespace TeamCoding
 {
+    // TODO: Add debugging output (to output window?)
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(PackageGuidString)]
@@ -23,10 +25,10 @@ namespace TeamCoding
     {
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
         public static TeamCodingPackage Current { get; private set; }
-        public readonly LocalIDEModel LocalIdeModel = new LocalIDEModel();
+        public readonly Settings Settings;
+        public readonly LocalIDEModel LocalIdeModel;
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly HttpClient HttpClient;
-        public readonly Settings Settings = new Settings();
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
         public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
@@ -40,7 +42,9 @@ namespace TeamCoding
             HttpClient = new HttpClient();
             HttpClient.DefaultRequestHeaders.Add("User-Agent",
                                                  "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
-        }
+            Settings = new Settings();
+            LocalIdeModel = new LocalIDEModel();
+    }
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -53,8 +57,10 @@ namespace TeamCoding
                                                                   new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
-            LocalModelChangeManager = new DebugLocalModelPersister(LocalIdeModel);
-            RemoteModelChangeManager = new DebugRemoteModelPersister(IDEWrapper);
+            LocalModelChangeManager = new SharedFolderLocalModelPersister(LocalIdeModel);
+            RemoteModelChangeManager = new SharedFolderRemoteModelPersister(IDEWrapper);
+            //LocalModelChangeManager = new DebugLocalModelPersister(LocalIdeModel);
+            //RemoteModelChangeManager = new DebugRemoteModelPersister(IDEWrapper);
         }
         protected override void Dispose(bool disposing)
         {

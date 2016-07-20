@@ -12,12 +12,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
     /// </summary>
     public abstract class FileBasedLocalModelPersisterBase : ILocalModelPerisister
     {
-        private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
-        private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
+        protected readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
+        protected readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;
         protected abstract string PersistenceFolderPath { get; }
-        private string PersistenceFilePath => Path.Combine(PersistenceFolderPath, PersistenceFile);
-
+        protected string PersistenceFilePath => Path.Combine(PersistenceFolderPath, PersistenceFile);
         public FileBasedLocalModelPersisterBase(LocalIDEModel model)
         {
             IdeModel = model;
@@ -25,12 +24,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             IdeModel.TextContentChanged += IdeModel_TextContentChanged;
             IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
         }
-
         private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
         {
             SendChanges();
         }
-
         private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
         {
             // TODO: Handle IdeModel_TextContentChanged to sync changes between instances (if enabled in some setting somehow?), maybe also to allow quick notifications of editing a document
@@ -40,27 +37,20 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         {
             SendChanges();
         }
-
-        private void SendChanges()
+        protected virtual void SendChanges()
         {
             // TODO: Handle IO errors
-            // Delete any temporary persistence files
-            foreach (var file in Directory.EnumerateFiles(PersistenceFolderPath, PersistenceFileSearchFormat))
+            if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
             {
-                if (File.Exists(file) && file != PersistenceFilePath)
+                // Create a remote IDE model to send
+                var remoteModel = new RemoteIDEModel(IdeModel);
+
+                using (var f = File.Create(PersistenceFilePath))
                 {
-                    File.Delete(file);
+                    ProtoBuf.Serializer.Serialize(f, remoteModel);
                 }
             }
-            // Create a remote IDE model to send
-            var remoteModel = new RemoteIDEModel(IdeModel);
-
-            using (var f = File.Create(PersistenceFilePath))
-            {
-                ProtoBuf.Serializer.Serialize(f, remoteModel);
-            }
         }
-
         public void Dispose()
         {
             if (File.Exists(PersistenceFilePath))

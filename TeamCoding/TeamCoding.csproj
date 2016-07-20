@@ -79,6 +79,8 @@
     <Compile Include="Documents\GitRepository.cs" />
     <Compile Include="IdentityManagement\UserIdentity.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugRemoteModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\SharedFolderLocalModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\SharedFolderRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\ILocalModelPerisister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\IRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\UserImageCache.cs" />

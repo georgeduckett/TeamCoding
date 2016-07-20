@@ -28,6 +28,11 @@ namespace TeamCoding.VisualStudio.Models
         public event EventHandler<TextContentChangedEventArgs> TextContentChanged;
         public event EventHandler<TextDocumentFileActionEventArgs> TextDocumentSaved;
 
+        public LocalIDEModel()
+        {
+            TeamCodingPackage.Current.Settings.UsernameChanged += (s, e) => OnUserIdentityChanged();
+            TeamCodingPackage.Current.Settings.UserImageUrlChanged += (s, e) => OnUserIdentityChanged();
+        }
         public void OnOpenedTextView(IWpfTextView view)
         {
             var filePath = view.GetTextDocumentFilePath();

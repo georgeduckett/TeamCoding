@@ -27,14 +27,36 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         }));
         public FileBasedRemoteModelPersisterBase(IDEWrapper ideWrapper)
         {
-            FileWatcher = new FileSystemWatcher(PersistenceFolderPath, "*.bin");
             IDEWrapper = ideWrapper;
-            FileWatcher.Created += FileWatcher_Changed;
-            FileWatcher.Deleted += FileWatcher_Changed;
-            FileWatcher.Changed += FileWatcher_Changed;
-            FileWatcher.Renamed += FileWatcher_Changed;
-            FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
-            FileWatcher.EnableRaisingEvents = true;
+            TeamCodingPackage.Current.Settings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
+
+            if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
+            {
+                FileWatcher = new FileSystemWatcher(PersistenceFolderPath, "*.bin");
+                FileWatcher.Created += FileWatcher_Changed;
+                FileWatcher.Deleted += FileWatcher_Changed;
+                FileWatcher.Changed += FileWatcher_Changed;
+                FileWatcher.Renamed += FileWatcher_Changed;
+                FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
+                FileWatcher.EnableRaisingEvents = true;
+            }
+        }
+
+        private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)
+        {
+            FileWatcher?.Dispose();
+            if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
+            {
+                FileWatcher = new FileSystemWatcher(PersistenceFolderPath, "*.bin");
+                FileWatcher.Created += FileWatcher_Changed;
+                FileWatcher.Deleted += FileWatcher_Changed;
+                FileWatcher.Changed += FileWatcher_Changed;
+                FileWatcher.Renamed += FileWatcher_Changed;
+                FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
+                FileWatcher.EnableRaisingEvents = true;
+                // Sync any changes since there could already be files in this new directory waiting
+                SyncChanges();
+            }
         }
 
         private void FileWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -62,7 +84,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         }
         public void Dispose()
         {
-            FileWatcher.Dispose();
+            FileWatcher?.Dispose();
         }
         private bool IsFileReady(string sFilename)
         {
