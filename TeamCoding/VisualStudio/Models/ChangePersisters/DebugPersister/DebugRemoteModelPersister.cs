@@ -1,25 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using TeamCoding.Documents;
+using TeamCoding.VisualStudio.Models.Remote;
 
-namespace TeamCoding.VisualStudio.Models.Remote
+namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
 {
     /// <summary>
     /// Manages receiving remote IDE model changes
     /// </summary>
-    public class RemoteModelChangeManager : IDisposable
+    public class DebugRemoteModelPersister : IDisposable
     {
         private readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(Directory.GetCurrentDirectory(), "*.bin");
         private readonly IDEWrapper IDEWrapper;
-        private readonly RemoteModelManager RemoteModelManager;
-        public RemoteModelChangeManager(IDEWrapper ideWrapper, RemoteModelManager remoteModelManager)
+        private readonly List<RemoteIDEModel> RemoteModels = new List<RemoteIDEModel>();
+        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModels.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
         {
-            RemoteModelManager = remoteModelManager;
+            Repository = of.RepoUrl,
+            IdeUserIdentity = model.IDEUserIdentity,
+            RelativePath = of.RelativePath,
+            BeingEdited = of.BeingEdited,
+            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
+        }));
+        public DebugRemoteModelPersister(IDEWrapper ideWrapper)
+        {
             IDEWrapper = ideWrapper;
             FileWatcher.Created += FileWatcher_Changed;
             FileWatcher.Deleted += FileWatcher_Changed;
             FileWatcher.Changed += FileWatcher_Changed;
             FileWatcher.Renamed += FileWatcher_Changed;
-
             FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -32,8 +42,20 @@ namespace TeamCoding.VisualStudio.Models.Remote
                 while (!IsFileReady(e.FullPath)) { }
             }
             FileWatcher.EnableRaisingEvents = true;
-            RemoteModelManager.SyncChanges();
+            SyncChanges();
             IDEWrapper.UpdateIDE();
+        }
+        private void SyncChanges()
+        {
+            RemoteModels.Clear();
+            foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), DebugLocalModelPersister.ModelSyncFileFormat))
+            {
+                while (!DebugRemoteModelPersister.IsFileReady(modelSyncFile)) { }
+                using (var f = File.OpenRead(modelSyncFile))
+                {
+                    RemoteModels.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
+                }
+            }
         }
         public void Dispose()
         {

@@ -8,6 +8,7 @@ namespace TeamCoding.IdentityManagement
     public class CredentialManagerIdentityProvider : IIdentityProvider
     {
         private readonly UserIdentity Identity;
+        public bool ShouldCache => true;
         public UserIdentity GetIdentity() => Identity;
         public CredentialManagerIdentityProvider(string[] credentialTargets)
         {
@@ -36,8 +37,16 @@ namespace TeamCoding.IdentityManagement
 
             TeamCodingPackage.Current.IDEWrapper.InvokeAsync(async () =>
             {
-                Identity.DisplayName = await UserIdentity.GetGravatarDisplayNameFromEmail(credential.Username);
-                TeamCodingPackage.Current.LocalIdeModel.OnUserIdentityChanged();
+                var oldDisplayName = Identity.DisplayName;
+                try
+                {
+                    Identity.DisplayName = await UserIdentity.GetGravatarDisplayNameFromEmail(credential.Username);
+                }
+                catch { } // Swallow failures here
+                if (oldDisplayName != Identity.DisplayName)
+                {
+                    TeamCodingPackage.Current.LocalIdeModel.OnUserIdentityChanged();
+                }
             });
         }
 

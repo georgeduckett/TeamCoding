@@ -7,6 +7,7 @@ namespace TeamCoding.IdentityManagement
     /// </summary>
     public class MachineIdentityProvider : IIdentityProvider
     {
+        public bool ShouldCache => true;
         public UserIdentity GetIdentity()
         {
             return new UserIdentity() { Id = Environment.UserName, DisplayName = Environment.UserName };

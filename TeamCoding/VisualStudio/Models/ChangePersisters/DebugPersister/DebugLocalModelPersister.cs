@@ -1,18 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using TeamCoding.Documents;
+using TeamCoding.VisualStudio.Models.Local;
+using TeamCoding.VisualStudio.Models.Remote;
 
-namespace TeamCoding.VisualStudio.Models.Local
+namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
 {
     /// <summary>
     /// Handles sending local IDE model changes to other clients.
     /// </summary>
-    public class LocalModelChangeManager : IDisposable
+    public class DebugLocalModelPersister : IDisposable
     {
+        public const string ModelSyncFileFormat = "OpenDocs*.bin";
+        private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();
+        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
+        {
+            Repository = of.RepoUrl,
+            IdeUserIdentity = model.IDEUserIdentity,
+            RelativePath = of.RelativePath,
+            BeingEdited = of.BeingEdited,
+            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
+        }));
+
+        public void SyncChanges()
+        {
+            Models.Clear();
+            foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
+            {
+                while (!DebugRemoteModelPersister.IsFileReady(modelSyncFile)) { }
+                using (var f = File.OpenRead(modelSyncFile))
+                {
+                    Models.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
+                }
+            }
+        }
         private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
         private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;
 
-        public LocalModelChangeManager(LocalIDEModel model)
+        public DebugLocalModelPersister(LocalIDEModel model)
         {
             IdeModel = model;
             IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
@@ -38,9 +66,16 @@ namespace TeamCoding.VisualStudio.Models.Local
         private void SendChanges()
         {
             // TODO: Persist somewhere other than a file! (maybe UDP broadcast to local network for now, (or write to a file share?)
-            
+            // Delete any temporary persistence files
+            foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), PersistenceFileSearchFormat))
+            {
+                if (File.Exists(file) && file != PersistenceFile)
+                {
+                    File.Delete(file);
+                }
+            }
             // Create a remote IDE model to send
-            var remoteModel = new Remote.RemoteIDEModel(IdeModel);
+            var remoteModel = new RemoteIDEModel(IdeModel);
 
             using (var f = File.Create(PersistenceFile))
             {

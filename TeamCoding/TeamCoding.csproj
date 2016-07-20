@@ -64,9 +64,13 @@
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\WindowFrameTitleExtensions.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
-    <Compile Include="VisualStudio\Models\Remote\RemoteModelManager.cs" />
+    <Compile Include="IdentityManagement\VSOptionsIdentityProvider.cs" />
+    <Compile Include="Options\OptionPageGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\Settings.cs" />
     <Compile Include="Documents\SourceControlledDocumentData.cs" />
-    <Compile Include="VisualStudio\Models\Local\LocalModelChangeManager.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugLocalModelPersister.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdentityManagement\CredentialManagerIdentityProvider.cs" />
     <Compile Include="IdentityManagement\IIdentityProvider.cs" />
@@ -79,7 +83,7 @@
     <Compile Include="VisualStudio\IDEWrapper.cs" />
     <Compile Include="VisualStudio\Models\Local\LocalIDEModel.cs" />
     <Compile Include="VisualStudio\Models\Remote\RemoteIDEModel.cs" />
-    <Compile Include="VisualStudio\Models\Remote\RemoteModelChangeManager.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\TeamCodingTextViewConnectionListener.cs" />
   </ItemGroup>
   <ItemGroup>

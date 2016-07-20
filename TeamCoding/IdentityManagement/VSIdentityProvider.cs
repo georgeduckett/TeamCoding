@@ -14,7 +14,7 @@ namespace TeamCoding.IdentityManagement
         private const string UserNameKeyName = "DisplayName";
         private const string ImageKeyname = "Avatar.Small";
         private readonly UserIdentity Identity;
-
+        public bool ShouldCache => true;
         public VSIdentityProvider()
         {
             try

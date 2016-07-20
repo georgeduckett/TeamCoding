@@ -6,5 +6,6 @@
     public interface IIdentityProvider
     {
         UserIdentity GetIdentity();
+        bool ShouldCache { get; }
     }
 }

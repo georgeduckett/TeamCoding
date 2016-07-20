@@ -53,7 +53,7 @@ namespace TeamCoding.VisualStudio
                 var titlePanels = documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
                 var tabItems = titlePanels.Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
 
-                var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelManager.GetOpenFiles();
+                var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
                 var tabItemWithFilePath = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetRelatedFilePath() }).Single(t => t.File == filePath);
 
@@ -120,7 +120,7 @@ namespace TeamCoding.VisualStudio
             var titlePanels = documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
             var tabItems = titlePanels.Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
 
-            var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelManager.GetOpenFiles();
+            var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
             var tabItemsWithFilePaths = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetRelatedFilePath() }).ToArray();
 
@@ -153,8 +153,9 @@ namespace TeamCoding.VisualStudio
                 var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
                                                                              rd.IdeUserIdentity.Id == imageDocData.IdeUserIdentity.Id);
 
-                if (matchedRemoteDoc == null)
+                if (matchedRemoteDoc == null || imageDocData.IdeUserIdentity.ImageUrl != matchedRemoteDoc.IdeUserIdentity.ImageUrl)
                 {
+                    // If we can't find an image control for this document, or the one that's there has a different image url then remove it
                     userImageControl.Remove();
                 }
                 else
