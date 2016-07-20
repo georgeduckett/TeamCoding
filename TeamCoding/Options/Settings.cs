@@ -11,5 +11,6 @@ namespace TeamCoding.Options
         private OptionPageGrid OptionsPage => (OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid));
         public string Username { get { return OptionsPage.Username; } }
         public string UserImageUrl { get { return OptionsPage.UserImageUrl; } }
+        public string FileBasedPersisterPath { get { return OptionsPage.FileBasedPersisterPath; } }
     }
 }

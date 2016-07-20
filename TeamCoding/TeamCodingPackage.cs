@@ -7,9 +7,9 @@ using TeamCoding.Documents;
 using TeamCoding.IdentityManagement;
 using TeamCoding.Options;
 using TeamCoding.VisualStudio;
-using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 using TeamCoding.VisualStudio.Models;
 using TeamCoding.VisualStudio.Models.ChangePersisters;
+using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 
 namespace TeamCoding
 {
@@ -54,7 +54,6 @@ namespace TeamCoding
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
             LocalModelChangeManager = new DebugLocalModelPersister(LocalIdeModel);
-
             RemoteModelChangeManager = new DebugRemoteModelPersister(IDEWrapper);
         }
         protected override void Dispose(bool disposing)

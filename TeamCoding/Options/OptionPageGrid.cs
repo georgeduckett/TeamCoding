@@ -12,14 +12,19 @@ namespace TeamCoding.Options
     { // TODO: Make the option page grid a custom control/page so it's easier to understand
         private const string DefaultUsername = null;
         private const string DefaultImageUrl = null;
+        private const string DefaultFileBasedPersisterPath = null;
         [Category("User Identity")]
-        [DisplayName("Username Override")]
+        [DisplayName("Username")]
         [Description("Set a custom username, leave blank for the default.")]
         public string Username { get; set; } = DefaultUsername;
         [Category("User Identity")]
-        [DisplayName("User image URL Override")]
+        [DisplayName("Image URL")]
         [Description("Set a custom image url. Invalid or blank urls are ignored.")]
         public string UserImageUrl { get; set; } = DefaultImageUrl;
+        [Category("Network")]
+        [DisplayName("IDE Sharing File Path")]
+        [Description("Set a file path to enable sharing via reading/writing to a shared folder. Requires restart")]
+        public string FileBasedPersisterPath { get; set; } = DefaultFileBasedPersisterPath; // TODO: perform basic sanity checking
 
         protected override void SaveSetting(PropertyDescriptor property)
         {
