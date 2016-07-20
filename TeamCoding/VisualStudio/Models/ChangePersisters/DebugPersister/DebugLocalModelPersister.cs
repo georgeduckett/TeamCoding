@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TeamCoding.Documents;
-using TeamCoding.VisualStudio.Models.Local;
-using TeamCoding.VisualStudio.Models.Remote;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
 {

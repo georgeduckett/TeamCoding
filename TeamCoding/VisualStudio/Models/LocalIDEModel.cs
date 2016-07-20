@@ -6,7 +6,7 @@ using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Text;
 using TeamCoding.Documents;
 
-namespace TeamCoding.VisualStudio.Models.Local
+namespace TeamCoding.VisualStudio.Models
 {
     /// <summary>
     /// Represents and maintains a model of the IDE, firing change events as appropriate

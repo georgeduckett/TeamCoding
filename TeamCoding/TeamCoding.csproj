@@ -81,8 +81,8 @@
     <Compile Include="IdentityManagement\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
     <Compile Include="VisualStudio\IDEWrapper.cs" />
-    <Compile Include="VisualStudio\Models\Local\LocalIDEModel.cs" />
-    <Compile Include="VisualStudio\Models\Remote\RemoteIDEModel.cs" />
+    <Compile Include="VisualStudio\Models\LocalIDEModel.cs" />
+    <Compile Include="VisualStudio\Models\RemoteIDEModel.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\TeamCodingTextViewConnectionListener.cs" />
   </ItemGroup>

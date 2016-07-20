@@ -8,8 +8,7 @@ using TeamCoding.IdentityManagement;
 using TeamCoding.Options;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
-using TeamCoding.VisualStudio.Models.Local;
-using TeamCoding.VisualStudio.Models.Remote;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding
 {

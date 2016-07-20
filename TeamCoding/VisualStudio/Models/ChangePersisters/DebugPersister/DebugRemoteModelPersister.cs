@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TeamCoding.Documents;
-using TeamCoding.VisualStudio.Models.Remote;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
 {
@@ -50,7 +49,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
             RemoteModels.Clear();
             foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), DebugLocalModelPersister.ModelSyncFileFormat))
             {
-                while (!DebugRemoteModelPersister.IsFileReady(modelSyncFile)) { }
+                while (!IsFileReady(modelSyncFile)) { }
                 using (var f = File.OpenRead(modelSyncFile))
                 {
                     RemoteModels.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));

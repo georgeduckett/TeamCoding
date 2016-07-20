@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TeamCoding.Documents;
 using TeamCoding.IdentityManagement;
 
-namespace TeamCoding.VisualStudio.Models.Remote
+namespace TeamCoding.VisualStudio.Models
 {
     /// <summary>
     /// Represents an IDE being used remotely
@@ -23,7 +23,7 @@ namespace TeamCoding.VisualStudio.Models.Remote
         }
 
         public RemoteIDEModel() { } // For protobuf
-        public RemoteIDEModel(Local.LocalIDEModel localModel)
+        public RemoteIDEModel(LocalIDEModel localModel)
         {
             IDEUserIdentity = TeamCodingPackage.Current.IdentityProvider.GetIdentity();
             OpenFiles = new List<DocumentRepoMetaData>(localModel.OpenDocs());
