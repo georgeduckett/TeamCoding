@@ -9,31 +9,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
     /// <summary>
     /// Handles sending local IDE model changes to other clients.
     /// </summary>
-    public class DebugLocalModelPersister : IDisposable
+    public class DebugLocalModelPersister : ILocalModelPerisister
     {
-        public const string ModelSyncFileFormat = "OpenDocs*.bin";
-        private readonly List<RemoteIDEModel> Models = new List<RemoteIDEModel>();
-        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => Models.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
-        {
-            Repository = of.RepoUrl,
-            IdeUserIdentity = model.IDEUserIdentity,
-            RelativePath = of.RelativePath,
-            BeingEdited = of.BeingEdited,
-            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
-        }));
-
-        public void SyncChanges()
-        {
-            Models.Clear();
-            foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
-            {
-                while (!DebugRemoteModelPersister.IsFileReady(modelSyncFile)) { }
-                using (var f = File.OpenRead(modelSyncFile))
-                {
-                    Models.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
-                }
-            }
-        }
         private readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
         private readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;

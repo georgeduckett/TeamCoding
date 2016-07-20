@@ -77,6 +77,8 @@
     <Compile Include="IdentityManagement\MachineIdentityProvider.cs" />
     <Compile Include="Documents\GitRepository.cs" />
     <Compile Include="IdentityManagement\UserIdentity.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\ILocalModelPerisister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\IRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\UserImageCache.cs" />
     <Compile Include="IdentityManagement\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />

@@ -9,8 +9,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
     /// <summary>
     /// Manages receiving remote IDE model changes
     /// </summary>
-    public class DebugRemoteModelPersister : IDisposable
+    public class DebugRemoteModelPersister : IRemoteModelPersister
     {
+        public const string ModelSyncFileFormat = "OpenDocs*.bin";
         private readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(Directory.GetCurrentDirectory(), "*.bin");
         private readonly IDEWrapper IDEWrapper;
         private readonly List<RemoteIDEModel> RemoteModels = new List<RemoteIDEModel>();
@@ -47,7 +48,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
         private void SyncChanges()
         {
             RemoteModels.Clear();
-            foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), DebugLocalModelPersister.ModelSyncFileFormat))
+            foreach (var modelSyncFile in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), ModelSyncFileFormat))
             {
                 while (!IsFileReady(modelSyncFile)) { }
                 using (var f = File.OpenRead(modelSyncFile))
@@ -60,7 +61,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
         {
             FileWatcher.Dispose();
         }
-        public static bool IsFileReady(string sFilename)
+        private bool IsFileReady(string sFilename)
         {
             // If the file can be opened for exclusive access it means that the file
             // is no longer locked by another process.

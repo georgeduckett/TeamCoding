@@ -9,6 +9,7 @@ using TeamCoding.Options;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 using TeamCoding.VisualStudio.Models;
+using TeamCoding.VisualStudio.Models.ChangePersisters;
 
 namespace TeamCoding
 {
@@ -26,9 +27,9 @@ namespace TeamCoding
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly HttpClient HttpClient;
         public readonly Settings Settings = new Settings();
-        public DebugLocalModelPersister LocalModelChangeManager { get; private set; }
+        public ILocalModelPerisister LocalModelChangeManager { get; private set; }
+        public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
-        public DebugRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IIdentityProvider IdentityProvider { get; private set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
