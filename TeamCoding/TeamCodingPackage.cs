@@ -59,8 +59,6 @@ namespace TeamCoding
                                                                   new MachineIdentityProvider());
             LocalModelChangeManager = new SharedFolderLocalModelPersister(LocalIdeModel);
             RemoteModelChangeManager = new SharedFolderRemoteModelPersister(IDEWrapper);
-            //LocalModelChangeManager = new DebugLocalModelPersister(LocalIdeModel);
-            //RemoteModelChangeManager = new DebugRemoteModelPersister(IDEWrapper);
         }
         protected override void Dispose(bool disposing)
         {
