@@ -13,6 +13,8 @@ namespace TeamCoding.VisualStudio.Models
     /// </summary>
     public class LocalIDEModel
     {
+        public static string Id = Guid.NewGuid().ToString();
+
         public class FileFocusChangedEventArgs : EventArgs
         {
             public string LostFocusFile { get; set; }

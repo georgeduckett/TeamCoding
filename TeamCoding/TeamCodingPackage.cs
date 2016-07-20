@@ -11,6 +11,7 @@ using TeamCoding.VisualStudio.Models;
 using TeamCoding.VisualStudio.Models.ChangePersisters;
 using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister;
 
 namespace TeamCoding
 {
@@ -57,8 +58,8 @@ namespace TeamCoding
                                                                   new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
-            LocalModelChangeManager = new SharedFolderLocalModelPersister(LocalIdeModel);
-            RemoteModelChangeManager = new SharedFolderRemoteModelPersister(IDEWrapper);
+            LocalModelChangeManager = new RedisLocalModelPersister(LocalIdeModel);
+            RemoteModelChangeManager = new RedisRemoteModelPersister(IDEWrapper);
         }
         protected override void Dispose(bool disposing)
         {

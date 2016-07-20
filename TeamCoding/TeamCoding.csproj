@@ -83,6 +83,8 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\SharedFolderRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\ILocalModelPerisister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\IRemoteModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisLocalModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\UserImageCache.cs" />
     <Compile Include="IdentityManagement\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
@@ -252,6 +254,10 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="protobuf-net, Version=2.1.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.2.1.0\lib\net451\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.1.0.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.StrongName.1.1.603\lib\net46\StackExchange.Redis.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
