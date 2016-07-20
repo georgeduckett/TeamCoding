@@ -10,8 +10,7 @@ namespace TeamCoding.IdentityManagement
     {
         private UserIdentity Identity;
         private readonly IIdentityProvider[] IdentityProviders;
-        private bool _ShouldCache;
-        public bool ShouldCache => _ShouldCache;
+        public bool ShouldCache => IdentityProviders.All(ip => ip.ShouldCache);
         public UserIdentity GetIdentity()
         {
             foreach (var identityProvider in IdentityProviders)
