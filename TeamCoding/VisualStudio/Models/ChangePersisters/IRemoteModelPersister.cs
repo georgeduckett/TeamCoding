@@ -12,6 +12,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     /// </summary>
     public interface IRemoteModelPersister : IDisposable
     {
+        event EventHandler RemoteModelReceived;
         IEnumerable<SourceControlledDocumentData> GetOpenFiles();
     }
 }

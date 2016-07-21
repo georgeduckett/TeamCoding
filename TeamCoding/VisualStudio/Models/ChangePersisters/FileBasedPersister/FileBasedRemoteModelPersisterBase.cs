@@ -15,7 +15,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         public const string ModelSyncFileFormat = "OpenDocs*.bin";
         protected abstract string PersistenceFolderPath { get; }
         private FileSystemWatcher FileWatcher;
-        private readonly IDEWrapper IDEWrapper;
+        public event EventHandler RemoteModelReceived;
         private readonly List<RemoteIDEModel> RemoteModels = new List<RemoteIDEModel>();
         public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModels.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
         {
@@ -25,9 +25,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             BeingEdited = of.BeingEdited,
             HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
         }));
-        public FileBasedRemoteModelPersisterBase(IDEWrapper ideWrapper)
+        public FileBasedRemoteModelPersisterBase()
         {
-            IDEWrapper = ideWrapper;
             TeamCodingPackage.Current.Settings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
 
             if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
@@ -68,7 +67,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             }
             FileWatcher.EnableRaisingEvents = true;
             SyncChanges();
-            IDEWrapper.UpdateIDE();
+            RemoteModelReceived?.Invoke(this, EventArgs.Empty);
         }
         private void SyncChanges()
         {

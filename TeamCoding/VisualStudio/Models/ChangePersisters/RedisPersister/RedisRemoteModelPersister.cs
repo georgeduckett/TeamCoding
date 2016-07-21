@@ -14,7 +14,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         public const string ModelPersisterChannel = "TeamCoding.ModelPersister";
         private static ConnectionMultiplexer RedisClient = ConnectionMultiplexer.Connect("localhost"); // TODO: allow for failing to connect to redis (and connect asyncronously)
         private static ISubscriber RedisSubscriber = RedisClient.GetSubscriber();
-        private readonly IDEWrapper IDEWrapper;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
         public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
         { // TODO: Make this part of a base class
@@ -24,12 +23,14 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             BeingEdited = of.BeingEdited,
             HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
         }));
-        public RedisRemoteModelPersister(IDEWrapper ideWrapper)
+        public RedisRemoteModelPersister()
         {
-            IDEWrapper = ideWrapper;
-            RedisSubscriber.Subscribe(ModelPersisterChannel, RemoteModelReceived);
+            RedisSubscriber.Subscribe(ModelPersisterChannel, OnRemoteModelReceived);
         }
-        public void RemoteModelReceived(RedisChannel channel, RedisValue value)
+
+        public event EventHandler RemoteModelReceived;
+
+        private void OnRemoteModelReceived(RedisChannel channel, RedisValue value)
         {
             using (var ms = new MemoryStream(value))
             {
@@ -37,7 +38,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 RemoteModels[RemoteModel.Id] = RemoteModel;
             }
 
-            IDEWrapper.UpdateIDE();
+            RemoteModelReceived?.Invoke(this, EventArgs.Empty);
         }
         public void Dispose()
         {

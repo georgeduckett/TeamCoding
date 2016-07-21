@@ -59,8 +59,15 @@ namespace TeamCoding
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
             LocalModelChangeManager = new RedisLocalModelPersister(LocalIdeModel);
-            RemoteModelChangeManager = new RedisRemoteModelPersister(IDEWrapper);
+            RemoteModelChangeManager = new RedisRemoteModelPersister();
+            RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
+
+        private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
+        {
+            IDEWrapper.UpdateIDE();
+        }
+
         protected override void Dispose(bool disposing)
         {
             RemoteModelChangeManager.Dispose();

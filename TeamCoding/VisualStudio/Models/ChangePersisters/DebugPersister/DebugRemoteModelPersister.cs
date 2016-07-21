@@ -12,6 +12,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
     {
         protected override string PersistenceFolderPath => Directory.GetCurrentDirectory();
 
-        public DebugRemoteModelPersister(IDEWrapper ideWrapper) : base(ideWrapper) { }
+        public DebugRemoteModelPersister() : base() { }
     }
 }
