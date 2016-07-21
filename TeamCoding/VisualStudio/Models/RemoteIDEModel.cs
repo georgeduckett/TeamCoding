@@ -28,7 +28,7 @@ namespace TeamCoding.VisualStudio.Models
         public RemoteIDEModel() { } // For protobuf
         public RemoteIDEModel(LocalIDEModel localModel)
         {
-            Id = LocalIDEModel.Id;
+            Id = LocalIDEModel.Id.Value;
             IDEUserIdentity = TeamCodingPackage.Current.IdentityProvider.GetIdentity();
             OpenFiles = new List<DocumentRepoMetaData>(localModel.OpenDocs());
         }

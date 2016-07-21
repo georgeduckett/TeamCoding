@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using TeamCoding.Documents;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
@@ -12,17 +14,57 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
     /// </summary>
     public abstract class FileBasedLocalModelPersisterBase : ILocalModelPerisister
     {
-        protected readonly string PersistenceFileSearchFormat = $"OpenDocs{Environment.MachineName}_*.bin";
-        protected readonly string PersistenceFile = $"OpenDocs{Environment.MachineName}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
+        private static readonly string SessionId = Guid.NewGuid().ToString("N");
+        protected readonly string PersistenceFileSearchFormat = $"OpenDocs{SessionId}_*.bin";
+        protected readonly string PersistenceFile = $"OpenDocs{SessionId}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;
         protected abstract string PersistenceFolderPath { get; }
         protected string PersistenceFilePath => Path.Combine(PersistenceFolderPath, PersistenceFile);
+
+        private DateTime LastFileWriteTime = DateTime.UtcNow;
+        private readonly Thread FileHeartBeatThread;
+        private CancellationTokenSource FileHeartBeatCancelSource;
+        private CancellationToken FileHeartBeatCancelToken;
         public FileBasedLocalModelPersisterBase(LocalIDEModel model)
         {
+            FileHeartBeatCancelSource = new CancellationTokenSource();
+            FileHeartBeatCancelToken = FileHeartBeatCancelSource.Token;
             IdeModel = model;
             IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
             IdeModel.TextContentChanged += IdeModel_TextContentChanged;
             IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
+
+            FileHeartBeatThread = new Thread(() =>
+            {
+                while (!FileHeartBeatCancelToken.IsCancellationRequested)
+                {
+                    if(PersistenceFolderPath == null || !Directory.Exists(PersistenceFolderPath))
+                    {
+                        FileHeartBeatCancelToken.WaitHandle.WaitOne(5000);
+                    }
+                    try
+                    {
+                        var UTCNow = DateTime.UtcNow;
+                        var Difference = (UTCNow - LastFileWriteTime).TotalSeconds;
+                        if (Difference > 60)
+                        { // If there have been no changes in the last minute, write the file again (prevent it being tidied up by others)
+                            File.SetLastWriteTimeUtc(PersistenceFilePath, UTCNow);
+                            LastFileWriteTime = UTCNow;
+                            FileHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
+                        }
+                        else
+                        {
+                            FileHeartBeatCancelToken.WaitHandle.WaitOne(1000 * (60 - (int)Difference + 1));
+                        }
+                    }
+                    catch (IOException)
+                    {
+                        FileHeartBeatCancelToken.WaitHandle.WaitOne(10000);
+                    }
+                }
+            });
+
+            FileHeartBeatThread.Start();
         }
         private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
         {
@@ -39,20 +81,26 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         }
         protected virtual void SendChanges()
         {
-            // TODO: Handle IO errors
             if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
             {
                 // Create a remote IDE model to send
                 var remoteModel = new RemoteIDEModel(IdeModel);
 
-                using (var f = File.Create(PersistenceFilePath))
+                try
                 {
-                    ProtoBuf.Serializer.Serialize(f, remoteModel);
+                    using (var f = File.Create(PersistenceFilePath))
+                    {
+                        ProtoBuf.Serializer.Serialize(f, remoteModel);
+                        LastFileWriteTime = DateTime.UtcNow;
+                    }
                 }
+                catch (IOException) { }
             }
         }
         public void Dispose()
         {
+            FileHeartBeatCancelSource.Cancel();
+            FileHeartBeatThread.Join();
             if (File.Exists(PersistenceFilePath))
             {
                 File.Delete(PersistenceFilePath);

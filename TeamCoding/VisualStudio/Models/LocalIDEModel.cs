@@ -5,6 +5,7 @@ using System.Linq;
 using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Text;
 using TeamCoding.Documents;
+using System.Management;
 
 namespace TeamCoding.VisualStudio.Models
 {
@@ -13,7 +14,21 @@ namespace TeamCoding.VisualStudio.Models
     /// </summary>
     public class LocalIDEModel
     {
-        public static string Id = Guid.NewGuid().ToString();
+        public static Lazy<string> Id = new Lazy<string>(() =>
+        {
+            string uuid = string.Empty;
+
+            using (var mc = new ManagementClass("Win32_ComputerSystemProduct"))
+            using (var moc = mc.GetInstances())
+            {
+                foreach (ManagementObject mo in moc)
+                {
+                    uuid = mo.Properties["UUID"].Value.ToString();
+                    break;
+                }
+                return uuid;
+            }
+        }, false);
 
         public class FileFocusChangedEventArgs : EventArgs
         {

@@ -10,21 +10,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
     /// Manages receiving remote IDE model changes.
     /// Used for debugging. Reads from the current directory, using protobuf.
     /// </summary>
-    public abstract class FileBasedRemoteModelPersisterBase : IRemoteModelPersister
+    public abstract class FileBasedRemoteModelPersisterBase : RemoteModelPersisterBase
     {
         public const string ModelSyncFileFormat = "OpenDocs*.bin";
         protected abstract string PersistenceFolderPath { get; }
         private FileSystemWatcher FileWatcher;
-        public event EventHandler RemoteModelReceived;
-        private readonly List<RemoteIDEModel> RemoteModels = new List<RemoteIDEModel>();
-        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModels.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
-        {
-            Repository = of.RepoUrl,
-            IdeUserIdentity = model.IDEUserIdentity,
-            RelativePath = of.RelativePath,
-            BeingEdited = of.BeingEdited,
-            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
-        }));
         public FileBasedRemoteModelPersisterBase()
         {
             TeamCodingPackage.Current.Settings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
@@ -67,22 +57,28 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             }
             FileWatcher.EnableRaisingEvents = true;
             SyncChanges();
-            RemoteModelReceived?.Invoke(this, EventArgs.Empty);
         }
         private void SyncChanges()
         {
-            RemoteModels.Clear();
-            foreach (var modelSyncFile in Directory.EnumerateFiles(PersistenceFolderPath, ModelSyncFileFormat))
+            ClearRemoteModels();
+            foreach (var modelSyncFile in Directory.GetFiles(PersistenceFolderPath, ModelSyncFileFormat))
             {
                 while (!IsFileReady(modelSyncFile)) { }
+                // If any file hasn't been modified in the last minute an a half, delete it (tidy up files left from crashes etc.)
+                if((DateTime.UtcNow - File.GetLastWriteTimeUtc(modelSyncFile)).TotalSeconds > 90)
+                {
+                    File.Delete(modelSyncFile);
+                    continue;
+                }
                 using (var f = File.OpenRead(modelSyncFile))
                 {
-                    RemoteModels.Add(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
+                    OnRemoteModelReceived(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
                 }
             }
         }
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
             FileWatcher?.Dispose();
         }
         private bool IsFileReady(string sFilename)
