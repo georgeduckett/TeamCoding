@@ -8,24 +8,51 @@ namespace TeamCoding.Options
 {
     public class Settings
     {
-        private OptionPageGrid OptionsPage => (OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid));
-        public string Username { get { return OptionsPage.Username; } }
-        public event EventHandler UsernameChanged
+        private class Property<T> where T : IEquatable<T>
         {
-            add { OptionsPage.UsernameChanged += value; }
-            remove { OptionsPage.UsernameChanged -= value; }
+            private readonly Settings Owner;
+            public Property(Settings owner) { Owner = owner; }
+            private T _Value;
+            public T Value
+            {
+                get { return _Value; }
+                set
+                {
+                    if(!EqualityComparer<T>.Default.Equals(_Value, value))
+                    {
+                        _Value = value;
+                        Changed?.Invoke(Owner, EventArgs.Empty);
+                    }
+                }
+            }
+            public event EventHandler Changed;
         }
-        public string UserImageUrl { get { return OptionsPage.UserImageUrl; } }
-        public event EventHandler UserImageUrlChanged
+
+        public string Username { get { return UsernameProperty.Value; } set { UsernameProperty.Value = value; } }
+        public event EventHandler UsernameChanged { add { UsernameProperty.Changed += value; } remove { UsernameProperty.Changed -= value; } }
+        private readonly Property<string> UsernameProperty;
+        public string UserImageUrl { get { return UserImageUrlProperty.Value; } set { UserImageUrlProperty.Value = value; } }
+        public event EventHandler UserImageUrlChanged { add { UserImageUrlProperty.Changed += value; } remove { UserImageUrlProperty.Changed -= value; } }
+        private readonly Property<string> UserImageUrlProperty;
+        public string FileBasedPersisterPath { get { return FileBasedPersisterPathProperty.Value; } set { FileBasedPersisterPathProperty.Value = value; } }
+        public event EventHandler FileBasedPersisterPathChanged { add { FileBasedPersisterPathProperty.Changed += value; } remove { FileBasedPersisterPathProperty.Changed -= value; } }
+
+        internal void Update(OptionPageGrid optionPageGrid)
         {
-            add { OptionsPage.UserImageUrlChanged += value; }
-            remove { OptionsPage.UserImageUrlChanged -= value; }
+            Username = optionPageGrid.Username;
+            UserImageUrl = optionPageGrid.UserImageUrl;
+            FileBasedPersisterPath = optionPageGrid.FileBasedPersisterPath;
         }
-        public string FileBasedPersisterPath { get { return OptionsPage.FileBasedPersisterPath; } }
-        public event EventHandler FileBasedPersisterPathChanged
+
+        private readonly Property<string> FileBasedPersisterPathProperty;
+
+        public Settings()
         {
-            add { OptionsPage.FileBasedPersisterPathChanged += value; }
-            remove { OptionsPage.FileBasedPersisterPathChanged -= value; }
+            UsernameProperty = new Property<string>(this);
+            UserImageUrlProperty = new Property<string>(this);
+            FileBasedPersisterPathProperty = new Property<string>(this);
+
+            Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
         }
     }
 }

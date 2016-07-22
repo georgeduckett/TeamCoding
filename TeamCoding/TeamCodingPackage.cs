@@ -26,8 +26,8 @@ namespace TeamCoding
     {
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
         public static TeamCodingPackage Current { get; private set; }
-        public readonly Settings Settings;
-        public readonly LocalIDEModel LocalIdeModel;
+        public Settings Settings;
+        public LocalIDEModel LocalIdeModel;
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly HttpClient HttpClient;
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
@@ -43,8 +43,6 @@ namespace TeamCoding
             HttpClient = new HttpClient();
             HttpClient.DefaultRequestHeaders.Add("User-Agent",
                                                  "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
-            Settings = new Settings();
-            LocalIdeModel = new LocalIDEModel();
     }
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -53,6 +51,8 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
+            Settings = new Settings();
+            LocalIdeModel = new LocalIDEModel();
             IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
             IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
                                                                   new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
