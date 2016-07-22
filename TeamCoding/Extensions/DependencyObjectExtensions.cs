@@ -9,6 +9,26 @@ namespace TeamCoding.Extensions
 {
     public static class DependencyObjectExtensions
     {
+        public static T FindParent<T>(this DependencyObject child) where T : DependencyObject
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+
+            if (parent == null)
+            {
+                return null;
+            }
+            
+            var typedParent = parent as T;
+
+            if (typedParent != null)
+            {
+                return typedParent;
+            }
+            else
+            {
+                return FindParent<T>(parent);
+            }
+        }
         public static void RemoveChild(this DependencyObject parent, UIElement child)
         { // http://stackoverflow.com/a/19318405
             var panel = parent as Panel;

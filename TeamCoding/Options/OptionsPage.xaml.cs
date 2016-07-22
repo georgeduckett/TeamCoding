@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -32,18 +33,17 @@ namespace TeamCoding.Options
                 textBox.LostKeyboardFocus += TextBox_LostKeyboardFocus;
             }
         }
-
         private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            sbiDescription.Content = ((Control)sender).ToolTip;
-            // TODO: Find the label with the same tool tip and set the title to it's caption
+            var senderTooltip = ((Control)sender).ToolTip;
+            sbiDescription.Content = senderTooltip;
+            sbiTitle.Content = (AutomationProperties.GetLabeledBy(sender as DependencyObject) as Label).Content;
         }
-
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             ((TextBox)sender).GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
 
-            sbiDescription.Content = null;
+            sbiTitle.Content = sbiDescription.Content = null;
         }
     }
 }
