@@ -6,13 +6,17 @@
              xmlns:local="clr-namespace:TeamCoding.Options"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid RenderTransformOrigin="0.488,0.748">
         <TextBox x:Name="txtUsername" Margin="68,0,10,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}"/>
         <Label x:Name="label" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <TextBox x:Name="txtUserImageUrl" Margin="68,35,10,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}"/>
         <Label x:Name="label_Copy" Content="User Url" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,31,0,0"/>
         <TextBox x:Name="txtFileBasedPersisterPath" Margin="68,66,10,0" Height="23" VerticalAlignment="Top" Text="{Binding FileBasedPersisterPath}"/>
         <Label x:Name="label_Copy1" Content="Share" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,62,0,0"/>
-
+        <StatusBar Margin="10,0,10,10" Height="23" VerticalAlignment="Bottom">
+            <StatusBarItem Name="sbiTitle" FontWeight="Bold" FontSize="10">sbiTitle</StatusBarItem>
+            <StatusBarItem Width="5"></StatusBarItem>
+            <StatusBarItem Name="sbiDescription" FontSize="10">sbiDescription</StatusBarItem>
+        </StatusBar>
     </Grid>
 </UserControl>
