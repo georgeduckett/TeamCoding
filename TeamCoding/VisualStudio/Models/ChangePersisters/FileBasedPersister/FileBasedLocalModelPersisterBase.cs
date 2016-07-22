@@ -19,7 +19,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         protected readonly string PersistenceFile = $"OpenDocs{SessionId}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
         private readonly LocalIDEModel IdeModel;
         protected abstract string PersistenceFolderPath { get; }
-        protected string PersistenceFilePath => Path.Combine(PersistenceFolderPath, PersistenceFile);
+        protected string PersistenceFilePath => PersistenceFolderPath == null ? null : Path.Combine(PersistenceFolderPath, PersistenceFile);
 
         private DateTime LastFileWriteTime = DateTime.UtcNow;
         private readonly Thread FileHeartBeatThread;
@@ -38,28 +38,31 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             {
                 while (!FileHeartBeatCancelToken.IsCancellationRequested)
                 {
-                    if(PersistenceFolderPath == null || !Directory.Exists(PersistenceFolderPath))
+                    if (PersistenceFolderPath == null || !Directory.Exists(PersistenceFolderPath))
                     {
                         FileHeartBeatCancelToken.WaitHandle.WaitOne(5000);
                     }
-                    try
+                    else
                     {
-                        var UTCNow = DateTime.UtcNow;
-                        var Difference = (UTCNow - LastFileWriteTime).TotalSeconds;
-                        if (Difference > 60)
-                        { // If there have been no changes in the last minute, write the file again (prevent it being tidied up by others)
-                            File.SetLastWriteTimeUtc(PersistenceFilePath, UTCNow);
-                            LastFileWriteTime = UTCNow;
-                            FileHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
-                        }
-                        else
+                        try
                         {
-                            FileHeartBeatCancelToken.WaitHandle.WaitOne(1000 * (60 - (int)Difference + 1));
+                            var UTCNow = DateTime.UtcNow;
+                            var Difference = (UTCNow - LastFileWriteTime).TotalSeconds;
+                            if (Difference > 60)
+                            { // If there have been no changes in the last minute, write the file again (prevent it being tidied up by others)
+                                File.SetLastWriteTimeUtc(PersistenceFilePath, UTCNow);
+                                LastFileWriteTime = UTCNow;
+                                FileHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
+                            }
+                            else
+                            {
+                                FileHeartBeatCancelToken.WaitHandle.WaitOne(1000 * (60 - (int)Difference + 1));
+                            }
                         }
-                    }
-                    catch (IOException)
-                    {
-                        FileHeartBeatCancelToken.WaitHandle.WaitOne(10000);
+                        catch (IOException)
+                        {
+                            FileHeartBeatCancelToken.WaitHandle.WaitOne(10000);
+                        }
                     }
                 }
             });

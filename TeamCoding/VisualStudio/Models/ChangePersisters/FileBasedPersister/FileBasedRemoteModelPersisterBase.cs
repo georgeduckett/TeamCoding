@@ -53,7 +53,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             FileWatcher.EnableRaisingEvents = false;
             if(e.ChangeType != WatcherChangeTypes.Deleted)
             {
-                while (!IsFileReady(e.FullPath)) { }
+                while (!IsFileReady(e.FullPath)) { System.Threading.Thread.Sleep(100); }
             }
             FileWatcher.EnableRaisingEvents = true;
             SyncChanges();
@@ -63,9 +63,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             ClearRemoteModels();
             foreach (var modelSyncFile in Directory.GetFiles(PersistenceFolderPath, ModelSyncFileFormat))
             {
-                while (!IsFileReady(modelSyncFile)) { }
+                while (!IsFileReady(modelSyncFile)) { System.Threading.Thread.Sleep(100); }
                 // If any file hasn't been modified in the last minute an a half, delete it (tidy up files left from crashes etc.)
-                if((DateTime.UtcNow - File.GetLastWriteTimeUtc(modelSyncFile)).TotalSeconds > 90)
+                if ((DateTime.UtcNow - File.GetLastWriteTimeUtc(modelSyncFile)).TotalSeconds > 90)
                 {
                     File.Delete(modelSyncFile);
                     continue;
