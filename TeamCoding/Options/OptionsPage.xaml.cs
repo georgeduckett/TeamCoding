@@ -28,13 +28,22 @@ namespace TeamCoding.Options
 
             foreach(var textBox in this.FindChildren<TextBox>())
             {
+                textBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                 textBox.LostKeyboardFocus += TextBox_LostKeyboardFocus;
             }
+        }
+
+        private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            sbiDescription.Content = ((Control)sender).ToolTip;
+            // TODO: Find the label with the same tool tip and set the title to it's caption
         }
 
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             ((TextBox)sender).GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+
+            sbiDescription.Content = null;
         }
     }
 }
