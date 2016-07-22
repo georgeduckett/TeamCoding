@@ -17,5 +17,6 @@
             <StatusBarItem Name="sbiTitle" FontSize="12" FontWeight="Bold"></StatusBarItem>
             <StatusBarItem Name="sbiDescription" FontSize="12"></StatusBarItem>
         </StatusBar>
+        <Button x:Name="btnReset" Content="Reset" Margin="242,242,10,38" Click="btnReset_Click" ToolTip="Reset settings to default or read from file if found"/>
     </Grid>
 </UserControl>

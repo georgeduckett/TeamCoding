@@ -31,11 +31,15 @@ namespace TeamCoding.Options
         public string Username { get { return UsernameProperty.Value; } set { UsernameProperty.Value = value; } }
         public event EventHandler UsernameChanged { add { UsernameProperty.Changed += value; } remove { UsernameProperty.Changed -= value; } }
         private readonly Property<string> UsernameProperty;
+        public const string DefaultUsername = null;
         public string UserImageUrl { get { return UserImageUrlProperty.Value; } set { UserImageUrlProperty.Value = value; } }
         public event EventHandler UserImageUrlChanged { add { UserImageUrlProperty.Changed += value; } remove { UserImageUrlProperty.Changed -= value; } }
         private readonly Property<string> UserImageUrlProperty;
+        public const string DefaultImageUrl = null;
         public string FileBasedPersisterPath { get { return FileBasedPersisterPathProperty.Value; } set { FileBasedPersisterPathProperty.Value = value; } }
         public event EventHandler FileBasedPersisterPathChanged { add { FileBasedPersisterPathProperty.Changed += value; } remove { FileBasedPersisterPathProperty.Changed -= value; } }
+        private readonly Property<string> FileBasedPersisterPathProperty;
+        public const string DefaultFileBasedPersisterPath = null;
 
         internal void Update(OptionPageGrid optionPageGrid)
         {
@@ -43,9 +47,6 @@ namespace TeamCoding.Options
             UserImageUrl = optionPageGrid.UserImageUrl;
             FileBasedPersisterPath = optionPageGrid.FileBasedPersisterPath;
         }
-
-        private readonly Property<string> FileBasedPersisterPathProperty;
-
         public Settings()
         {
             UsernameProperty = new Property<string>(this);

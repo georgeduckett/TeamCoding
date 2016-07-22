@@ -27,7 +27,7 @@ namespace TeamCoding.Options
             InitializeComponent();
             DataContext = optionPageGrid;
 
-            foreach(var textBox in this.FindChildren<TextBox>())
+            foreach (var textBox in this.FindChildren<TextBox>())
             {
                 textBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                 textBox.LostKeyboardFocus += TextBox_LostKeyboardFocus;
@@ -42,8 +42,18 @@ namespace TeamCoding.Options
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             ((TextBox)sender).GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
-
             sbiTitle.Content = sbiDescription.Content = null;
+        }
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Check for and read in a config file at the route of this solution's repo.
+            // TODO: When changing solutions if Settings.AllowRepoConfigToOverwriteSettings is set then load new settings if a new config file exists for the new repo.
+            txtUsername.Text = Settings.DefaultUsername;
+            txtUsername.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            txtUserImageUrl.Text = Settings.DefaultImageUrl;
+            txtUserImageUrl.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            txtFileBasedPersisterPath.Text = Settings.DefaultFileBasedPersisterPath;
+            txtFileBasedPersisterPath.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
         }
     }
 }

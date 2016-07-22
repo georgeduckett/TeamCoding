@@ -13,26 +13,15 @@ namespace TeamCoding.Options
     [Guid("BEC8E8F5-B7B8-422E-A586-12E7AA7E8DF8")]
     public class OptionPageGrid : UIElementDialogPage
     {
-        private const string DefaultUsername = null;
-        private const string DefaultImageUrl = null;
-        private const string DefaultFileBasedPersisterPath = null;
-        public string Username { get; set; } = DefaultUsername;
-        public string UserImageUrl { get; set; } = DefaultImageUrl;
-        public string FileBasedPersisterPath { get; set; } = DefaultFileBasedPersisterPath;
+        public string Username { get; set; } = Settings.DefaultUsername;
+        public string UserImageUrl { get; set; } = Settings.DefaultImageUrl;
+        public string FileBasedPersisterPath { get; set; } = Settings.DefaultFileBasedPersisterPath;
         private OptionsPage OptionsPage;
         protected override UIElement Child { get { return OptionsPage ?? (OptionsPage = new OptionsPage(this)); } }
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);
             TeamCodingPackage.Current.Settings.Update(this);
-        }
-        public override void ResetSettings()
-        {
-            base.ResetSettings();
-
-            Username = DefaultUsername;
-            UserImageUrl = DefaultImageUrl;
-            FileBasedPersisterPath = DefaultFileBasedPersisterPath;
         }
     }
 }
