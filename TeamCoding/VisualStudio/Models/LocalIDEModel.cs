@@ -47,8 +47,8 @@ namespace TeamCoding.VisualStudio.Models
 
         public LocalIDEModel()
         {
-            TeamCodingPackage.Current.Settings.UsernameChanged += (s, e) => OnUserIdentityChanged();
-            TeamCodingPackage.Current.Settings.UserImageUrlChanged += (s, e) => OnUserIdentityChanged();
+            TeamCodingPackage.Current.Settings.UserSettings.UsernameChanged += (s, e) => OnUserIdentityChanged();
+            TeamCodingPackage.Current.Settings.UserSettings.UserImageUrlChanged += (s, e) => OnUserIdentityChanged();
         }
         public void OnOpenedTextView(IWpfTextView view)
         {

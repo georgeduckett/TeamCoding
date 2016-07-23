@@ -46,13 +46,14 @@ namespace TeamCoding.Options
         }
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Check for and read in a config file at the route of this solution's repo.
+            // TODO: Check for and read in a shared config file at the route of this solution's repo.
+            // TODO: Figure out the best way to create the shared config file
             // TODO: When changing solutions if Settings.AllowRepoConfigToOverwriteSettings is set then load new settings if a new config file exists for the new repo.
-            txtUsername.Text = Settings.DefaultUsername;
+            txtUsername.Text = UserSettings.DefaultUsername;
             txtUsername.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
-            txtUserImageUrl.Text = Settings.DefaultImageUrl;
+            txtUserImageUrl.Text = UserSettings.DefaultImageUrl;
             txtUserImageUrl.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
-            txtFileBasedPersisterPath.Text = Settings.DefaultFileBasedPersisterPath;
+            txtFileBasedPersisterPath.Text = SharedSettings.DefaultFileBasedPersisterPath;
             txtFileBasedPersisterPath.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
         }
     }

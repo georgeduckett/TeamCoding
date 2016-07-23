@@ -17,7 +17,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private FileSystemWatcher FileWatcher;
         public FileBasedRemoteModelPersisterBase()
         {
-            TeamCodingPackage.Current.Settings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
+            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
 
             if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
             {

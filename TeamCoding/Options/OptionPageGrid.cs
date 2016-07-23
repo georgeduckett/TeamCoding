@@ -13,9 +13,9 @@ namespace TeamCoding.Options
     [Guid("BEC8E8F5-B7B8-422E-A586-12E7AA7E8DF8")]
     public class OptionPageGrid : UIElementDialogPage
     {
-        public string Username { get; set; } = Settings.DefaultUsername;
-        public string UserImageUrl { get; set; } = Settings.DefaultImageUrl;
-        public string FileBasedPersisterPath { get; set; } = Settings.DefaultFileBasedPersisterPath;
+        public string Username { get; set; } = UserSettings.DefaultUsername;
+        public string UserImageUrl { get; set; } = UserSettings.DefaultImageUrl;
+        public string FileBasedPersisterPath { get; set; } = SharedSettings.DefaultFileBasedPersisterPath;
         private OptionsPage OptionsPage;
         protected override UIElement Child { get { return OptionsPage ?? (OptionsPage = new OptionsPage(this)); } }
         protected override void OnApply(PageApplyEventArgs e)

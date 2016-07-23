@@ -71,8 +71,11 @@
     <Compile Include="Options\OptionsPage.xaml.cs">
       <DependentUpon>OptionsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Options\Property.cs" />
     <Compile Include="Options\Settings.cs" />
     <Compile Include="Documents\SourceControlledDocumentData.cs" />
+    <Compile Include="Options\SharedSettings.cs" />
+    <Compile Include="Options\UserSettings.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\FileBasedLocalModelPersisterBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

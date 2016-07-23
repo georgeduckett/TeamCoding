@@ -8,10 +8,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
 {
     public class SharedFolderLocalModelPersister : FileBasedLocalModelPersisterBase
     {
-        protected override string PersistenceFolderPath => TeamCodingPackage.Current.Settings.FileBasedPersisterPath;
+        protected override string PersistenceFolderPath => TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPath;
         public SharedFolderLocalModelPersister(LocalIDEModel model) : base(model)
         {
-            TeamCodingPackage.Current.Settings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
+            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
         }
 
         private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)

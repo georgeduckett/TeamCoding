@@ -8,7 +8,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
 {
     public class SharedFolderRemoteModelPersister : FileBasedRemoteModelPersisterBase
     {
-        protected override string PersistenceFolderPath => TeamCodingPackage.Current.Settings.FileBasedPersisterPath;
+        protected override string PersistenceFolderPath => TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPath;
         public SharedFolderRemoteModelPersister() : base() { }
     }
 }

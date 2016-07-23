@@ -6,17 +6,21 @@
              xmlns:local="clr-namespace:TeamCoding.Options"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid RenderTransformOrigin="0.488,0.748">
+    <Grid>
         <TextBox x:Name="txtUsername" Margin="68,0,10,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
         <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtUsername, Mode=OneWay}"/>
         <TextBox x:Name="txtUserImageUrl" Margin="68,35,10,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}" ToolTip="Set a custom image url" AutomationProperties.LabeledBy="{Binding ElementName=lblUserImageUrl, Mode=OneWay}"/>
         <Label x:Name="lblUserImageUrl" Content="User Url" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,31,0,0" Target="{Binding ElementName=txtUserImageUrl, Mode=OneWay}"/>
-        <TextBox x:Name="txtFileBasedPersisterPath" Margin="68,66,10,0" Height="23" VerticalAlignment="Top" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}"/>
-        <Label x:Name="lblFileBasedPersisterPath" Content="Share" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,62,0,0" Target="{Binding ElementName=txtFileBasedPersisterPath, Mode=OneWay}"/>
         <StatusBar Margin="10,0,10,10" Height="23" VerticalAlignment="Bottom">
             <StatusBarItem Name="sbiTitle" FontSize="12" FontWeight="Bold"></StatusBarItem>
             <StatusBarItem Name="sbiDescription" FontSize="12"></StatusBarItem>
         </StatusBar>
-        <Button x:Name="btnReset" Content="Reset" Margin="242,242,10,38" Click="btnReset_Click" ToolTip="Reset settings to default or read from file if found"/>
+        <Button x:Name="btnReset" Content="Reset" Margin="0,0,10,38" Click="btnReset_Click" ToolTip="Reset settings to default or read from file if found" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="48"/>
+        <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,116,0,63">
+            <Grid>
+                <Label x:Name="lblFileBasedPersisterPath" Content="File Share Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtFileBasedPersisterPath, Mode=OneWay}" Margin="0,10,0,0"/>
+                <TextBox x:Name="txtFileBasedPersisterPath" Margin="98,10,0,0" Height="23" VerticalAlignment="Top" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}"/>
+            </Grid>
+        </GroupBox>
     </Grid>
 </UserControl>
