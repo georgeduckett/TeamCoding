@@ -18,11 +18,13 @@ namespace TeamCoding.Options
             {
                 if (!EqualityComparer<TProperty>.Default.Equals(_Value, value))
                 {
+                    Changing?.Invoke(Owner, EventArgs.Empty);
                     _Value = value;
                     Changed?.Invoke(Owner, EventArgs.Empty);
                 }
             }
         }
+        public event EventHandler Changing;
         public event EventHandler Changed;
     }
 }
