@@ -15,7 +15,7 @@ namespace TeamCoding.VisualStudio
     /// Maintains a cache of images of users
     /// </summary>
     public class UserImageCache // TODO: If we go with redis as a messaging option, maybe make it also a user image caching option
-    { // TODO: See how github tools for visual studio gets/caches user images
+    {
         private static readonly Brush BorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private readonly BitmapImage SharedUnknownUserImage = LoadBitmapFromResource("Resources/UnknownUserImage.png");
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
@@ -53,7 +53,6 @@ namespace TeamCoding.VisualStudio
             {
                 using (var MS = new MemoryStream(userIdentity.ImageBytes))
                 {
-                    // No idea what the first 16 bytes are, but after that we get a regular PNG
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.StreamSource = MS;
