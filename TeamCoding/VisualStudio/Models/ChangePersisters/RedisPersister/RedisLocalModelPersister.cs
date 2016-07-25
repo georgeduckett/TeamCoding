@@ -17,7 +17,20 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
             IdeModel.TextContentChanged += IdeModel_TextContentChanged;
             IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
+            TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanging += SharedSettings_RedisServerChanging;
+            TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanged += SharedSettings_RedisServerChanged;
         }
+
+        private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
+        {
+            SendChanges();
+        }
+
+        private void SharedSettings_RedisServerChanging(object sender, EventArgs e)
+        {
+            SendModel(new RemoteIDEModel(new LocalIDEModel()));
+        }
+
         private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
         {
             SendChanges();
@@ -32,12 +45,18 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         }
         protected virtual void SendChanges()
         {
+            SendModel(new RemoteIDEModel(IdeModel));
+        }
+
+        private void SendModel(RemoteIDEModel remoteModel)
+        {
             using (var ms = new MemoryStream())
             {
-                ProtoBuf.Serializer.Serialize(ms, new RemoteIDEModel(IdeModel));
+                ProtoBuf.Serializer.Serialize(ms, remoteModel);
                 TeamCodingPackage.Current.Redis.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray());
             }
         }
+
         public void Dispose()
         {
 

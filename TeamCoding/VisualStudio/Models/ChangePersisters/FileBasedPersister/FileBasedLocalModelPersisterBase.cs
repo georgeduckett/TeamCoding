@@ -27,6 +27,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private CancellationToken FileHeartBeatCancelToken;
         public FileBasedLocalModelPersisterBase(LocalIDEModel model)
         {
+            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanging += SharedSettings_FileBasedPersisterPathChanging;
+            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
+
             FileHeartBeatCancelSource = new CancellationTokenSource();
             FileHeartBeatCancelToken = FileHeartBeatCancelSource.Token;
             IdeModel = model;
@@ -69,6 +72,14 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
 
             FileHeartBeatThread.Start();
         }
+        private void SharedSettings_FileBasedPersisterPathChanging(object sender, EventArgs e)
+        {
+            SendEmpty();
+        }
+        private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)
+        {
+            SendChanges();
+        }
         private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
         {
             SendChanges();
@@ -82,13 +93,19 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         {
             SendChanges();
         }
+        protected virtual void SendEmpty()
+        {
+            SendIdeModel(new RemoteIDEModel(new LocalIDEModel()));
+        }
         protected virtual void SendChanges()
+        {
+            SendIdeModel(new RemoteIDEModel(IdeModel));
+        }
+
+        private void SendIdeModel(RemoteIDEModel remoteModel)
         {
             if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
             {
-                // Create a remote IDE model to send
-                var remoteModel = new RemoteIDEModel(IdeModel);
-
                 try
                 {
                     using (var f = File.Create(PersistenceFilePath))
@@ -100,6 +117,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
                 catch (IOException) { }
             }
         }
+
         public void Dispose()
         {
             FileHeartBeatCancelSource.Cancel();

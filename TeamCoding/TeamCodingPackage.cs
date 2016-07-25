@@ -60,8 +60,8 @@ namespace TeamCoding
                                                                   new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
-            LocalModelChangeManager = new RedisLocalModelPersister(LocalIdeModel);
-            RemoteModelChangeManager = new RedisRemoteModelPersister();
+            LocalModelChangeManager = new SharedFolderLocalModelPersister(LocalIdeModel);
+            RemoteModelChangeManager = new SharedFolderRemoteModelPersister();
             RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
 

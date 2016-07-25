@@ -13,6 +13,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 
         private ConnectionMultiplexer RedisClient; // TODO: allow for failing to connect to redis (and connect asyncronously)
         private ISubscriber RedisSubscriber;
+        private Dictionary<string, List<Action<RedisChannel, RedisValue>>> SubscribedActions = new Dictionary<string, List<Action<RedisChannel, RedisValue>>>();
         public RedisWrapper()
         {
             Current = this;
@@ -22,7 +23,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 
         private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
         {
-            Dispose();
+            ResetRedis();
             ConnectRedis();
         }
 
@@ -32,6 +33,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             {
                 RedisClient = ConnectionMultiplexer.Connect(TeamCodingPackage.Current.Settings.SharedSettings.RedisServer);
                 RedisSubscriber = RedisClient.GetSubscriber();
+                foreach(var key in SubscribedActions.Keys)
+                {
+                    foreach(var action in SubscribedActions[key])
+                    {
+                        RedisSubscriber.Subscribe(key, action);
+                    }
+                }
             }
         }
 
@@ -41,6 +49,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         }
         internal void Subscribe(string channel, Action<RedisChannel, RedisValue> action)
         {
+            if (!SubscribedActions.ContainsKey(channel))
+            {
+                SubscribedActions.Add(channel, new List<Action<RedisChannel, RedisValue>>());
+            }
+            SubscribedActions[channel].Add(action);
             RedisSubscriber?.Subscribe(channel, action);
         }
         private void ResetRedis()

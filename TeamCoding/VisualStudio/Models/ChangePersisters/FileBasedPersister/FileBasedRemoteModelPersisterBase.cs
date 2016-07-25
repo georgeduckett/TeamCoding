@@ -17,31 +17,38 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private FileSystemWatcher FileWatcher;
         public FileBasedRemoteModelPersisterBase()
         {
+            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanging += SharedSettings_FileBasedPersisterPathChanging;
             TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
 
-            if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
-            {
-                FileWatcher = new FileSystemWatcher(PersistenceFolderPath, "*.bin");
-                FileWatcher.Created += FileWatcher_Changed;
-                FileWatcher.Deleted += FileWatcher_Changed;
-                FileWatcher.Changed += FileWatcher_Changed;
-                FileWatcher.Renamed += FileWatcher_Changed;
-                FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
-                FileWatcher.EnableRaisingEvents = true;
-            }
+            CreateNewFileWatcher();
+            UpdateFileWatcherPath();
         }
 
+        private void CreateNewFileWatcher()
+        {
+            FileWatcher = new FileSystemWatcher();
+            FileWatcher.Filter = "*.bin";
+            FileWatcher.Created += FileWatcher_Changed;
+            FileWatcher.Deleted += FileWatcher_Changed;
+            FileWatcher.Changed += FileWatcher_Changed;
+            FileWatcher.Renamed += FileWatcher_Changed;
+            FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
+        }
+        private void SharedSettings_FileBasedPersisterPathChanging(object sender, EventArgs e)
+        {
+            SyncChanges();
+        }
         private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)
         {
-            FileWatcher?.Dispose();
+            UpdateFileWatcherPath();
+        }
+
+        private void UpdateFileWatcherPath()
+        {
+            FileWatcher.EnableRaisingEvents = false;
             if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
             {
-                FileWatcher = new FileSystemWatcher(PersistenceFolderPath, "*.bin");
-                FileWatcher.Created += FileWatcher_Changed;
-                FileWatcher.Deleted += FileWatcher_Changed;
-                FileWatcher.Changed += FileWatcher_Changed;
-                FileWatcher.Renamed += FileWatcher_Changed;
-                FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
+                FileWatcher.Path = PersistenceFolderPath;
                 FileWatcher.EnableRaisingEvents = true;
                 // Sync any changes since there could already be files in this new directory waiting
                 SyncChanges();
@@ -51,7 +58,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private void FileWatcher_Changed(object sender, FileSystemEventArgs e)
         {
             FileWatcher.EnableRaisingEvents = false;
-            if(e.ChangeType != WatcherChangeTypes.Deleted)
+            if (e.ChangeType != WatcherChangeTypes.Deleted)
             {
                 while (!IsFileReady(e.FullPath)) { System.Threading.Thread.Sleep(100); }
             }
@@ -61,18 +68,25 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private void SyncChanges()
         {
             ClearRemoteModels();
-            foreach (var modelSyncFile in Directory.GetFiles(PersistenceFolderPath, ModelSyncFileFormat))
+            if (PersistenceFolderPath == null || !Directory.Exists(PersistenceFolderPath))
             {
-                while (!IsFileReady(modelSyncFile)) { System.Threading.Thread.Sleep(100); }
-                // If any file hasn't been modified in the last minute an a half, delete it (tidy up files left from crashes etc.)
-                if ((DateTime.UtcNow - File.GetLastWriteTimeUtc(modelSyncFile)).TotalSeconds > 90)
+                OnRemoteModelReceived(null);
+            }
+            else
+            {
+                foreach (var modelSyncFile in Directory.GetFiles(PersistenceFolderPath, ModelSyncFileFormat))
                 {
-                    File.Delete(modelSyncFile);
-                    continue;
-                }
-                using (var f = File.OpenRead(modelSyncFile))
-                {
-                    OnRemoteModelReceived(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
+                    while (!IsFileReady(modelSyncFile)) { System.Threading.Thread.Sleep(100); }
+                    // If any file hasn't been modified in the last minute an a half, delete it (tidy up files left from crashes etc.)
+                    if ((DateTime.UtcNow - File.GetLastWriteTimeUtc(modelSyncFile)).TotalSeconds > 90)
+                    {
+                        File.Delete(modelSyncFile);
+                        continue;
+                    }
+                    using (var f = File.OpenRead(modelSyncFile))
+                    {
+                        OnRemoteModelReceived(ProtoBuf.Serializer.Deserialize<RemoteIDEModel>(f));
+                    }
                 }
             }
         }

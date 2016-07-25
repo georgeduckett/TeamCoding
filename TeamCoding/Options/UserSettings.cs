@@ -10,10 +10,12 @@ namespace TeamCoding.Options
     {
         public string Username { get { return UsernameProperty.Value; } set { UsernameProperty.Value = value; } }
         public event EventHandler UsernameChanged { add { UsernameProperty.Changed += value; } remove { UsernameProperty.Changed -= value; } }
+        public event EventHandler UsernameChanging { add { UsernameProperty.Changing += value; } remove { UsernameProperty.Changing -= value; } }
         private readonly Property<string> UsernameProperty;
         public const string DefaultUsername = null;
         public string UserImageUrl { get { return UserImageUrlProperty.Value; } set { UserImageUrlProperty.Value = value; } }
         public event EventHandler UserImageUrlChanged { add { UserImageUrlProperty.Changed += value; } remove { UserImageUrlProperty.Changed -= value; } }
+        public event EventHandler UserImageUrlChanging { add { UserImageUrlProperty.Changing += value; } remove { UserImageUrlProperty.Changing -= value; } }
         private readonly Property<string> UserImageUrlProperty;
         public const string DefaultImageUrl = null;
         public UserSettings()

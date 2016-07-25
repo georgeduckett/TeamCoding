@@ -11,13 +11,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         protected override string PersistenceFolderPath => TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPath;
         public SharedFolderLocalModelPersister(LocalIDEModel model) : base(model)
         {
-            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
-        }
-
-        private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)
-        {
-            // TODO: clean up any existing file
-            SendChanges();
         }
     }
 }

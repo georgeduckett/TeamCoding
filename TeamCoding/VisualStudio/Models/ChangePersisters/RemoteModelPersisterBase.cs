@@ -25,7 +25,12 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         public void OnRemoteModelReceived(RemoteIDEModel remoteModel)
         {
-            if (remoteModel.OpenFiles.Count == 0)
+            if(remoteModel == null)
+            {
+                ClearRemoteModels();
+                RemoteModelReceived?.Invoke(this, EventArgs.Empty);
+            }
+            else if (remoteModel.OpenFiles.Count == 0)
             {
                 if (RemoteModels.ContainsKey(remoteModel.Id))
                 {
