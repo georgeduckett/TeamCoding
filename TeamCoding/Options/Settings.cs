@@ -12,9 +12,25 @@ namespace TeamCoding.Options
         public SharedSettings SharedSettings = new SharedSettings();
         internal void Update(OptionPageGrid optionPageGrid)
         {
-            UserSettings.Username = optionPageGrid.Username;
-            UserSettings.UserImageUrl = optionPageGrid.UserImageUrl;
-            SharedSettings.FileBasedPersisterPath = optionPageGrid.FileBasedPersisterPath;
+            // TODO: Cache properties for updating settings
+            foreach(var prop in UserSettings.GetType().GetProperties())
+            {
+                var optionProp = typeof(OptionPageGrid).GetProperty(prop.Name);
+
+                if(optionProp != null)
+                {
+                    prop.SetValue(UserSettings, optionProp.GetValue(optionPageGrid));
+                }
+            }
+            foreach (var prop in SharedSettings.GetType().GetProperties())
+            {
+                var optionProp = typeof(OptionPageGrid).GetProperty(prop.Name);
+
+                if (optionProp != null)
+                {
+                    prop.SetValue(SharedSettings, optionProp.GetValue(optionPageGrid));
+                }
+            }
         }
         public Settings()
         {

@@ -12,11 +12,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
     public class RedisRemoteModelPersister : RemoteModelPersisterBase
     {
         public const string ModelPersisterChannel = "TeamCoding.ModelPersister";
-        private static ConnectionMultiplexer RedisClient = ConnectionMultiplexer.Connect("localhost"); // TODO: allow for failing to connect to redis (and connect asyncronously)
-        private static ISubscriber RedisSubscriber = RedisClient.GetSubscriber();
         public RedisRemoteModelPersister()
         {
-            RedisSubscriber.Subscribe(ModelPersisterChannel, Redis_RemoteModelReceived);
+            TeamCodingPackage.Current.Redis.Subscribe(ModelPersisterChannel, Redis_RemoteModelReceived);
         }
         private void Redis_RemoteModelReceived(RedisChannel channel, RedisValue value)
         {
@@ -28,7 +26,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         public override void Dispose()
         {
             base.Dispose();
-            RedisClient?.Dispose();
         }
     }
 }

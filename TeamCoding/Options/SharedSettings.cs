@@ -12,9 +12,14 @@ namespace TeamCoding.Options
         public event EventHandler FileBasedPersisterPathChanged { add { FileBasedPersisterPathProperty.Changed += value; } remove { FileBasedPersisterPathProperty.Changed -= value; } }
         private readonly Property<string> FileBasedPersisterPathProperty;
         public const string DefaultFileBasedPersisterPath = null;
+        public string RedisServer { get { return RedisServerProperty.Value; } set { RedisServerProperty.Value = value; } }
+        public event EventHandler RedisServerChanged { add { RedisServerProperty.Changed += value; } remove { RedisServerProperty.Changed -= value; } }
+        private readonly Property<string> RedisServerProperty;
+        public const string DefaultRedisServer = null;
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
+            RedisServerProperty = new Property<string>(this);
         }
     }
 }

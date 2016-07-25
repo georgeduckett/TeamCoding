@@ -28,6 +28,7 @@ namespace TeamCoding
         public static TeamCodingPackage Current { get; private set; }
         public Settings Settings;
         public LocalIDEModel LocalIdeModel;
+        public RedisWrapper Redis;
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly HttpClient HttpClient;
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
@@ -52,14 +53,15 @@ namespace TeamCoding
         {
             base.Initialize();
             Settings = new Settings();
+            Redis = new RedisWrapper();
             LocalIdeModel = new LocalIDEModel();
             IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
             IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
                                                                   new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
-            LocalModelChangeManager = new SharedFolderLocalModelPersister(LocalIdeModel);
-            RemoteModelChangeManager = new SharedFolderRemoteModelPersister();
+            LocalModelChangeManager = new RedisLocalModelPersister(LocalIdeModel);
+            RemoteModelChangeManager = new RedisRemoteModelPersister();
             RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
 
@@ -70,9 +72,10 @@ namespace TeamCoding
 
         protected override void Dispose(bool disposing)
         {
-            RemoteModelChangeManager.Dispose();
-            LocalModelChangeManager.Dispose();
-            HttpClient.Dispose();
+            Redis?.Dispose();
+            RemoteModelChangeManager?.Dispose();
+            LocalModelChangeManager?.Dispose();
+            HttpClient?.Dispose();
             base.Dispose(disposing);
         }
     }

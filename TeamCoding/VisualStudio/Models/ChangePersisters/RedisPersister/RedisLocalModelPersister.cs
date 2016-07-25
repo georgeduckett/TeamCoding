@@ -10,9 +10,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
     public class RedisLocalModelPersister : ILocalModelPerisister
     {
-        // TODO: Maybe extract out common redis parts
-        private static ConnectionMultiplexer RedisClient = ConnectionMultiplexer.Connect("localhost");
-        private static ISubscriber RedisSubscriber = RedisClient.GetSubscriber();
         private readonly LocalIDEModel IdeModel;
         public RedisLocalModelPersister(LocalIDEModel model)
         {
@@ -38,12 +35,12 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             using (var ms = new MemoryStream())
             {
                 ProtoBuf.Serializer.Serialize(ms, new RemoteIDEModel(IdeModel));
-                RedisSubscriber.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray());
+                TeamCodingPackage.Current.Redis.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray());
             }
         }
         public void Dispose()
         {
-            RedisClient?.Dispose();
+
         }
     }
 }
