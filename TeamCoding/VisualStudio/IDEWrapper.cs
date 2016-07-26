@@ -51,13 +51,12 @@ namespace TeamCoding.VisualStudio
 
                 var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
                 var titlePanels = documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
-                var tabItems = titlePanels.Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
 
                 var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
-                var tabItemWithFilePath = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetRelatedFilePath() }).Single(t => t.File == filePath);
+                var tabItemWithFilePath = titlePanels.Select(t => new { Item = t, File = (t.DataContext as DocumentView).GetRelatedFilePath() }).Single(t => t.File == filePath);
 
-                UpdateTabImages(tabItemWithFilePath.Item.TitlePanel, filePath, remoteOpenFiles);
+                UpdateTabImages(tabItemWithFilePath.Item, filePath, remoteOpenFiles);
             });
         }
 
@@ -117,16 +116,11 @@ namespace TeamCoding.VisualStudio
                 return;
             }
             
-            var titlePanels = documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
-            var tabItems = titlePanels.Select(dp => new { TitlePanel = dp, TitleText = dp.FindChild<TabItemTextControl>() }).ToArray();
-
             var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
-            var tabItemsWithFilePaths = tabItems.Select(t => new { Item = t, File = (t.TitleText.DataContext as WindowFrameTitle).GetRelatedFilePath() }).ToArray();
-
-            foreach (var tabItem in tabItemsWithFilePaths)
+            foreach (var titlePanel in documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>())
             {
-                UpdateTabImages(tabItem.Item.TitlePanel, tabItem.File, remoteOpenFiles);
+                UpdateTabImages(titlePanel, (titlePanel.DataContext as DocumentView).GetRelatedFilePath(), remoteOpenFiles);
             }
         }
 
@@ -181,7 +175,7 @@ namespace TeamCoding.VisualStudio
 
                     if (PropertiesUpdated)
                     {
-                        UserImages.SetImageProperties(userImageControl, matchedRemoteDoc);
+                        UserImages.SetUserControlProperties(userImageControl, matchedRemoteDoc);
                     }
                 }
             }
@@ -192,14 +186,14 @@ namespace TeamCoding.VisualStudio
             {
                 if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is SourceControlledDocumentData).Any(i => (i.Tag as SourceControlledDocumentData).Equals(remoteTabItem)))
                 {
-                    var imgUser = UserImages.GetUserImageControlFromUserIdentity(remoteTabItem.IdeUserIdentity, (int)(tabPanel.Children[0] as GlyphButton).Width);
+                    var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity);
 
                     if (imgUser != null)
                     {
                         imgUser.Width = (tabPanel.Children[0] as GlyphButton).Width;
                         imgUser.Height = (tabPanel.Children[0] as GlyphButton).Height;
                         imgUser.Margin = (tabPanel.Children[0] as GlyphButton).Margin;
-                        UserImages.SetImageProperties(imgUser, remoteTabItem);
+                        UserImages.SetUserControlProperties(imgUser, remoteTabItem);
                         imgUser.Tag = remoteTabItem;
 
                         tabPanel.Children.Insert(tabPanel.Children.Count, imgUser);

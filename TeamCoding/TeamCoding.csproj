@@ -60,9 +60,10 @@
     <Compile Include="Extensions\DTEExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
-    <Compile Include="Extensions\WindowFrameTitleExtensions.cs" />
+    <Compile Include="Extensions\DocumentViewExtensions.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
     <Compile Include="IdentityManagement\VSOptionsIdentityProvider.cs" />
     <Compile Include="Options\OptionPageGrid.cs">
@@ -101,6 +102,7 @@
     <Compile Include="VisualStudio\Models\RemoteIDEModel.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\FileBasedRemoteModelPersisterBase.cs" />
     <Compile Include="VisualStudio\TeamCodingTextViewConnectionListener.cs" />
+    <Compile Include="VisualStudio\VisuallyDistinctColours.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
