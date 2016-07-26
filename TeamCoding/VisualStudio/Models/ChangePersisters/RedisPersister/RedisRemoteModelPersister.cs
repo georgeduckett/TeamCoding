@@ -14,7 +14,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         public const string ModelPersisterChannel = "TeamCoding.ModelPersister";
         public RedisRemoteModelPersister()
         {
-            TeamCodingPackage.Current.Redis.Subscribe(ModelPersisterChannel, Redis_RemoteModelReceived);
+            TeamCodingPackage.Current.Redis.Subscribe(ModelPersisterChannel, Redis_RemoteModelReceived).ContinueWith((t) =>
+            {
+                // TODO: Handle subscribe exception
+            });
         }
         private void Redis_RemoteModelReceived(RedisChannel channel, RedisValue value)
         {

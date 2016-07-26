@@ -11,50 +11,60 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
     {
         public static RedisWrapper Current;
 
-        private ConnectionMultiplexer RedisClient; // TODO: allow for failing to connect to redis (and connect asyncronously)
+        private Task ConnectTask;
+        private ConnectionMultiplexer RedisClient;
         private ISubscriber RedisSubscriber;
         private Dictionary<string, List<Action<RedisChannel, RedisValue>>> SubscribedActions = new Dictionary<string, List<Action<RedisChannel, RedisValue>>>();
         public RedisWrapper()
         {
             Current = this;
             TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanged += SharedSettings_RedisServerChanged;
-            ConnectRedis();
+            ConnectTask = ConnectRedis();
         }
 
         private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
         {
+            ConnectTask.Wait();
             ResetRedis();
-            ConnectRedis();
+            ConnectTask = ConnectRedis();
         }
 
-        private void ConnectRedis()
+        private async Task ConnectRedis()
         {
-            if (!string.IsNullOrWhiteSpace(TeamCodingPackage.Current.Settings.SharedSettings.RedisServer))
+            var redisServer = TeamCodingPackage.Current.Settings.SharedSettings.RedisServer;
+            if (!string.IsNullOrWhiteSpace(redisServer))
             {
-                RedisClient = ConnectionMultiplexer.Connect(TeamCodingPackage.Current.Settings.SharedSettings.RedisServer);
+                RedisClient = await ConnectionMultiplexer.ConnectAsync(redisServer);
                 RedisSubscriber = RedisClient.GetSubscriber();
-                foreach(var key in SubscribedActions.Keys)
+
+                IEnumerable<Task> tasks;
+                lock (SubscribedActions)
                 {
-                    foreach(var action in SubscribedActions[key])
-                    {
-                        RedisSubscriber.Subscribe(key, action);
-                    }
+                    tasks = SubscribedActions.Keys.SelectMany(key => SubscribedActions[key].Select((a) => RedisSubscriber.SubscribeAsync(key, a)));
                 }
+
+                await Task.WhenAll(tasks);
             }
         }
 
-        internal void Publish(string channel, byte[] data)
+        internal async Task Publish(string channel, byte[] data)
         {
-            RedisSubscriber?.Publish(channel, data);
+            await ConnectTask;
+            await RedisSubscriber?.PublishAsync(channel, data);
         }
-        internal void Subscribe(string channel, Action<RedisChannel, RedisValue> action)
+        internal async Task Subscribe(string channel, Action<RedisChannel, RedisValue> action)
         {
-            if (!SubscribedActions.ContainsKey(channel))
+            lock (SubscribedActions)
             {
-                SubscribedActions.Add(channel, new List<Action<RedisChannel, RedisValue>>());
+                if (!SubscribedActions.ContainsKey(channel))
+                {
+                    SubscribedActions.Add(channel, new List<Action<RedisChannel, RedisValue>>());
+                }
+                SubscribedActions[channel].Add(action);
             }
-            SubscribedActions[channel].Add(action);
-            RedisSubscriber?.Subscribe(channel, action);
+
+            await ConnectTask;
+            await RedisSubscriber?.SubscribeAsync(channel, action);
         }
         private void ResetRedis()
         {
