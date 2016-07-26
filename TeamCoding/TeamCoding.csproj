@@ -77,6 +77,8 @@
     <Compile Include="Documents\SourceControlledDocumentData.cs" />
     <Compile Include="Options\SharedSettings.cs" />
     <Compile Include="Options\UserSettings.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedLocalModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\FileBasedLocalModelPersisterBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -304,9 +306,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="VisualStudio\Models\ChangePersisters\CombinedPersister\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="Options\OptionsPage.xaml">
       <SubType>Designer</SubType>

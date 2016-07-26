@@ -24,7 +24,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 
         private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
         {
-            ConnectTask.Wait();
+            ConnectTask.Wait(); // TODO: Don't wait until here to find out we can't connect to redis
             ResetRedis();
             ConnectTask = ConnectRedis();
         }

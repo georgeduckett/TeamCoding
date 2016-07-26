@@ -9,6 +9,7 @@ using TeamCoding.Options;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Models;
 using TeamCoding.VisualStudio.Models.ChangePersisters;
+using TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister;
@@ -60,8 +61,8 @@ namespace TeamCoding
                                                                   new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                   new VSIdentityProvider(),
                                                                   new MachineIdentityProvider());
-            LocalModelChangeManager = new RedisLocalModelPersister(LocalIdeModel);
-            RemoteModelChangeManager = new RedisRemoteModelPersister();
+            LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel));
+            RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister());
             RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
 
