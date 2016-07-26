@@ -15,7 +15,7 @@ namespace TeamCoding.Documents
         public bool HasFocus { get; set; }
         public override int GetHashCode()
         {
-            return Repository.GetHashCode() ^ Repository.GetHashCode() ^ IdeUserIdentity.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode();
+            return Repository.GetHashCode() ^ IdeUserIdentity.Id.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode();
         }
         public bool Equals(SourceControlledDocumentData other)
         {
@@ -25,7 +25,6 @@ namespace TeamCoding.Documents
             return Repository == other.Repository &&
                    RelativePath == other.RelativePath &&
                    IdeUserIdentity.Id == IdeUserIdentity.Id &&
-                   IdeUserIdentity.ImageUrl == IdeUserIdentity.ImageUrl &&
                    BeingEdited == other.BeingEdited &&
                    HasFocus == other.HasFocus;
         }
