@@ -31,11 +31,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
         public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles()).GroupBy(scdd => new
         {
             scdd.Repository,
+            scdd.RepositoryBranch,
             scdd.RelativePath,
             scdd.IdeUserIdentity.Id
         }).Select(g => new SourceControlledDocumentData()
         {
             Repository = g.Key.Repository,
+            RepositoryBranch = g.Key.RepositoryBranch,
             RelativePath = g.Key.RelativePath,
             IdeUserIdentity = g.First().IdeUserIdentity,
             HasFocus = g.Any(scdd => scdd.HasFocus),

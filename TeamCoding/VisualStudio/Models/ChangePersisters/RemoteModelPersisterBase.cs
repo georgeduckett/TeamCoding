@@ -14,6 +14,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
         {
             Repository = of.RepoUrl,
+            RepositoryBranch = of.RepoBranch,
             IdeUserIdentity = model.IDEUserIdentity,
             RelativePath = of.RelativePath,
             BeingEdited = of.BeingEdited,

@@ -11,10 +11,12 @@ namespace TeamCoding.Documents
         [ProtoBuf.ProtoMember(1)]
         public string RepoUrl { get; set; }
         [ProtoBuf.ProtoMember(2)]
-        public string RelativePath { get; set; }
+        public string RepoBranch { get; set; }
         [ProtoBuf.ProtoMember(3)]
-        public bool BeingEdited { get; set; }
+        public string RelativePath { get; set; }
         [ProtoBuf.ProtoMember(4)]
+        public bool BeingEdited { get; set; }
+        [ProtoBuf.ProtoMember(5)]
         public DateTime LastActioned { get; set; }
     }
 }

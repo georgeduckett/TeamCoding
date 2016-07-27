@@ -136,7 +136,7 @@ namespace TeamCoding.VisualStudio
 
             var relativePath = repoInfo.RelativePath;
 
-            var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrl == rof.Repository && rof.RelativePath == repoInfo.RelativePath).ToList();
+            var remoteDocuments = remoteOpenFiles.Where(rof => repoInfo.RepoUrl == rof.Repository && repoInfo.RepoBranch == rof.RepositoryBranch && rof.RelativePath == repoInfo.RelativePath).ToList();
 
             UpdateOrRemoveImages(titlePanel, remoteDocuments);
 

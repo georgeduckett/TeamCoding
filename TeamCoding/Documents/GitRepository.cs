@@ -11,7 +11,7 @@ namespace TeamCoding.Documents
     public class GitRepository
     {
         private string GetRepoPath(string fullFilePath)
-        { // TODO: Make sure GetRepoPath handles branches / decide if we want to seperate out users working on the same doc in the same repo, but a different branch
+        {
             var repoPath = Repository.Discover(fullFilePath);
 
             if (repoPath == null) return null; // No repository for file
@@ -42,6 +42,7 @@ namespace TeamCoding.Documents
             return new DocumentRepoMetaData()
             {
                 RepoUrl = repo.Head.TrackedBranch.Remote.Url,
+                RepoBranch = repo.Head.TrackedBranch.CanonicalName,
                 RelativePath = relativePath,
                 BeingEdited = isEdited,
                 LastActioned = DateTime.UtcNow
