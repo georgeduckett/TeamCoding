@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,31 +9,32 @@ namespace TeamCoding.Options
 {
     public class Settings
     {
-        public UserSettings UserSettings = new UserSettings();
-        public SharedSettings SharedSettings = new SharedSettings();
+        public readonly UserSettings UserSettings = new UserSettings();
+        public readonly SharedSettings SharedSettings = new SharedSettings();
+        public readonly Dictionary<object, PropertyInfo[]> SettingsProperties;
+        public readonly static PropertyInfo[] OptionPageGridProperties = typeof(OptionPageGrid).GetProperties();
         public Settings()
         {
+            SettingsProperties = new Dictionary<object, PropertyInfo[]>()
+            {
+                [UserSettings] = typeof(UserSettings).GetProperties(),
+                [SharedSettings] = typeof(SharedSettings).GetProperties()
+            };
+
             Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
         }
         internal void Update(OptionPageGrid optionPageGrid)
         {
-            // TODO: Cache properties for updating settings
-            foreach(var prop in UserSettings.GetType().GetProperties())
+            foreach (var key in SettingsProperties.Keys)
             {
-                var optionProp = typeof(OptionPageGrid).GetProperty(prop.Name);
-
-                if(optionProp != null)
+                foreach (var prop in SettingsProperties[key])
                 {
-                    prop.SetValue(UserSettings, optionProp.GetValue(optionPageGrid));
-                }
-            }
-            foreach (var prop in SharedSettings.GetType().GetProperties())
-            {
-                var optionProp = typeof(OptionPageGrid).GetProperty(prop.Name);
+                    var optionProp = OptionPageGridProperties.SingleOrDefault(p => p.Name == prop.Name);
 
-                if (optionProp != null)
-                {
-                    prop.SetValue(SharedSettings, optionProp.GetValue(optionPageGrid));
+                    if (optionProp != null)
+                    {
+                        prop.SetValue(key, optionProp.GetValue(optionPageGrid));
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace TeamCoding.VisualStudio
     /// <summary>
     /// Maintains a cache of images of users
     /// </summary>
-    public class UserImageCache // TODO: Maybe make redis also a user image caching option
+    public class UserImageCache
     {
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 0.0f, ScB = 0.0f });
