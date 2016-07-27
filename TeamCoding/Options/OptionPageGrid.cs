@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace TeamCoding.Options
 { // TODO: Figure out some way of getting (some) settings from a local file that could be synced from a repository. Maybe take them as defaults (and a way of resetting to default)
-    [Guid("BEC8E8F5-B7B8-422E-A586-12E7AA7E8DF8")]
+    [Guid(Guids.OptionPageGridGuidString)]
     public class OptionPageGrid : UIElementDialogPage
     {
         public string Username { get; set; } = UserSettings.DefaultUsername;

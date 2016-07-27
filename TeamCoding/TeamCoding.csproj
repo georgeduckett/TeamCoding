@@ -65,6 +65,7 @@
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\DocumentViewExtensions.cs" />
+    <Compile Include="Guids.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
     <Compile Include="IdentityManagement\VSOptionsIdentityProvider.cs" />
     <Compile Include="Logging\Logger.cs" />

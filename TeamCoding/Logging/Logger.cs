@@ -10,7 +10,6 @@ namespace TeamCoding.Logging
 {
     public class Logger
     {
-        private Guid OutputWindowCategoryGuid = new Guid("3C4076F2-E4E4-4B36-9643-FF48585BD80C"); // TODO: Move all guids to the same place
         private const string OutputWindowCategory = "Team Coding Output";
         private IVsOutputWindowPane TeamCodingPane;
         private void EnsureOutputPane()
@@ -18,8 +17,9 @@ namespace TeamCoding.Logging
             if (TeamCodingPane == null)
             {
                 var outputWindow = (IVsOutputWindow)Package.GetGlobalService(typeof(SVsOutputWindow));
-                outputWindow.CreatePane(ref OutputWindowCategoryGuid, OutputWindowCategory, 0, 0);
-                outputWindow.GetPane(ref OutputWindowCategoryGuid, out TeamCodingPane);
+                var outputWindowCategoryGuid = new Guid(Guids.OutputWindowCategoryGuidString);
+                outputWindow.CreatePane(ref outputWindowCategoryGuid, OutputWindowCategory, 0, 0);
+                outputWindow.GetPane(ref outputWindowCategoryGuid, out TeamCodingPane);
             }
         }
         public void WriteInformation(string info)

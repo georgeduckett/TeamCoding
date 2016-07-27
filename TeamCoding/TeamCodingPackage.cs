@@ -20,13 +20,12 @@ namespace TeamCoding
     // TODO: Add debugging output (to output window?)
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [Guid(PackageGuidString)]
+    [Guid(Guids.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids80.SolutionExists)]
     [ProvideOptionPage(typeof(OptionPageGrid), "Team Coding", "General", 0, 0, true)]
     public sealed class TeamCodingPackage : Package
     {
-        public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
         public static TeamCodingPackage Current { get; private set; }
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly HttpClient HttpClient;
