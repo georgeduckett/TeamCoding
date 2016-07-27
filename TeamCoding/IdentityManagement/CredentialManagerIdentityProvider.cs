@@ -1,4 +1,5 @@
 ﻿using TeamCoding.CredentialManagement;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.IdentityManagement
 {
@@ -40,9 +41,9 @@ namespace TeamCoding.IdentityManagement
                 var oldDisplayName = Identity.DisplayName;
                 try
                 {
-                    Identity.DisplayName = await UserIdentity.GetGravatarDisplayNameFromEmail(credential.Username);
+                    Identity.DisplayName = await UserIdentity.GetGravatarDisplayNameFromEmail(credential.Username).HandleException();
                 }
-                catch { } // Swallow failures here
+                catch { } // Swallow failures here since they're dealt with above
                 if (oldDisplayName != Identity.DisplayName)
                 {
                     TeamCodingPackage.Current.LocalIdeModel.OnUserIdentityChanged();

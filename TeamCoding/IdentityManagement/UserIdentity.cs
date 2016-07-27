@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.IdentityManagement
 {
@@ -29,7 +30,7 @@ namespace TeamCoding.IdentityManagement
         }
         public static async Task<string> GetGravatarDisplayNameFromEmail(string email)
         {
-            var result = await TeamCodingPackage.Current.HttpClient.GetAsync($"https://www.gravatar.com/{CalculateMD5Hash(email).ToLower()}.json?d=404");
+            var result = await TeamCodingPackage.Current.HttpClient.GetAsync($"https://www.gravatar.com/{CalculateMD5Hash(email).ToLower()}.json?d=404").HandleException();
             if (!result.IsSuccessStatusCode) return null;
 
             var gravatarProfileJsonString = await result.Content.ReadAsStringAsync();

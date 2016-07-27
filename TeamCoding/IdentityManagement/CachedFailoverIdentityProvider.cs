@@ -21,10 +21,12 @@ namespace TeamCoding.IdentityManagement
                 }
                 else
                 {
-                    Identity = identityProvider.GetIdentity();
+                    var newIdentity = identityProvider.GetIdentity();
 
-                    if(Identity != null)
+                    if(newIdentity != null)
                     {
+                        Identity = newIdentity;
+                        TeamCodingPackage.Current.Logger.WriteInformation($"{nameof(CachedFailoverIdentityProvider)}: Got identity from {identityProvider.GetType().Name}");
                         return Identity;
                     }
                 }
@@ -34,6 +36,9 @@ namespace TeamCoding.IdentityManagement
         }
         public CachedFailoverIdentityProvider(params IIdentityProvider[] identityProviders)
         {
+            TeamCodingPackage.Current.Logger.WriteInformation(
+                $"{nameof(CachedFailoverIdentityProvider)}: Using identity providers; {string.Join(", ", identityProviders.Select(ip => ip.GetType().Name))}");
+
             IdentityProviders = identityProviders;
         }
     }

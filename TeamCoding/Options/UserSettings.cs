@@ -21,7 +21,10 @@ namespace TeamCoding.Options
         public UserSettings()
         {
             UsernameProperty = new Property<string>(this);
+            UsernameProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(Username)}: {Username}");
+
             UserImageUrlProperty = new Property<string>(this);
+            UserImageUrlProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(UserImageUrl)}: {UserImageUrl}");
         }
     }
 }

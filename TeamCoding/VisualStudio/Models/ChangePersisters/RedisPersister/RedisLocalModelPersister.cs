@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
@@ -53,10 +54,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             using (var ms = new MemoryStream())
             {
                 ProtoBuf.Serializer.Serialize(ms, remoteModel);
-                TeamCodingPackage.Current.Redis.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray()).ContinueWith((t) =>
-                {
-                    // TODO: Handle redis publish exception
-                });
+                TeamCodingPackage.Current.Redis.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray()).HandleException();
             }
         }
 

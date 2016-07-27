@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using TeamCoding.Documents;
 using TeamCoding.IdentityManagement;
+using TeamCoding.Logging;
 using TeamCoding.Options;
 using TeamCoding.VisualStudio;
 using TeamCoding.VisualStudio.Models;
@@ -27,15 +28,16 @@ namespace TeamCoding
     {
         public const string PackageGuidString = "ac66efb2-fad5-442d-87e2-b9b4a206f14d";
         public static TeamCodingPackage Current { get; private set; }
-        public Settings Settings;
-        public LocalIDEModel LocalIdeModel;
-        public RedisWrapper Redis;
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly HttpClient HttpClient;
+        public readonly Logger Logger = new Logger();
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
         public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
         public IIdentityProvider IdentityProvider { get; private set; }
+        public Settings Settings { get; private set; }
+        public LocalIDEModel LocalIdeModel { get; private set; }
+        public RedisWrapper Redis { get; private set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
         /// </summary>
@@ -53,17 +55,25 @@ namespace TeamCoding
         protected override void Initialize()
         {
             base.Initialize();
-            Settings = new Settings();
-            Redis = new RedisWrapper();
-            LocalIdeModel = new LocalIDEModel();
-            IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
-            IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
-                                                                  new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
-                                                                  new VSIdentityProvider(),
-                                                                  new MachineIdentityProvider());
-            LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel));
-            RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister());
-            RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+            Logger.WriteInformation("Initializing");
+            try
+            {
+                Settings = new Settings();
+                Redis = new RedisWrapper();
+                LocalIdeModel = new LocalIDEModel();
+                IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
+                IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
+                                                                      new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
+                                                                      new VSIdentityProvider(),
+                                                                      new MachineIdentityProvider());
+                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel));
+                RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister());
+                RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+            }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                Logger.WriteError(ex);
+            }
         }
 
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)

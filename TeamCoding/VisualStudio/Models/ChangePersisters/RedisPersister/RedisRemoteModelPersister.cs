@@ -6,18 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
     public class RedisRemoteModelPersister : RemoteModelPersisterBase
     {
         public const string ModelPersisterChannel = "TeamCoding.ModelPersister";
+        private readonly Task SubscribeTask;
         public RedisRemoteModelPersister()
         {
-            TeamCodingPackage.Current.Redis.Subscribe(ModelPersisterChannel, Redis_RemoteModelReceived).ContinueWith((t) =>
-            {
-                // TODO: Handle subscribe exception
-            });
+            SubscribeTask = TeamCodingPackage.Current.Redis.Subscribe(ModelPersisterChannel, Redis_RemoteModelReceived).HandleException();
         }
         private void Redis_RemoteModelReceived(RedisChannel channel, RedisValue value)
         {
@@ -28,6 +27,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         }
         public override void Dispose()
         {
+            Task.WaitAll(SubscribeTask);
             base.Dispose();
         }
     }

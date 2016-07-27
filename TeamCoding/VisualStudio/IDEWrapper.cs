@@ -108,19 +108,26 @@ namespace TeamCoding.VisualStudio
         }
         private void UpdateIDE_Internal()
         {
-            // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
-            var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
-            
-            if (documentTabPanel == null)
-            { // We don't have a doc panel ATM (no docs are open)
-                return;
-            }
-            
-            var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
-
-            foreach (var titlePanel in documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>())
+            try
             {
-                UpdateTabImages(titlePanel, (titlePanel.DataContext as DocumentView).GetRelatedFilePath(), remoteOpenFiles);
+                // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
+                var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
+
+                if (documentTabPanel == null)
+                { // We don't have a doc panel ATM (no docs are open)
+                    return;
+                }
+
+                var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
+
+                foreach (var titlePanel in documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>())
+                {
+                    UpdateTabImages(titlePanel, (titlePanel.DataContext as DocumentView).GetRelatedFilePath(), remoteOpenFiles);
+                }
+            }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
             }
         }
 

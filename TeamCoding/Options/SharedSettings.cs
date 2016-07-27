@@ -21,7 +21,10 @@ namespace TeamCoding.Options
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
+            FileBasedPersisterPathProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(FileBasedPersisterPath)}: {FileBasedPersisterPath}");
+
             RedisServerProperty = new Property<string>(this);
+            RedisServerProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(RedisServer)}: {RedisServer}");
         }
     }
 }

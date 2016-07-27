@@ -10,6 +10,10 @@ namespace TeamCoding.Options
     {
         public UserSettings UserSettings = new UserSettings();
         public SharedSettings SharedSettings = new SharedSettings();
+        public Settings()
+        {
+            Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
+        }
         internal void Update(OptionPageGrid optionPageGrid)
         {
             // TODO: Cache properties for updating settings
@@ -31,10 +35,6 @@ namespace TeamCoding.Options
                     prop.SetValue(SharedSettings, optionProp.GetValue(optionPageGrid));
                 }
             }
-        }
-        public Settings()
-        {
-            Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
         }
     }
 }

@@ -69,7 +69,10 @@ namespace TeamCoding.VisualStudio
                         var imageStream = await request.Content.ReadAsStreamAsync();
                         imageControl.Source = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                     }
-                    catch { } // Any failures don't matter, it just won't update the image
+                    catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+                    {
+                        TeamCodingPackage.Current.Logger.WriteError(ex);
+                    }
                 });
             }
             return grid;

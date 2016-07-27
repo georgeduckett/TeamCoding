@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.Drawing;
 using System.Linq;
 
@@ -37,8 +38,9 @@ namespace TeamCoding.IdentityManagement
                     }
                 }
             }
-            catch
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
             {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
                 Identity = null;
             }
         }

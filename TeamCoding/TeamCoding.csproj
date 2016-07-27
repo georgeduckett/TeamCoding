@@ -60,12 +60,14 @@
     <Compile Include="Extensions\DTEExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\DocumentViewExtensions.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
     <Compile Include="IdentityManagement\VSOptionsIdentityProvider.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Options\OptionPageGrid.cs">
       <SubType>Component</SubType>
     </Compile>
