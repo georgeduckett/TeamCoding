@@ -36,7 +36,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             {
                 TeamCodingPackage.Current.Logger.WriteInformation($"Connecting to Redis using config string: \"{redisServer}\"");
                 RedisClient = await ConnectionMultiplexer.ConnectAsync(redisServer).HandleException();
-                TeamCodingPackage.Current.Logger.WriteInformation($"Connectted to Redis using config string: \"{redisServer}\"");
+                TeamCodingPackage.Current.Logger.WriteInformation($"Connected to Redis using config string: \"{redisServer}\"");
                 RedisSubscriber = RedisClient.GetSubscriber();
 
                 IEnumerable<Task> tasks;
