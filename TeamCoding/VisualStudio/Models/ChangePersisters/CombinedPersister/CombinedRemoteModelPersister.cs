@@ -32,9 +32,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
         {
             scdd.Repository,
             scdd.RelativePath,
-            scdd.IdeUserIdentity.Id,
-            scdd.BeingEdited
-        }).Select(g => g.OrderByDescending(scdd => scdd.HasFocus).First()).ToArray();
+            scdd.IdeUserIdentity.Id
+        }).Select(g => new SourceControlledDocumentData()
+        {
+            Repository = g.Key.Repository,
+            RelativePath = g.Key.RelativePath,
+            IdeUserIdentity = g.First().IdeUserIdentity,
+            HasFocus = g.Any(scdd => scdd.HasFocus),
+            BeingEdited = g.Any(scdd => scdd.BeingEdited)
+        }).ToArray();
         public CombinedRemoteModelPersister(params IRemoteModelPersister[] remoteModelPersisters)
         {
             RemoteModelPersisters = remoteModelPersisters;

@@ -103,14 +103,12 @@ namespace TeamCoding.VisualStudio
         }
         public void UpdateIDE()
         {
-            // TODO: Pass a cancellation token so we can cancel when disposed. Dispose of this in the package dispose method
             WpfMainWindow.Dispatcher.InvokeAsync(UpdateIDE_Internal);
         }
         private void UpdateIDE_Internal()
         {
             try
             {
-                // TODO: Cache this (probably need to re-do cache when closing/opening a solution)
                 var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
 
                 if (documentTabPanel == null)

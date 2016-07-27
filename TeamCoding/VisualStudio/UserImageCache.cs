@@ -17,7 +17,8 @@ namespace TeamCoding.VisualStudio
     /// </summary>
     public class UserImageCache // TODO: Maybe make redis also a user image caching option
     {
-        private static readonly Brush BorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
+        private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
+        private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 0.0f, ScB = 0.0f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
         private readonly IDEWrapper IdeWrapper;
 
@@ -52,7 +53,6 @@ namespace TeamCoding.VisualStudio
             });
             grid.Children.Add(new Border()
             {
-                BorderBrush = BorderBrush,
                 BorderThickness = new Thickness(1),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
@@ -93,12 +93,20 @@ namespace TeamCoding.VisualStudio
             {
                 textBlockControl.Margin = new Thickness(0);
             }
-            // TODO: Think of a better way of indicating the user is editing a document
+
             parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
 
             if (matchedRemoteDoc.HasFocus)
             {
-                parentControl.Children.OfType<Border>().Single().Visibility = Visibility.Visible;
+                var border = parentControl.Children.OfType<Border>().Single();
+                border.Visibility = Visibility.Visible;
+                border.BorderBrush = DocSelectedBorderBrush;
+            }
+            else if (matchedRemoteDoc.BeingEdited)
+            {
+                var border = parentControl.Children.OfType<Border>().Single();
+                border.Visibility = Visibility.Visible;
+                border.BorderBrush = DocEditedBorderBrush;
             }
             else
             {
