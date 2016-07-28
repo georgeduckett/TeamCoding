@@ -32,6 +32,20 @@ namespace TeamCoding.Options
                 textBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                 textBox.LostKeyboardFocus += TextBox_LostKeyboardFocus;
             }
+
+            Loaded += OptionsPage_Loaded;
+        }
+
+        private void OptionsPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            var loadedFromFile = TeamCodingPackage.Current?.Settings?.LoadFromJsonFile() ?? false;
+
+            foreach (var child in grpPersistence.Children().OfType<FrameworkElement>())
+            {
+                child.IsEnabled &= !loadedFromFile;
+            }
+
+            chkUsingJsonSettings.IsChecked = loadedFromFile;
         }
         private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
@@ -43,6 +57,11 @@ namespace TeamCoding.Options
         {
             ((TextBox)sender).GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
             sbiTitle.Content = sbiDescription.Content = null;
+        }
+
+        private void cmdShowJsonExample_Click(object sender, RoutedEventArgs e)
+        {
+            new TeamCodingExample().ShowModal();
         }
     }
 }

@@ -8,7 +8,13 @@ namespace TeamCoding.Extensions
 {
     public static class TaskExtensions
     {
-        private static void WriteTaskException(Task t) => TeamCodingPackage.Current.Logger.WriteError(t.Exception);
+        private static void WriteTaskException(Task t)
+        {
+            if (t != null)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(t.Exception);
+            }
+        }
         public static Task<TResult> HandleException<TResult>(this Task<TResult> task)
         {
             task.ContinueWith(WriteTaskException, TaskContinuationOptions.OnlyOnFaulted);

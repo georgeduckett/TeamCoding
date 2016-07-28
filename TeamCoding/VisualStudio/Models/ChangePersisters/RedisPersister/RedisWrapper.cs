@@ -42,7 +42,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 IEnumerable<Task> tasks;
                 lock (SubscribedActions)
                 {
-                    tasks = SubscribedActions.Keys.SelectMany(key => SubscribedActions[key].Select((a) => RedisSubscriber.SubscribeAsync(key, a).HandleException()));
+                    tasks = SubscribedActions.Keys.SelectMany(key => SubscribedActions[key].Select((a) => RedisSubscriber?.SubscribeAsync(key, a)?.HandleException()));
                 }
 
                 await Task.WhenAll(tasks);
@@ -52,7 +52,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         internal async Task Publish(string channel, byte[] data)
         {
             await ConnectTask;
-            await RedisSubscriber?.PublishAsync(channel, data).HandleException();
+            if (RedisSubscriber != null)
+            {
+                await RedisSubscriber?.PublishAsync(channel, data)?.HandleException();
+            }
         }
         internal async Task Subscribe(string channel, Action<RedisChannel, RedisValue> action)
         {
@@ -66,7 +69,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             }
 
             await ConnectTask;
-            await RedisSubscriber?.SubscribeAsync(channel, action).HandleException();
+            if (RedisSubscriber != null)
+            {
+                await RedisSubscriber?.SubscribeAsync(channel, action)?.HandleException();
+            }
         }
         private void ResetRedis()
         {

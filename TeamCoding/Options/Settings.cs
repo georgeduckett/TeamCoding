@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -9,6 +12,7 @@ namespace TeamCoding.Options
 {
     public class Settings
     {
+        public const string TeamCodingConfigFileName = "teamcoding.json";
         public readonly UserSettings UserSettings = new UserSettings();
         public readonly SharedSettings SharedSettings = new SharedSettings();
         public readonly Dictionary<object, PropertyInfo[]> SettingsProperties;
@@ -22,6 +26,59 @@ namespace TeamCoding.Options
             };
 
             Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
+        }
+        internal bool LoadFromJsonFile()
+        {
+            var dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
+
+            var solutionFile = dte.Solution?.FileName;
+
+            if (string.IsNullOrWhiteSpace(solutionFile))
+            {
+                return false;
+            }
+            var SolutionPath = Path.GetDirectoryName(solutionFile);
+
+            TeamCodingPackage.Current.Logger.WriteInformation($"Looking for {TeamCodingConfigFileName} in {SolutionPath}");
+
+            var teamConfigFilePath = Directory.GetFiles(SolutionPath, TeamCodingConfigFileName, SearchOption.AllDirectories);
+
+            if (teamConfigFilePath.Length == 0)
+            {
+                TeamCodingPackage.Current.Logger.WriteInformation($"No {TeamCodingConfigFileName} file found");
+                return false;
+            }
+            else if (teamConfigFilePath.Length != 1)
+            {
+                TeamCodingPackage.Current.Logger.WriteError($"Multiple {TeamCodingConfigFileName} files found");
+                return false;
+            }
+
+            TeamCodingPackage.Current.Logger.WriteInformation($"{TeamCodingConfigFileName} file found");
+            var teamConfig = JObject.Parse(File.ReadAllText(teamConfigFilePath[0]));
+            TeamCodingPackage.Current.Logger.WriteInformation($"{TeamCodingConfigFileName} file parsed as json successfully");
+
+            foreach (var prop in SettingsProperties[SharedSettings])
+            { // TODO: Why doesn't this start syncing on startup (and maybe when file is initially created)
+                var configPropValue = teamConfig[prop.Name];
+                if(configPropValue == null)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    prop.SetValue(SharedSettings, configPropValue.ToObject(prop.PropertyType));
+                    TeamCodingPackage.Current.Logger.WriteInformation($"{prop.Name} set to {configPropValue.ToObject(prop.PropertyType)}");
+                }
+                catch(Exception ex)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError($"{prop.Name} cannot be set to {configPropValue.ToObject(prop.PropertyType)}");
+                    TeamCodingPackage.Current.Logger.WriteError(ex);
+                }
+            }
+
+            return true;
         }
         internal void Update(OptionPageGrid optionPageGrid)
         {

@@ -104,7 +104,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
 
         private void SendIdeModel(RemoteIDEModel remoteModel)
         {
-            if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
+            if (!string.IsNullOrEmpty(PersistenceFolderPath))
             {
                 try
                 {
@@ -114,7 +114,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
                         LastFileWriteTime = DateTime.UtcNow;
                     }
                 }
-                catch (IOException) { }
+                catch (IOException ex)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError(ex);
+                }
             }
         }
 

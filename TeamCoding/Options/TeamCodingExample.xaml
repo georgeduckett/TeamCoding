@@ -1,0 +1,15 @@
+﻿<platformUi:DialogWindow x:Class="TeamCoding.Options.TeamCodingExample"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TeamCoding.Options"
+             xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             mc:Ignorable="d" HasMinimizeButton="False" HasMaximizeButton="False" Height="193.466" Width="436.363">
+    <Grid>
+        <TextBox x:Name="txtExampleConfigJson" TextWrapping="WrapWithOverflow" xml:space="preserve" AcceptsReturn="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" >{
+  "FileBasedPersisterPath": "\\\\FileServer\\TeamCodingPersistence",
+  "RedisServer": "localhost"
+}</TextBox>
+    </Grid>
+</platformUi:DialogWindow>

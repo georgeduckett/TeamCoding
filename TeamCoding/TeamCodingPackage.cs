@@ -64,8 +64,8 @@ namespace TeamCoding
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
                                                                       new MachineIdentityProvider());
-                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel));
                 RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister());
+                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel));
                 RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             }
             catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)

@@ -20,6 +20,7 @@ namespace TeamCoding.Logging
                 var outputWindowCategoryGuid = new Guid(Guids.OutputWindowCategoryGuidString);
                 outputWindow.CreatePane(ref outputWindowCategoryGuid, OutputWindowCategory, 0, 0);
                 outputWindow.GetPane(ref outputWindowCategoryGuid, out TeamCodingPane);
+                // TODO: How do I make the output window pane visible (in dropdown) without activating it?
             }
         }
         public void WriteInformation(string info)

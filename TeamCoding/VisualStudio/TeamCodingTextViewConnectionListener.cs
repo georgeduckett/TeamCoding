@@ -48,6 +48,12 @@ namespace TeamCoding.VisualStudio
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
             {
                 TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
+
+                // If the file was the config file the try and load the settings
+                if (e.FilePath.EndsWith(Options.Settings.TeamCodingConfigFileName))
+                {
+                    TeamCodingPackage.Current.Settings.LoadFromJsonFile();
+                }
             }
         }
 

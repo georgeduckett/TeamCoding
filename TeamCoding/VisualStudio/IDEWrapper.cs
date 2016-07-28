@@ -39,6 +39,9 @@ namespace TeamCoding.VisualStudio
             // It's ok that we're not saying that tabs without documents have been opened since if the document hasn't been opened the user isn't really looking at them yet anyway
             // We do want to update the IDE though because we need to show user icons on tabs even thought the associated document window hasn't been created yet
             UpdateIDE();
+
+            // Load a TeamConfig.json file if it exists
+            TeamCodingPackage.Current.Settings.LoadFromJsonFile();
         }
 
         private void WindowEvents_WindowCreated(EnvDTE.Window window)
@@ -118,7 +121,7 @@ namespace TeamCoding.VisualStudio
 
                 var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
-                foreach (var titlePanel in documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>())
+                foreach (var titlePanel in documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>().Where(tp => tp.DataContext is DocumentView))
                 {
                     UpdateTabImages(titlePanel, (titlePanel.DataContext as DocumentView).GetRelatedFilePath(), remoteOpenFiles);
                 }

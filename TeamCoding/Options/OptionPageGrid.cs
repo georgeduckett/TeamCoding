@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace TeamCoding.Options
-{ // TODO: Figure out some way of getting (some) settings from a local file that could be synced from a repository. Maybe take them as defaults (and a way of resetting to default)
+{ // Test out some way of getting (some) settings from a local file that could be synced from a repository.
     [Guid(Guids.OptionPageGridGuidString)]
     public class OptionPageGrid : UIElementDialogPage
     {

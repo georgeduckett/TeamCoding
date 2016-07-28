@@ -79,6 +79,9 @@
     <Compile Include="Options\Settings.cs" />
     <Compile Include="Documents\SourceControlledDocumentData.cs" />
     <Compile Include="Options\SharedSettings.cs" />
+    <Compile Include="Options\TeamCodingExample.xaml.cs">
+      <DependentUpon>TeamCodingExample.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Options\UserSettings.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedRemoteModelPersister.cs" />
@@ -312,6 +315,10 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="Options\OptionsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Options\TeamCodingExample.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
