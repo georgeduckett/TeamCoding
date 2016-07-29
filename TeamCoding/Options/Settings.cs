@@ -68,8 +68,8 @@ namespace TeamCoding.Options
 
                 try
                 {
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Setting {prop.Name} to {configPropValue.ToObject(prop.PropertyType)}");
                     prop.SetValue(SharedSettings, configPropValue.ToObject(prop.PropertyType));
-                    TeamCodingPackage.Current.Logger.WriteInformation($"{prop.Name} set to {configPropValue.ToObject(prop.PropertyType)}");
                 }
                 catch(Exception ex)
                 {
