@@ -27,11 +27,11 @@ namespace TeamCoding.Options
 
             Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
         }
-        internal bool LoadFromJsonFile()
+        internal bool LoadFromJsonFile(string solutionFile = null)
         {
             var dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
 
-            var solutionFile = dte.Solution?.FileName;
+            solutionFile = solutionFile ?? dte.Solution?.FileName;
 
             if (string.IsNullOrWhiteSpace(solutionFile))
             {

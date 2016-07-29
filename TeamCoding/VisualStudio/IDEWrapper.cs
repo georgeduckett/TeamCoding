@@ -19,7 +19,6 @@ namespace TeamCoding.VisualStudio
     {
         private readonly UserImageCache UserImages;
         private readonly EnvDTE.WindowEvents WindowEvents;
-        private readonly EnvDTE.SolutionEvents SolutionEvents;
         private readonly Visual WpfMainWindow;
         private readonly EnvDTE.DTE DTE;
 
@@ -29,19 +28,8 @@ namespace TeamCoding.VisualStudio
             UserImages = new UserImageCache(this);
             WpfMainWindow = GetWpfMainWindow(dte);
             WindowEvents = dte.Events.WindowEvents;
-            SolutionEvents = dte.Events.SolutionEvents;
-            SolutionEvents.Opened += SolutionEvents_Opened;
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             WindowEvents.WindowCreated += WindowEvents_WindowCreated;
-        }
-        private void SolutionEvents_Opened()
-        {
-            // It's ok that we're not saying that tabs without documents have been opened since if the document hasn't been opened the user isn't really looking at them yet anyway
-            // We do want to update the IDE though because we need to show user icons on tabs even thought the associated document window hasn't been created yet
-            UpdateIDE();
-
-            // Load a TeamConfig.json file if it exists
-            TeamCodingPackage.Current.Settings.LoadFromJsonFile();
         }
 
         private void WindowEvents_WindowCreated(EnvDTE.Window window)

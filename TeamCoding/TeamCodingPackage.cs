@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
@@ -27,8 +28,9 @@ namespace TeamCoding
     {
         public static TeamCodingPackage Current { get; private set; }
         public readonly GitRepository SourceControlRepo = new GitRepository();
-        public readonly HttpClient HttpClient;
         public readonly Logger Logger = new Logger();
+        private uint pdwCookie;
+        public HttpClient HttpClient { get; private set; }
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
         public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
@@ -42,9 +44,6 @@ namespace TeamCoding
         public TeamCodingPackage()
         {
             Current = this;
-            HttpClient = new HttpClient();
-            HttpClient.DefaultRequestHeaders.Add("User-Agent",
-                                                 "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
     }
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -55,11 +54,13 @@ namespace TeamCoding
             base.Initialize();
             Logger.WriteInformation("Initializing");
 
-            //var pSolution = GetService(typeof(Microsoft.VisualStudio.Shell.Interop.SVsSolution)) as Microsoft.VisualStudio.Shell.Interop.IVsSolution;
-            // TODO: use pSolution.AdviseSolutionEvents() and http://stackoverflow.com/questions/16558133/issues-with-loading-solution-sln-file-using-c-sharp to be able to load settings etc. before the solution is fully loaded
-
             try
-            {
+                {
+                HttpClient = new HttpClient();
+                HttpClient.DefaultRequestHeaders.Add("User-Agent",
+                                                     "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
+                var pSolution = (IVsSolution)GetService(typeof(SVsSolution));
+                var result = pSolution.AdviseSolutionEvents(new SolutionEventsHandler(), out pdwCookie);
                 Settings = new Settings();
                 Redis = new RedisWrapper();
                 LocalIdeModel = new LocalIDEModel();
@@ -85,6 +86,11 @@ namespace TeamCoding
 
         protected override void Dispose(bool disposing)
         {
+            if (pdwCookie != 0)
+            {
+                var pSolution = (IVsSolution)GetService(typeof(SVsSolution));
+                pSolution.UnadviseSolutionEvents(pdwCookie);
+            }
             Redis?.Dispose();
             RemoteModelChangeManager?.Dispose();
             LocalModelChangeManager?.Dispose();

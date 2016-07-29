@@ -102,6 +102,7 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisWrapper.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RemoteModelPersisterBase.cs" />
+    <Compile Include="VisualStudio\SolutionEventsHandler.cs" />
     <Compile Include="VisualStudio\UserImageCache.cs" />
     <Compile Include="IdentityManagement\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
