@@ -54,6 +54,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             await ConnectTask;
             if (RedisSubscriber != null)
             {
+                await ConnectTask; // Wait to be connected first
                 await RedisSubscriber?.PublishAsync(channel, data)?.HandleException();
             }
         }
