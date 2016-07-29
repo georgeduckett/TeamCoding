@@ -12,22 +12,22 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
     {
         private Task ConnectTask;
         private ConnectionMultiplexer RedisClient;
-        private ISubscriber RedisSubscriber;
         private Dictionary<string, List<Action<RedisChannel, RedisValue>>> SubscribedActions = new Dictionary<string, List<Action<RedisChannel, RedisValue>>>();
         public RedisWrapper()
         {
-            TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanged += SharedSettings_RedisServerChanged;
             ConnectTask = ConnectRedis();
+            TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanged += SharedSettings_RedisServerChanged;
         }
-        private void ChangeRedisServer(Task existingConnectTask)
+        private async Task ChangeRedisServer()
         {
             // We don't worry about the result of the task as any exceptions are already handled
+            await ConnectTask;
             ResetRedis();
-            ConnectTask = ConnectRedis();
+            await ConnectRedis();
         }
         private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
         {
-            ConnectTask.ContinueWith(ChangeRedisServer);
+            ConnectTask = ChangeRedisServer();
         }
         private async Task ConnectRedis()
         {
@@ -35,27 +35,36 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             if (!string.IsNullOrWhiteSpace(redisServer))
             {
                 TeamCodingPackage.Current.Logger.WriteInformation($"Connecting to Redis using config string: \"{redisServer}\"");
-                RedisClient = await ConnectionMultiplexer.ConnectAsync(redisServer).HandleException();
+                RedisClient = await ConnectionMultiplexer.ConnectAsync(redisServer)
+                    .HandleException((ex) => TeamCodingPackage.Current.Logger.WriteError($"Failed to connect to redis server using config string: {redisServer}"));
                 TeamCodingPackage.Current.Logger.WriteInformation($"Connected to Redis using config string: \"{redisServer}\"");
-                RedisSubscriber = RedisClient.GetSubscriber();
 
-                IEnumerable<Task> tasks;
-                lock (SubscribedActions)
+                if (RedisClient != null)
                 {
-                    tasks = SubscribedActions.Keys.SelectMany(key => SubscribedActions[key].Select((a) => RedisSubscriber?.SubscribeAsync(key, a)?.HandleException()));
-                }
+                    IEnumerable<Task> tasks;
+                    lock (SubscribedActions)
+                    {
+                        var subscriber = RedisClient.GetSubscriber();
+                        tasks = SubscribedActions.Keys.SelectMany(key => SubscribedActions[key].Select((a) => subscriber.SubscribeAsync(key, a)?.HandleException()));
+                    }
 
-                await Task.WhenAll(tasks);
+                    await Task.WhenAll(tasks);
+                }
             }
         }
 
         internal async Task Publish(string channel, byte[] data)
         {
-            await ConnectTask;
-            if (RedisSubscriber != null)
+            await ConnectTask; // Wait to be connected first
+
+            if (RedisClient != null)
             {
-                await ConnectTask; // Wait to be connected first
-                await RedisSubscriber?.PublishAsync(channel, data)?.HandleException();
+                await RedisClient?.GetSubscriber()?.PublishAsync(channel, data)?.HandleException();
+                TeamCodingPackage.Current.Logger.WriteInformation("Sent model");
+            }
+            else
+            {
+                TeamCodingPackage.Current.Logger.WriteInformation("Redisclient == null, didn't send model");
             }
         }
         internal async Task Subscribe(string channel, Action<RedisChannel, RedisValue> action)
@@ -70,16 +79,20 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             }
 
             await ConnectTask;
-            if (RedisSubscriber != null)
+            if (RedisClient != null)
             {
-                await RedisSubscriber?.SubscribeAsync(channel, action)?.HandleException();
+                await RedisClient?.GetSubscriber()?.SubscribeAsync(channel, action)?.HandleException();
+                TeamCodingPackage.Current.Logger.WriteInformation("Subscribed");
+            }
+            else
+            {
+                TeamCodingPackage.Current.Logger.WriteInformation("Redisclient == null, didn't subscribe");
             }
         }
         private void ResetRedis()
         {
             RedisClient?.Dispose();
             RedisClient = null;
-            RedisSubscriber = null;
         }
         public void Dispose()
         {

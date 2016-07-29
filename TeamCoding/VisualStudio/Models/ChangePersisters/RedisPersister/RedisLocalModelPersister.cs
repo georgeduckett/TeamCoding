@@ -54,6 +54,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             using (var ms = new MemoryStream())
             {
                 ProtoBuf.Serializer.Serialize(ms, remoteModel);
+                TeamCodingPackage.Current.Logger.WriteInformation("Publishing Model");
                 TeamCodingPackage.Current.Redis.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray()).HandleException();
             }
         }

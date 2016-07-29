@@ -59,7 +59,7 @@ namespace TeamCoding.Options
             TeamCodingPackage.Current.Logger.WriteInformation($"{TeamCodingConfigFileName} file parsed as json successfully");
 
             foreach (var prop in SettingsProperties[SharedSettings])
-            { // TODO: Why doesn't this start syncing on startup (and maybe when file is initially created)
+            { // TODO: Why doesn't this start when the config file is initially created
                 var configPropValue = teamConfig[prop.Name];
                 if(configPropValue == null)
                 {

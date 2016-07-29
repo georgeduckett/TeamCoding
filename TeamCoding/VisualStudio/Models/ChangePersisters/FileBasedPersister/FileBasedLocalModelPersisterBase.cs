@@ -116,6 +116,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
                 }
                 catch (IOException ex)
                 {
+                    TeamCodingPackage.Current.Logger.WriteError("Failed to create persistence file.");
                     TeamCodingPackage.Current.Logger.WriteError(ex);
                 }
             }
