@@ -29,7 +29,7 @@ namespace TeamCoding
         public static TeamCodingPackage Current { get; private set; }
         public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly Logger Logger = new Logger();
-        private uint pdwCookie;
+        private uint SolutionEventsHandlerId;
         public HttpClient HttpClient { get; private set; }
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
         public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
@@ -55,12 +55,12 @@ namespace TeamCoding
             Logger.WriteInformation("Initializing");
 
             try
-                {
+            {
                 HttpClient = new HttpClient();
                 HttpClient.DefaultRequestHeaders.Add("User-Agent",
                                                      "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
                 var pSolution = (IVsSolution)GetService(typeof(SVsSolution));
-                var result = pSolution.AdviseSolutionEvents(new SolutionEventsHandler(), out pdwCookie);
+                var result = pSolution.AdviseSolutionEvents(new SolutionEventsHandler(), out SolutionEventsHandlerId);
                 Settings = new Settings();
                 Redis = new RedisWrapper();
                 LocalIdeModel = new LocalIDEModel();
@@ -78,18 +78,15 @@ namespace TeamCoding
                 Logger.WriteError(ex);
             }
         }
-
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
             IDEWrapper.UpdateIDE();
         }
-
         protected override void Dispose(bool disposing)
         {
-            if (pdwCookie != 0)
+            if (SolutionEventsHandlerId != 0)
             {
-                var pSolution = (IVsSolution)GetService(typeof(SVsSolution));
-                pSolution.UnadviseSolutionEvents(pdwCookie);
+                (GetService(typeof(SVsSolution)) as IVsSolution).UnadviseSolutionEvents(SolutionEventsHandlerId);
             }
             Redis?.Dispose();
             RemoteModelChangeManager?.Dispose();
