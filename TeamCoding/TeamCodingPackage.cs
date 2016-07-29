@@ -54,6 +54,10 @@ namespace TeamCoding
         {
             base.Initialize();
             Logger.WriteInformation("Initializing");
+
+            //var pSolution = GetService(typeof(Microsoft.VisualStudio.Shell.Interop.SVsSolution)) as Microsoft.VisualStudio.Shell.Interop.IVsSolution;
+            // TODO: use pSolution.AdviseSolutionEvents() and http://stackoverflow.com/questions/16558133/issues-with-loading-solution-sln-file-using-c-sharp to be able to load settings etc. before the solution is fully loaded
+
             try
             {
                 Settings = new Settings();
