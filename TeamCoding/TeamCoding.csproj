@@ -129,7 +129,10 @@
     <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.pdb">
       <Link>git2-785d8c4.pdb</Link>
     </Content>
-    <Content Include="Resources\TeamCodingPackage.ico" />
+    <Content Include="Resources\TeamCodingPackage.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Resource Include="Resources\UnknownUserImage.png" />
   </ItemGroup>
   <ItemGroup>
