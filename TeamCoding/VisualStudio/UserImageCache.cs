@@ -18,7 +18,7 @@ namespace TeamCoding.VisualStudio
     public class UserImageCache
     {
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
-        private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 0.0f, ScB = 0.0f });
+        private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
         private readonly IDEWrapper IdeWrapper;
 
@@ -98,13 +98,13 @@ namespace TeamCoding.VisualStudio
 
             if (matchedRemoteDoc.HasFocus)
             {
-                var border = parentControl.Children.OfType<Border>().Single();
+                var border = parentControl.FindChild<Border>();
                 border.Visibility = Visibility.Visible;
                 border.BorderBrush = DocSelectedBorderBrush;
             }
             else if (matchedRemoteDoc.BeingEdited)
             {
-                var border = parentControl.Children.OfType<Border>().Single();
+                var border = parentControl.FindChild<Border>();
                 border.Visibility = Visibility.Visible;
                 border.BorderBrush = DocEditedBorderBrush;
             }
@@ -139,7 +139,7 @@ namespace TeamCoding.VisualStudio
                 }
             }
 
-            parentControl.Children.OfType<Image>().Single().Source = imageSource;
+            parentControl.FindChild<Image>().Source = imageSource;
         }
 
         /// <summary>
