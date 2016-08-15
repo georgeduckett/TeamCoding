@@ -4,8 +4,11 @@
     <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="0.1" Language="en-US" Publisher="George Duckett" />
     <DisplayName>TeamCoding</DisplayName>
     <Description xml:space="preserve">The Team Coding Visual Studio extension helps discover team members who are working in the same area of a solution as you. You can set your own username and user image url via settings (Tools-&gt;Options-&gt;Team Coding), or let it try and figure them out automatically. Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited.</Description>
+    <MoreInfo>https://github.com/georgeduckett/TeamCoding</MoreInfo>
+    <License>Resources\License.txt</License>
     <GettingStartedGuide>Resources\GettingStarted.txt</GettingStartedGuide>
     <Icon>Resources\TeamCodingPackage.ico</Icon>
+    <PreviewImage>Resources\PreviewImage.png</PreviewImage>
     <Tags>Collaboration, Teams, Source Control, Git, Pair Programming</Tags>
   </Metadata>
   <Installation>

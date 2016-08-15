@@ -122,6 +122,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\License.txt">
+      <Link>Resources\License.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.dll">
       <Link>git2-785d8c4.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -137,6 +142,10 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GettingStarted.tt</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\PreviewImage.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
