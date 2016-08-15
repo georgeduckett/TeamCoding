@@ -129,6 +129,17 @@
     <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.pdb">
       <Link>git2-785d8c4.pdb</Link>
     </Content>
+    <Content Include="Resources\GettingStarted.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GettingStarted.txt</LastGenOutput>
+    </Content>
+    <Content Include="Resources\GettingStarted.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GettingStarted.tt</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\TeamCodingPackage.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -316,7 +327,9 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Options\OptionsPage.xaml">
       <SubType>Designer</SubType>

@@ -243,3 +243,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/TeamCoding/Resources/GettingStarted.txt

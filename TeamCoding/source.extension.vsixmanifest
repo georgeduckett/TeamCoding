@@ -1,14 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="1.0" Language="en-US" Publisher="George Duckett" />
+    <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="0.1" Language="en-US" Publisher="George Duckett" />
     <DisplayName>TeamCoding</DisplayName>
-    <Description xml:space="preserve">The Team Coding Visual Studio extension helps discover team members who are working in the same area of a solution as you. You can set your own username and user image url via settings (Tools-&gt;Options-&gt;Team Coding), or let it try and figure them out automatically (see below). Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited.</Description>
+    <Description xml:space="preserve">The Team Coding Visual Studio extension helps discover team members who are working in the same area of a solution as you. You can set your own username and user image url via settings (Tools-&gt;Options-&gt;Team Coding), or let it try and figure them out automatically. Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited.</Description>
+    <GettingStartedGuide>Resources\GettingStarted.txt</GettingStartedGuide>
     <Icon>Resources\TeamCodingPackage.ico</Icon>
     <Tags>Collaboration, Teams, Source Control, Git, Pair Programming</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,15.0)" />
+    <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.Enterprise" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
