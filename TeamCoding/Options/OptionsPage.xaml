@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="TeamCoding.Options.OptionsPage"
+﻿<UserControl x:Name="userControl" x:Class="TeamCoding.Options.OptionsPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -21,8 +21,8 @@
                 <TextBox x:Name="txtFileBasedPersisterPath" Margin="98,34,0,0" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}" Height="23" VerticalAlignment="Top"/>
                 <Label x:Name="lblRedisServer" Content="Redis Server" HorizontalAlignment="Left" Target="{Binding ElementName=txtRedisServer, Mode=OneWay}" Margin="0,60,0,0" Height="26" VerticalAlignment="Top"/>
                 <TextBox x:Name="txtRedisServer" Margin="98,62,0,0" Height="23" VerticalAlignment="Top" Text="{Binding RedisServer}" ToolTip="Set a redis server to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblRedisServer, Mode=OneWay}"/>
-                <CheckBox x:Name="chkUsingJsonSettings" Content="Using TeamConfig.json" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
-                <Button x:Name="cmdShowJsonExample" Content="Show example teamcoding.json" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="cmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,0,0"/>
+                <CheckBox x:Name="chkUsingJsonSettings" Content="{x:Static local:OptionsPage.chkUsingJsonSettingsCaption}" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
+                <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="cmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,0,0"/>
             </Grid>
         </GroupBox>
         <StatusBar Height="25" VerticalAlignment="Bottom">

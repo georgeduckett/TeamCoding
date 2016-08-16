@@ -22,6 +22,9 @@ namespace TeamCoding.Options
     /// </summary>
     public partial class OptionsPage : UserControl
     {
+        public const string chkUsingJsonSettingsCaption = "Using " + TeamCoding.Options.Settings.TeamCodingConfigFileName;
+        public const string cmdShowJsonExampleCaption = "Show example " + TeamCoding.Options.Settings.TeamCodingConfigFileName;
+
         public OptionsPage(OptionPageGrid optionPageGrid)
         {
             InitializeComponent();
