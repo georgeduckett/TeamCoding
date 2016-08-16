@@ -28,7 +28,7 @@ namespace TeamCoding.Logging
                 outputWindow.CreatePane(ref outputWindowCategoryGuid, OutputWindowCategory, 0, 0);
                 outputWindow.GetPane(ref outputWindowCategoryGuid, out TeamCodingPane);
                 TeamCodingPane.Activate(); // Activate it so it's visible
-                OldPane.Activate(); // Then activate the old one again
+                OldPane?.Activate(); // Then activate the old one again
             }
         }
         public void WriteInformation(string info)
