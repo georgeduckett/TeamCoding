@@ -114,6 +114,12 @@
     <Compile Include="VisualStudio\VisuallyDistinctColours.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Readme.md">
+      <Link>Resources\Readme.md</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Readme.tt</DependentUpon>
+    </None>
     <None Include="app.config" />
     <None Include="Key.snk" />
     <None Include="packages.config" />
@@ -133,6 +139,11 @@
     </Content>
     <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.pdb">
       <Link>git2-785d8c4.pdb</Link>
+    </Content>
+    <Content Include="..\Readme.tt">
+      <Link>Resources\Readme.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Readme.md</LastGenOutput>
     </Content>
     <Content Include="Resources\GettingStarted.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
