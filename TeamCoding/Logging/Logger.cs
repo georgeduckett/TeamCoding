@@ -10,30 +10,40 @@ namespace TeamCoding.Logging
 {
     public class Logger
     {
-        private const string OutputWindowCategory = "Team Coding Output";
+        public const string OutputWindowCategory = "Team Coding";
         private IVsOutputWindowPane TeamCodingPane;
+        private EnvDTE.OutputWindow OutputWindow;
+        public Logger()
+        {
+            var dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
+            OutputWindow = (EnvDTE.OutputWindow)dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput).Object;
+        }
         private void EnsureOutputPane()
         {
             if (TeamCodingPane == null)
             {
+                var OldPane = OutputWindow.ActivePane;
                 var outputWindow = (IVsOutputWindow)Package.GetGlobalService(typeof(SVsOutputWindow));
                 var outputWindowCategoryGuid = new Guid(Guids.OutputWindowCategoryGuidString);
                 outputWindow.CreatePane(ref outputWindowCategoryGuid, OutputWindowCategory, 0, 0);
                 outputWindow.GetPane(ref outputWindowCategoryGuid, out TeamCodingPane);
-                // TODO: How do I make the output window pane visible (in dropdown) without activating it?
+                TeamCodingPane.Activate(); // Activate it so it's visible
+                OldPane.Activate(); // Then activate the old one again
             }
         }
         public void WriteInformation(string info)
         {
+            LogText(info);
+        }
+        private void LogText(string text)
+        {
             EnsureOutputPane();
-            ActivityLog.TryLogInformation(OutputWindowCategory, info);
-            TeamCodingPane.OutputStringThreadSafe(info + Environment.NewLine);
+            ActivityLog.TryLogInformation(OutputWindowCategory, text);
+            TeamCodingPane.OutputStringThreadSafe($"{DateTime.Now} {text}{Environment.NewLine}");
         }
         public void WriteError(string error)
         {
-            EnsureOutputPane();
-            ActivityLog.TryLogError(OutputWindowCategory, error);
-            TeamCodingPane.OutputStringThreadSafe(error + Environment.NewLine);
+            LogText(error);
             TeamCodingPane.Activate();
         }
         public void WriteError(Exception ex) => WriteError(ex.ToString());
