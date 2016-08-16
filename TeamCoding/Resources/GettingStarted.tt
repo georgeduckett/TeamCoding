@@ -3,5 +3,5 @@
 <#@ output extension=".txt" #>
 <#@ assembly name="$(SolutionDir)\TeamCoding\bin\Debug\TeamCoding.dll" #>
 There are 2 ways Team Coding can be minimally configured.
-In the options menu (under <#= TeamCoding.Options.Settings.TeamCodingConfigFileName #>) where you can also set user settings and/or
-by opening a repository with a <#= TeamCoding.Options.OptionPageGrid.OptionsName #> file in it (shared settings will be taken from there).
+In the options menu (under <#= TeamCoding.Options.OptionPageGrid.OptionsName #>) where you can also set user settings and/or
+by opening a repository with a `<#= TeamCoding.Options.Settings.TeamCodingConfigFileName #>` file in it (shared settings will be taken from there).
