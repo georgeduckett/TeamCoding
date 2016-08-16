@@ -49,7 +49,7 @@ namespace TeamCoding.VisualStudio
             {
                 TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
 
-                // If the file was the config file the try and load the settings
+                // If the file was the config file then try and load the settings
                 if (e.FilePath.EndsWith(Options.Settings.TeamCodingConfigFileName))
                 {
                     TeamCodingPackage.Current.Settings.LoadFromJsonFile();
