@@ -13,6 +13,7 @@ namespace TeamCoding.Options
     [Guid(Guids.OptionPageGridGuidString)]
     public class OptionPageGrid : UIElementDialogPage
     {
+        public const string OptionsName = "Team Coding";
         public string Username { get; set; } = UserSettings.DefaultUsername;
         public string UserImageUrl { get; set; } = UserSettings.DefaultImageUrl;
         public string FileBasedPersisterPath { get; set; } = SharedSettings.DefaultFileBasedPersisterPath;

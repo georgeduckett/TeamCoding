@@ -23,7 +23,7 @@ namespace TeamCoding
     [Guid(Guids.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids80.SolutionExists)]
-    [ProvideOptionPage(typeof(OptionPageGrid), "Team Coding", "General", 0, 0, true)]
+    [ProvideOptionPage(typeof(OptionPageGrid), OptionPageGrid.OptionsName, "General", 0, 0, true)]
     public sealed class TeamCodingPackage : Package
     {
         public static TeamCodingPackage Current { get; private set; }
