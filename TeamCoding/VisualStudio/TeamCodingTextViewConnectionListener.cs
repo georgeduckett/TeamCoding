@@ -30,7 +30,7 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
-                TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView);
+                TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView).Wait();
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;
 
