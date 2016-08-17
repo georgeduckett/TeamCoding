@@ -1,26 +1,29 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using System.IO;
+using System.Linq;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio
 {
-    /// <summary>
-    /// Establishes an <see cref="IAdornmentLayer"/> to place the adornment on and exports the <see cref="IWpfTextViewCreationListener"/>
-    /// that instantiates the adornment on the event of a <see cref="IWpfTextView"/>'s creation
-    /// </summary>
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
     {
         private readonly ITextDocumentFactoryService TextDocFactory;
+        private readonly IClassifierAggregatorService TextClassifierService;
 
         [ImportingConstructor]
-        public TeamCodingTextViewConnectionListener(ITextDocumentFactoryService textDocumentFactoryService)
+        public TeamCodingTextViewConnectionListener(ITextDocumentFactoryService textDocumentFactoryService, IClassifierAggregatorService textClassifierService)
         {
             TextDocFactory = textDocumentFactoryService;
+            TextClassifierService = textClassifierService;
             TextDocFactory.TextDocumentDisposed += TextDocFactory_TextDocumentDisposed;
         }
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
@@ -30,12 +33,19 @@ namespace TeamCoding.VisualStudio
                 TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;
+
                 TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
+                    textView.Caret.PositionChanged += Caret_PositionChanged;
                 }
             }
+        }
+
+        private async void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
         }
 
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)
@@ -67,6 +77,14 @@ namespace TeamCoding.VisualStudio
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView closed
                 textView.TextBuffer.Changed -= TextBuffer_Changed;
+                ITextDocument textDoc;
+
+                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
+                if (textDoc != null)
+                {
+                    textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;
+                    textView.Caret.PositionChanged -= Caret_PositionChanged;
+                }
             }
         }
     }

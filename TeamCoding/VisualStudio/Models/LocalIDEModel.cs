@@ -6,6 +6,10 @@ using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Text;
 using TeamCoding.Documents;
 using System.Management;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.CodeAnalysis.Text;
 
 namespace TeamCoding.VisualStudio.Models
 {
@@ -42,6 +46,7 @@ namespace TeamCoding.VisualStudio.Models
         private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
 
         public event EventHandler OpenViewsChanged;
+        public event EventHandler<CaretPositionChangedEventArgs> CaretPositionChanged;
         public event EventHandler<TextContentChangedEventArgs> TextContentChanged;
         public event EventHandler<TextDocumentFileActionEventArgs> TextDocumentSaved;
 
@@ -49,6 +54,43 @@ namespace TeamCoding.VisualStudio.Models
         {
             TeamCodingPackage.Current.Settings.UserSettings.UsernameChanged += (s, e) => OnUserIdentityChanged();
             TeamCodingPackage.Current.Settings.UserSettings.UserImageUrlChanged += (s, e) => OnUserIdentityChanged();
+        }
+        public async System.Threading.Tasks.Task OnCaretPositionChanged(CaretPositionChangedEventArgs e)
+        {
+            var syntaxRoot = await e.NewPosition.BufferPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
+            var caretToken = syntaxRoot.FindToken(e.NewPosition.BufferPosition);
+            int? memberHashCode = null;
+            switch (caretToken.Language)
+            {
+                case "C#":
+                    memberHashCode = caretToken.Parent
+                                               .AncestorsAndSelf()
+                                               .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax>()
+                                               .FirstOrDefault()
+                                               ?.GetTreePositionHashCode();
+                    break;
+                default:
+                    // TODO: First check whether we have a navigation pane (if not don't worry about indicating an unsupported language)
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); break;
+            }
+
+            if(memberHashCode != null)
+            {
+                var filePath = e.TextView.TextBuffer.GetTextDocumentFilePath();
+                var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
+                sourceControlInfo.CaretMemberHashCode = memberHashCode;
+                if (sourceControlInfo != null)
+                {
+                    lock (OpenFilesLock)
+                    {
+                        OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, d) => sourceControlInfo);
+                    }
+                    // TODO: Only trigger if the caret member actually changed
+                    OpenViewsChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+
+            CaretPositionChanged?.Invoke(this, e);
         }
         public void OnOpenedTextView(IWpfTextView view)
         {
@@ -63,16 +105,16 @@ namespace TeamCoding.VisualStudio.Models
                     {
                         // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
 
-                        OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => e);
+                        OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => sourceControlInfo);
                     }
                 }
-                OpenViewsChanged?.Invoke(this, new EventArgs());
+                OpenViewsChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
         internal void OnUserIdentityChanged()
         {
-            OpenViewsChanged?.Invoke(this, new EventArgs());
+            OpenViewsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
@@ -82,7 +124,7 @@ namespace TeamCoding.VisualStudio.Models
             {
                 OpenFiles.TryRemove(textDocument.FilePath, out tmp);
             }
-            OpenViewsChanged?.Invoke(this, new EventArgs());
+            OpenViewsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)

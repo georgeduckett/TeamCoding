@@ -72,6 +72,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
 
             FileHeartBeatThread.Start();
         }
+
         private void SharedSettings_FileBasedPersisterPathChanging(object sender, EventArgs e)
         {
             SendEmpty();
