@@ -41,7 +41,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
             RelativePath = g.Key.RelativePath,
             IdeUserIdentity = g.First().IdeUserIdentity,
             HasFocus = g.Any(scdd => scdd.HasFocus),
-            BeingEdited = g.Any(scdd => scdd.BeingEdited)
+            BeingEdited = g.Any(scdd => scdd.BeingEdited),
+            CaretMemberHashCode = g.SingleOrDefault(scdd => scdd.CaretMemberHashCode != null)?.CaretMemberHashCode
         }).ToArray();
         public CombinedRemoteModelPersister(params IRemoteModelPersister[] remoteModelPersisters)
         {

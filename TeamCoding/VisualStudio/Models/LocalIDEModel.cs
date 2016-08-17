@@ -74,6 +74,7 @@ namespace TeamCoding.VisualStudio.Models
 
         private static async System.Threading.Tasks.Task<int?> GetMemberHashCode(SnapshotPoint snapshotPoint)
         {
+            // TODO: Use the hash-code somewhere (in code-lens?)
             var syntaxRoot = await snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
             int? memberHashCode = null;
