@@ -78,7 +78,7 @@
     </Compile>
     <Compile Include="Options\Property.cs" />
     <Compile Include="Options\Settings.cs" />
-    <Compile Include="Documents\SourceControlledDocumentData.cs" />
+    <Compile Include="Documents\RemotelyAccessedDocumentData.cs" />
     <Compile Include="Options\SharedSettings.cs" />
     <Compile Include="Options\TeamCodingExample.xaml.cs">
       <DependentUpon>TeamCodingExample.xaml</DependentUpon>

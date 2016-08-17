@@ -28,13 +28,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
             }
         }
 
-        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles()).GroupBy(scdd => new
+        public IEnumerable<RemotelyAccessedDocumentData> GetOpenFiles() => RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles()).GroupBy(scdd => new
         {
             scdd.Repository,
             scdd.RepositoryBranch,
             scdd.RelativePath,
             scdd.IdeUserIdentity.Id
-        }).Select(g => new SourceControlledDocumentData()
+        }).Select(g => new RemotelyAccessedDocumentData()
         {
             Repository = g.Key.Repository,
             RepositoryBranch = g.Key.RepositoryBranch,

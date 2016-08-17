@@ -11,14 +11,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     {
         public event EventHandler RemoteModelReceived;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
-        public IEnumerable<SourceControlledDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new SourceControlledDocumentData()
+        public IEnumerable<RemotelyAccessedDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new RemotelyAccessedDocumentData()
         {
             Repository = of.RepoUrl,
             RepositoryBranch = of.RepoBranch,
             IdeUserIdentity = model.IDEUserIdentity,
             RelativePath = of.RelativePath,
             BeingEdited = of.BeingEdited,
-            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault()
+            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault(),
+            CaretMemberHashCode = of.CaretMemberHashCode
         }));
         public void ClearRemoteModels()
         {

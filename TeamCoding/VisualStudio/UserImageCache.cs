@@ -77,7 +77,7 @@ namespace TeamCoding.VisualStudio
             }
             return grid;
         }
-        internal void SetUserControlProperties(Panel parentControl, SourceControlledDocumentData matchedRemoteDoc)
+        internal void SetUserControlProperties(Panel parentControl, RemotelyAccessedDocumentData matchedRemoteDoc)
         {
             var textBlockControl = parentControl.FindChild<TextBlock>();
             var firstLetter = (matchedRemoteDoc.IdeUserIdentity.Id)[0];
@@ -116,7 +116,7 @@ namespace TeamCoding.VisualStudio
             SetImageSource(parentControl, matchedRemoteDoc);
         }
 
-        private void SetImageSource(Panel parentControl, SourceControlledDocumentData matchedRemoteDoc)
+        private void SetImageSource(Panel parentControl, RemotelyAccessedDocumentData matchedRemoteDoc)
         {
             ImageSource imageSource = null;
             if (matchedRemoteDoc.IdeUserIdentity.ImageBytes != null)
