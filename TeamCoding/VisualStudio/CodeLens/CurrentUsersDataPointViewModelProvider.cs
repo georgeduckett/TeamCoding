@@ -5,15 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Language.Intellisense;
+using System.ComponentModel.Composition;
 
 namespace TeamCoding.VisualStudio.CodeLens
 {
     [DataPointViewModelProvider(typeof(CurrentUsersDataPoint))]
     public class CurrentUsersDataPointViewModelProvider : DataPointViewModelProvider<CurrentUsersDataPointViewModel>
     {
+        [Import]
+        private readonly CurrentUsersDataPointUpdater DataPointUpdater = null;
         protected override CurrentUsersDataPointViewModel GetViewModel(ICodeLensDataPoint dataPoint)
         {
-            return new CurrentUsersDataPointViewModel(dataPoint);
+            var dataPointModel = new CurrentUsersDataPointViewModel(DataPointUpdater, dataPoint);
+            return dataPointModel;
         }
     }
 }

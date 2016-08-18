@@ -11,9 +11,11 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.VisualStudio.CodeLens
 {
-    [LocalizedName(typeof(Resources.Resource), "CurrentUsersDataPointProviderName"), Export(typeof(ICodeLensDataPointProvider)), Name("CurrentUsers")]
+    [Export(typeof(ICodeLensDataPointProvider)), Name("Team Coding")]
     public class CurrentUsersDataPointProvider : ICodeLensDataPointProvider
     {
+        [Import]
+        private readonly CurrentUsersDataPointUpdater DataPointUpdater = null;
         [Import]
         private readonly IWorkspaceUpdateManager WorkspaceUpdateManager = null;
         public bool CanCreateDataPoint(ICodeLensDescriptor descriptor)
@@ -22,7 +24,7 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         public ICodeLensDataPoint CreateDataPoint(ICodeLensDescriptor codeLensDescriptor)
         {
-            return new CurrentUsersDataPoint(WorkspaceUpdateManager, (ICodeElementDescriptor)codeLensDescriptor);
+            return new CurrentUsersDataPoint(DataPointUpdater, WorkspaceUpdateManager, (ICodeElementDescriptor)codeLensDescriptor);
         }
     }
 }

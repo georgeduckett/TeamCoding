@@ -10,8 +10,8 @@ namespace TeamCoding.Extensions
     public static class SyntaxNodeExtensions
     {
         public static int GetTreePositionHashCode(this SyntaxNode node)
-        {
-            if(node == null)
+        { // TODO: Test GetTreePositionHashCode using seperate IDE instances
+            if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
             }

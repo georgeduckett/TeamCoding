@@ -1,7 +1,7 @@
 Team Coding
 --
 
-**About:** The Team Coding Visual Studio extension helps discover team members who are working in the same area of a solution as you. You can set your own username and user image url via settings (Tools->Options->Team Coding), or let it try and figure them out automatically (see below). Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited.
+**About:** The Team Coding Visual Studio extension helps discover team members who are working in the same area of a solution as you. You can set your own username and user image url via settings (Tools->Options->Team Coding), or let it try and figure them out automatically (see below). Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited. It will also display text in CodeLens (disable in CodeLens settings) indicating whether someone is currently working on a class/member based on where their caret is.
 
 **Settings:** Also in the Team Coding settings page is configuration options for how to share open document information with others. Multiple methods can be used at once, you can also add a `teamcoding.json` file anywhere within the solution folder for it to override user settings. If this file is in place then for that solution settings don't need to be set in each developer's IDE.
 

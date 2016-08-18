@@ -15,28 +15,20 @@ namespace TeamCoding.VisualStudio.CodeLens
     {
         private readonly IWorkspaceUpdateManager WorkspaceUpdateManager;
         private readonly Task WorkspaceChangedTask;
-        private readonly ICodeElementDescriptor CodeElementDescriptor;
+        private readonly CurrentUsersDataPointUpdater DataPointUpdater;
         private bool Disposed;
         private object DisposedLock = new object();
-        public CurrentUsersDataPoint(IWorkspaceUpdateManager workspaceUpdateManager, ICodeElementDescriptor codeElementDescriptor)
+        public readonly ICodeElementDescriptor CodeElementDescriptor;
+        public CurrentUsersDataPoint(CurrentUsersDataPointUpdater dataPointUpdater, IWorkspaceUpdateManager workspaceUpdateManager, ICodeElementDescriptor codeElementDescriptor)
         {
+            DataPointUpdater = dataPointUpdater;
             CodeElementDescriptor = codeElementDescriptor;
             WorkspaceUpdateManager = workspaceUpdateManager;
             WorkspaceChangedTask = WorkspaceUpdateManager.AddWorkspaceChangedAsync(OnWorkspaceChanged);
         }
-
         public override Task<string> GetDataAsync()
         {
-            var MatchingUsers = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                      .Where(of => of.CaretMemberHashCode == CodeElementDescriptor.SyntaxNode.GetTreePositionHashCode())
-                                                      .GroupBy(of => of.IdeUserIdentity.DisplayName)
-                                                      .Select(g => g.Key).ToArray();
-
-            if(MatchingUsers.Length == 0)
-            {
-                return Task.FromResult<string>(null);
-            }
-            return Task.FromResult("Current coders: " + string.Join(", ", MatchingUsers));
+            return DataPointUpdater.GetTextForDataPoint(CodeElementDescriptor);
         }
         private void OnWorkspaceChanged(object sender, WorkspaceChangesEventArgs e)
         {

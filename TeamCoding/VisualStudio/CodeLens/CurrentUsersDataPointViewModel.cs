@@ -11,18 +11,17 @@ namespace TeamCoding.VisualStudio.CodeLens
 {
     public class CurrentUsersDataPointViewModel : GlyphDataPointViewModel
     {
+        private readonly CurrentUsersDataPointUpdater DataPointUpdater;
         public override bool IsVisible { get { return Data != null && !string.IsNullOrEmpty((string)Data); } }
         public override string AdditionalInformation { get { return "Current users in this area"; } }
-        public CurrentUsersDataPointViewModel(ICodeLensDataPoint dataPoint) : base(dataPoint)
+        public CurrentUsersDataPointViewModel(CurrentUsersDataPointUpdater dataPointUpdater, ICodeLensDataPoint dataPoint) : base(dataPoint)
         {
+            DataPointUpdater = dataPointUpdater;
+            dataPointUpdater.AddDataPointModel(this);
             HasDetails = false;
             PropertyChanged += CurrentUsersDataPointViewModel_PropertyChanged;
-            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
-        private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
-        {
-            Refresh(); // TODO: Refresh the CodeLens data points much more efficiently
-        }
+        public void RefreshModel() => Refresh();
         private void CurrentUsersDataPointViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             Descriptor = (string)Data;
@@ -31,8 +30,8 @@ namespace TeamCoding.VisualStudio.CodeLens
         {
             if (disposing)
             {
+                DataPointUpdater.RemoveDataPointModel(this);
                 PropertyChanged -= CurrentUsersDataPointViewModel_PropertyChanged;
-                TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
             }
             base.Dispose(disposing);
         }

@@ -57,6 +57,7 @@
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
     <Compile Include="Documents\DocumentRepoMetaData.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DTEExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -84,12 +85,8 @@
       <DependentUpon>TeamCodingExample.xaml</DependentUpon>
     </Compile>
     <Compile Include="Options\UserSettings.cs" />
-    <Compile Include="Resources\Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPoint.cs" />
+    <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointUpdater.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModel.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointProvider.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModelProvider.cs" />
@@ -178,10 +175,6 @@
     <Resource Include="Resources\UnknownUserImage.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
