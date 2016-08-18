@@ -157,7 +157,13 @@ namespace TeamCoding.VisualStudio
                         PropertiesUpdated = true;
                     }
 
-                    if(imageDocData.HasFocus != matchedRemoteDoc.HasFocus)
+                    if (imageDocData.CaretMemberHashCode != matchedRemoteDoc.CaretMemberHashCode)
+                    {
+                        imageDocData.CaretMemberHashCode = matchedRemoteDoc.CaretMemberHashCode;
+                        PropertiesUpdated = true;
+                    }
+
+                    if (imageDocData.HasFocus != matchedRemoteDoc.HasFocus)
                     {
                         imageDocData.HasFocus = matchedRemoteDoc.HasFocus;
                         PropertiesUpdated = true;

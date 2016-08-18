@@ -16,7 +16,8 @@ namespace TeamCoding.Extensions
                 throw new ArgumentNullException(nameof(node));
             }
 
-            return node.AncestorsAndSelf().Aggregate(17, (acc, next) => unchecked(acc * 31 + next.GetHashCode()));
+            // Can't just use the node's parents and self's hashcode since that includes trivia (whitespace), so we combine the hash code of all token's text
+            return node.AncestorsAndSelf().SelectMany(n => n.DescendantTokens()).Aggregate(17, (acc, next) => unchecked(acc * 31 + next.ToString().GetHashCode()));
         }
     }
 }
