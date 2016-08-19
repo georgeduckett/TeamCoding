@@ -161,9 +161,9 @@ namespace TeamCoding.VisualStudio
                         PropertiesUpdated = true;
                     }
 
-                    if (imageDocData.CaretMemberHashCode != matchedRemoteDoc.CaretMemberHashCode)
+                    if (imageDocData.CaretPositionInfo != matchedRemoteDoc.CaretPositionInfo)
                     {
-                        imageDocData.CaretMemberHashCode = matchedRemoteDoc.CaretMemberHashCode;
+                        imageDocData.CaretPositionInfo = matchedRemoteDoc.CaretPositionInfo;
                         PropertiesUpdated = true;
                     }
 

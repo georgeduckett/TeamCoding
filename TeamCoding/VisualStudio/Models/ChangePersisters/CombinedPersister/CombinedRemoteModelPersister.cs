@@ -42,7 +42,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
             IdeUserIdentity = g.First().IdeUserIdentity,
             HasFocus = g.Any(scdd => scdd.HasFocus),
             BeingEdited = g.Any(scdd => scdd.BeingEdited),
-            CaretMemberHashCode = g.FirstOrDefault(scdd => scdd.CaretMemberHashCode != null)?.CaretMemberHashCode
+            CaretPositionInfo = g.FirstOrDefault(scdd => scdd.CaretPositionInfo != null)?.CaretPositionInfo
         }).ToArray();
         public CombinedRemoteModelPersister(params IRemoteModelPersister[] remoteModelPersisters)
         {

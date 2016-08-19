@@ -94,7 +94,7 @@ namespace TeamCoding.VisualStudio
                 textBlockControl.Margin = new Thickness(0);
             }
 
-            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty) + matchedRemoteDoc.CaretMemberHashCode;
+            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty) + matchedRemoteDoc.CaretPositionInfo;
 
             if (matchedRemoteDoc.HasFocus)
             {

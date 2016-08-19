@@ -8,6 +8,14 @@ namespace TeamCoding.Documents
     [ProtoBuf.ProtoContract]
     public class DocumentRepoMetaData
     {
+        [ProtoBuf.ProtoContract]
+        public class CaretInfo
+        {
+            [ProtoBuf.ProtoMember(1)]
+            public int[] MemberHashCodes { get; set; }
+            [ProtoBuf.ProtoMember(2)]
+            public int LeafMemberCaretOffset { get; set; }
+        }
         [ProtoBuf.ProtoMember(1)]
         public string RepoUrl { get; set; }
         [ProtoBuf.ProtoMember(2)]
@@ -19,6 +27,6 @@ namespace TeamCoding.Documents
         [ProtoBuf.ProtoMember(5)]
         public DateTime LastActioned { get; set; }
         [ProtoBuf.ProtoMember(6)]
-        public int[] CaretMemberHashCodes { get; set; }
+        public CaretInfo CaretPositionInfo { get; set; }
     }
 }

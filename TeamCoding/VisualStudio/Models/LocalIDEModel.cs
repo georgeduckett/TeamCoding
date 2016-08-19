@@ -59,7 +59,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = e.TextView.TextBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCodes(e.NewPosition.BufferPosition);
+            sourceControlInfo.CaretPositionInfo = await GetCaretInfo(e.NewPosition.BufferPosition);
             if (sourceControlInfo != null)
             {
                 lock (OpenFilesLock)
@@ -72,30 +72,29 @@ namespace TeamCoding.VisualStudio.Models
             CaretPositionChanged?.Invoke(this, e);
         }
 
-        private static async System.Threading.Tasks.Task<int[]> GetMemberHashCodes(SnapshotPoint snapshotPoint)
+        private static async System.Threading.Tasks.Task<DocumentRepoMetaData.CaretInfo> GetCaretInfo(SnapshotPoint snapshotPoint)
         {
             var syntaxRoot = await snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
-            int[] memberHashCode = null;
+            int[] memberHashCodes = null;
             switch (caretToken.Language)
             {
-                case "C#": case "Visual Basic":
-                    memberHashCode = caretToken.Parent
-                                               .AncestorsAndSelf()
-                                               .Select(n => n.GetTreePositionHashCode()).ToArray();
+                case "C#": case "Visual Basic": // TODO: Use the actual token, *not* the parent (syntaxnode)
+                    memberHashCodes = caretToken.Parent.AncestorsAndSelf()
+                                                .Select(n => n.GetTreePositionHashCode()).ToArray();
                     break;
                 default:
                     TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); break;
             }
-
-            return memberHashCode;
+            
+            return new DocumentRepoMetaData.CaretInfo() { MemberHashCodes = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - caretToken.Parent.SpanStart };
         }
 
         public async System.Threading.Tasks.Task OnOpenedTextView(IWpfTextView view)
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCodes(view.Caret.Position.BufferPosition);
+            sourceControlInfo.CaretPositionInfo = await GetCaretInfo(view.Caret.Position.BufferPosition);
 
             if (sourceControlInfo != null)
             {
@@ -135,7 +134,7 @@ namespace TeamCoding.VisualStudio.Models
             {
                 lock (OpenFilesLock)
                 {
-                    OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCodes = r.CaretMemberHashCodes; return sourceControlInfo; });
+                    OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
                 }
 
                 TextDocumentSaved?.Invoke(textDocument, e);
@@ -164,7 +163,7 @@ namespace TeamCoding.VisualStudio.Models
                 }
                 else
                 {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCodes = r.CaretMemberHashCodes; return sourceControlInfo; });
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
                 }
             }
             
@@ -179,7 +178,7 @@ namespace TeamCoding.VisualStudio.Models
             {
                 lock (OpenFilesLock)
                 {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCodes = r.CaretMemberHashCodes; return sourceControlInfo; });
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
                 }
                 OpenViewsChanged?.Invoke(this, new EventArgs());
             }

@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using TeamCoding.Extensions;
 using Microsoft.CodeAnalysis;
+using TeamCoding.IdentityManagement;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -76,23 +77,32 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 e.NewOrReformattedLines.Select(l => l.Extent).SelectMany(extent => syntaxTree.GetRoot().DescendantNodes(new TextSpan(extent.Start, extent.Length))).Distinct();
             
             var CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                                    .Where(of => of.CaretMemberHashCode != null)
-                                                                    .Select(of => new { CaretMemberHashCode = of.CaretMemberHashCode[0], of.IdeUserIdentity })
+                                                                    .Where(of => of.CaretPositionInfo != null)
+                                                                    .Select(of => new
+                                                                    {
+                                                                        CaretMemberHashCode = of.CaretPositionInfo.MemberHashCodes[0],
+                                                                        of.CaretPositionInfo.LeafMemberCaretOffset,
+                                                                        of.IdeUserIdentity
+                                                                    })
                                                                     .GroupBy(of => of.CaretMemberHashCode)
-                                                                    .ToDictionary(g => g.Key, g => g.Select(of => of.IdeUserIdentity).Distinct());
+                                                                    .ToDictionary(g => g.Key, g => g.Select(of => new { of.IdeUserIdentity, of.LeafMemberCaretOffset }).Distinct());
             foreach (var node in newOrChangedNodes)
             {
-                if (CaretMemberHashCodeToDataPointString.ContainsKey(node.GetTreePositionHashCode()))
+                var nodeTreeHashCode = node.GetTreePositionHashCode();
+                if (CaretMemberHashCodeToDataPointString.ContainsKey(nodeTreeHashCode))
                 {
-                    CreateVisual(node);
+                    foreach (var matchedRemoteCaret in CaretMemberHashCodeToDataPointString[nodeTreeHashCode])
+                    {
+                        CreateVisual(node, matchedRemoteCaret.LeafMemberCaretOffset, matchedRemoteCaret.IdeUserIdentity);
+                    }
                 }
             }
         }
 
-        private void CreateVisual(SyntaxNode node)
+        private void CreateVisual(SyntaxNode node, int caretOffset, UserIdentity userIdentity)
         {
             // TODO: Improve what we render here
-            var span = new SnapshotSpan(View.TextSnapshot, node.SpanStart, 1);
+            var span = new SnapshotSpan(View.TextSnapshot, node.SpanStart + caretOffset, 1);
             Geometry geometry = View.TextViewLines.GetMarkerGeometry(span);
             if (geometry != null)
             {

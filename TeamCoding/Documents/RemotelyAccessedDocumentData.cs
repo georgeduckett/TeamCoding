@@ -14,10 +14,11 @@ namespace TeamCoding.Documents
         public UserIdentity IdeUserIdentity { get; set; }
         public bool BeingEdited { get; set; }
         public bool HasFocus { get; set; }
-        public int[] CaretMemberHashCode { get; set; }
+        public DocumentRepoMetaData.CaretInfo CaretPositionInfo { get; set; }
         public override int GetHashCode()
         {
-            return Repository.GetHashCode() ^ RepositoryBranch.GetHashCode() ^ IdeUserIdentity.Id.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode() ^ (CaretMemberHashCode?.GetHashCode() ?? 0);
+            // TODO: Use better hash combination
+            return Repository.GetHashCode() ^ RepositoryBranch.GetHashCode() ^ IdeUserIdentity.Id.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode() ^ (CaretPositionInfo?.LeafMemberCaretOffset.GetHashCode() ?? 0) ^ (CaretPositionInfo?.MemberHashCodes.GetHashCode() ?? 0);
         }
         public bool Equals(RemotelyAccessedDocumentData other)
         {
@@ -30,7 +31,8 @@ namespace TeamCoding.Documents
                    IdeUserIdentity.Id == IdeUserIdentity.Id &&
                    BeingEdited == other.BeingEdited &&
                    HasFocus == other.HasFocus &&
-                   CaretMemberHashCode == other.CaretMemberHashCode;
+                   CaretPositionInfo?.LeafMemberCaretOffset == other.CaretPositionInfo?.LeafMemberCaretOffset &&
+                   CaretPositionInfo?.MemberHashCodes == other.CaretPositionInfo?.MemberHashCodes;
         }
         public override bool Equals(object obj)
         {
