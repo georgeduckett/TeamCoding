@@ -37,7 +37,7 @@ namespace TeamCoding.VisualStudio.CodeLens
                                                                     .Where(of => of.CaretMemberHashCode != null)
                                                                     .SelectMany(of => of.CaretMemberHashCode.Select(c => new { CaretMemberHashCode = c, of.IdeUserIdentity.DisplayName }))
                                                                     .GroupBy(of => of.CaretMemberHashCode)
-                                                                    .ToDictionary(g => g.Key, g => "Current coders: " + string.Join(", ", g.Select(of => of.DisplayName)));
+                                                                    .ToDictionary(g => g.Key, g => "Current coders: " + string.Join(", ", g.Select(of => of.DisplayName).Distinct()));
 
             if (!oldCaretMemberHashCodeToDataPointString.DictionaryEqual(CaretMemberHashCodeToDataPointString))
             {
