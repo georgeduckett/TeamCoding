@@ -19,19 +19,11 @@ namespace TeamCoding.Extensions
                 throw new ArgumentNullException(nameof(node));
             }
 
-            CodeElementIdentity Identity;
+            var Identity = Microsoft.VisualStudio.CodeSense.Client.Common.CommonSyntaxNodeExtensions.GetCodeElementIdentityCommon(node);
 
-            if (node is CSharpSyntaxNode)
+            if(Identity == null)
             {
-                Identity = CSharpSyntaxNodeExtensions.GetCodeElementIdentity((CSharpSyntaxNode)node);
-            }
-            else if (node is VisualBasicSyntaxNode)
-            {
-                Identity = VisualBasicSyntaxNodeExtensions.GetCodeElementIdentity((VisualBasicSyntaxNode)node);
-            }
-            else
-            {
-                TeamCodingPackage.Current.Logger.WriteError($"Called {nameof(GetTreePositionHashCode)} with unexpected SyntaxNode type {node.GetType().Name}. Reverting to using anscestor HashCodes.");
+                TeamCodingPackage.Current.Logger.WriteError($"Unable to get node identity in function {nameof(GetTreePositionHashCode)}. Reverting to using anscestor HashCodes. Node: {node}");
                 // Can't just use the node's parents and self's hashcode since that includes trivia (whitespace), so we combine the hash code of all token's text
                 return node.AncestorsAndSelf().SelectMany(n => n.DescendantTokens()).Aggregate(17, (acc, next) => unchecked(acc * 31 + next.ToString().GetHashCode()));
             }
