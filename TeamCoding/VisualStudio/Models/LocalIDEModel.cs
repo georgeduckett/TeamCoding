@@ -66,7 +66,7 @@ namespace TeamCoding.VisualStudio.Models
                 {
                     OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, d) => sourceControlInfo);
                 }
-                // TODO: Only trigger if the caret member actually changed
+                
                 OpenViewsChanged?.Invoke(this, EventArgs.Empty);
             }
             CaretPositionChanged?.Invoke(this, e);
