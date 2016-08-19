@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using TeamCoding.Extensions;
+using Microsoft.CodeAnalysis;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -79,51 +80,38 @@ namespace TeamCoding.VisualStudio.TextAdornment
                                                                     .Select(of => new { CaretMemberHashCode = of.CaretMemberHashCode[0], of.IdeUserIdentity })
                                                                     .GroupBy(of => of.CaretMemberHashCode)
                                                                     .ToDictionary(g => g.Key, g => g.Select(of => of.IdeUserIdentity).Distinct());
-            var nodesWithHashCode = newOrChangedNodes.Select(n => new { Node = n, Hash = n.GetTreePositionHashCode() }).ToArray();
-            foreach (var node in nodesWithHashCode)
+            foreach (var node in newOrChangedNodes)
             {
-                if (CaretMemberHashCodeToDataPointString.ContainsKey(node.Hash))
+                if (CaretMemberHashCodeToDataPointString.ContainsKey(node.GetTreePositionHashCode()))
                 {
-                    // TODO: Render something indicating the user is here!
-
+                    CreateVisual(node);
                 }
             }
         }
 
-        /// <summary>
-        /// Adds the scarlet box behind the 'a' characters within the given line
-        /// </summary>
-        /// <param name="line">Line to add the adornments</param>
-        private void CreateVisuals(ITextViewLine line)
+        private void CreateVisual(SyntaxNode node)
         {
-            IWpfTextViewLineCollection textViewLines = View.TextViewLines;
-            // Loop through each character, and place a box around any 'a'
-            for (int charIndex = line.Start; charIndex < line.End; charIndex++)
+            // TODO: Improve what we render here
+            var span = new SnapshotSpan(View.TextSnapshot, node.SpanStart, 1);
+            Geometry geometry = View.TextViewLines.GetMarkerGeometry(span);
+            if (geometry != null)
             {
-                if (View.TextSnapshot[charIndex] == 'a')
+                var drawing = new GeometryDrawing(brush, pen, geometry);
+                drawing.Freeze();
+
+                var drawingImage = new DrawingImage(drawing);
+                drawingImage.Freeze();
+
+                var image = new Image
                 {
-                    SnapshotSpan span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
-                    Geometry geometry = textViewLines.GetMarkerGeometry(span);
-                    if (geometry != null)
-                    {
-                        var drawing = new GeometryDrawing(brush, pen, geometry);
-                        drawing.Freeze();
+                    Source = drawingImage,
+                };
 
-                        var drawingImage = new DrawingImage(drawing);
-                        drawingImage.Freeze();
+                // Align the image with the top of the bounds of the text geometry
+                Canvas.SetLeft(image, geometry.Bounds.Left);
+                Canvas.SetTop(image, geometry.Bounds.Top);
 
-                        var image = new Image
-                        {
-                            Source = drawingImage,
-                        };
-
-                        // Align the image with the top of the bounds of the text geometry
-                        Canvas.SetLeft(image, geometry.Bounds.Left);
-                        Canvas.SetTop(image, geometry.Bounds.Top);
-
-                        Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
-                    }
-                }
+                Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
             }
         }
     }

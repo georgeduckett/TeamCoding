@@ -19,7 +19,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
             RelativePath = of.RelativePath,
             BeingEdited = of.BeingEdited,
             HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault(),
-            CaretMemberHashCode = of.CaretMemberHashCode
+            CaretMemberHashCode = of.CaretMemberHashCodes
         }));
         public void ClearRemoteModels()
         {

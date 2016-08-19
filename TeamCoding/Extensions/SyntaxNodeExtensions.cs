@@ -21,6 +21,7 @@ namespace TeamCoding.Extensions
 
             unchecked
             {
+                // Use a hash of the content of the node and all parents, hashed together
                 return node.AncestorsAndSelf().Select(a => a.ToString().GetHashCode()).Aggregate(17, (acc, next) => acc * 31 + next);
             }
         }

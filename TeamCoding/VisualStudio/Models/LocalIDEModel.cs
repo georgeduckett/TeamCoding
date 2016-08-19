@@ -59,7 +59,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = e.TextView.TextBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretMemberHashCode = await GetMemberHashCode(e.NewPosition.BufferPosition);
+            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCode(e.NewPosition.BufferPosition);
             if (sourceControlInfo != null)
             {
                 lock (OpenFilesLock)
@@ -95,7 +95,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretMemberHashCode = await GetMemberHashCode(view.Caret.Position.BufferPosition);
+            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCode(view.Caret.Position.BufferPosition);
 
             if (sourceControlInfo != null)
             {
@@ -135,7 +135,7 @@ namespace TeamCoding.VisualStudio.Models
             {
                 lock (OpenFilesLock)
                 {
-                    OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCode = r.CaretMemberHashCode; return sourceControlInfo; });
+                    OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCodes = r.CaretMemberHashCodes; return sourceControlInfo; });
                 }
 
                 TextDocumentSaved?.Invoke(textDocument, e);
@@ -164,7 +164,7 @@ namespace TeamCoding.VisualStudio.Models
                 }
                 else
                 {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCode = r.CaretMemberHashCode; return sourceControlInfo; });
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCodes = r.CaretMemberHashCodes; return sourceControlInfo; });
                 }
             }
             
@@ -179,7 +179,7 @@ namespace TeamCoding.VisualStudio.Models
             {
                 lock (OpenFilesLock)
                 {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCode = r.CaretMemberHashCode; return sourceControlInfo; });
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretMemberHashCodes = r.CaretMemberHashCodes; return sourceControlInfo; });
                 }
                 OpenViewsChanged?.Invoke(this, new EventArgs());
             }
