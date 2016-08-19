@@ -72,19 +72,17 @@ namespace TeamCoding.VisualStudio.Models
             CaretPositionChanged?.Invoke(this, e);
         }
 
-        private static async System.Threading.Tasks.Task<int?> GetMemberHashCode(SnapshotPoint snapshotPoint)
+        private static async System.Threading.Tasks.Task<int[]> GetMemberHashCode(SnapshotPoint snapshotPoint)
         {
             var syntaxRoot = await snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
-            int? memberHashCode = null;
+            int[] memberHashCode = null;
             switch (caretToken.Language)
             {
-                case "C#":
+                case "C#": case "Visual Basic":
                     memberHashCode = caretToken.Parent
                                                .AncestorsAndSelf()
-                                               .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax>()
-                                               .FirstOrDefault()
-                                               ?.GetTreePositionHashCode();
+                                               .Select(n => n.GetTreePositionHashCode()).ToArray();
                     break;
                 default:
                     TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); break;

@@ -32,11 +32,12 @@ namespace TeamCoding.VisualStudio.CodeLens
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
             var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
-            // TODO: Also display text when a class containing the member is focused
+
             CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                                                     .Where(of => of.CaretMemberHashCode != null)
+                                                                    .SelectMany(of => of.CaretMemberHashCode.Select(c => new { CaretMemberHashCode = c, of.IdeUserIdentity.DisplayName }))
                                                                     .GroupBy(of => of.CaretMemberHashCode)
-                                                                    .ToDictionary(g => g.Key.Value, g => "Current coders: " + string.Join(", ", g.Select(of => of.IdeUserIdentity.DisplayName)));
+                                                                    .ToDictionary(g => g.Key, g => "Current coders: " + string.Join(", ", g.Select(of => of.DisplayName)));
 
             if (!oldCaretMemberHashCodeToDataPointString.DictionaryEqual(CaretMemberHashCodeToDataPointString))
             {

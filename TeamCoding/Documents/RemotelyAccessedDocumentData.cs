@@ -14,7 +14,7 @@ namespace TeamCoding.Documents
         public UserIdentity IdeUserIdentity { get; set; }
         public bool BeingEdited { get; set; }
         public bool HasFocus { get; set; }
-        public int? CaretMemberHashCode { get; set; }
+        public int[] CaretMemberHashCode { get; set; }
         public override int GetHashCode()
         {
             return Repository.GetHashCode() ^ RepositoryBranch.GetHashCode() ^ IdeUserIdentity.Id.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode() ^ (CaretMemberHashCode?.GetHashCode() ?? 0);

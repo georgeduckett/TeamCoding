@@ -19,6 +19,6 @@ namespace TeamCoding.Documents
         [ProtoBuf.ProtoMember(5)]
         public DateTime LastActioned { get; set; }
         [ProtoBuf.ProtoMember(6)]
-        public int? CaretMemberHashCode { get; set; }
+        public int[] CaretMemberHashCode { get; set; }
     }
 }
