@@ -59,7 +59,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = e.TextView.TextBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCode(e.NewPosition.BufferPosition);
+            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCodes(e.NewPosition.BufferPosition);
             if (sourceControlInfo != null)
             {
                 lock (OpenFilesLock)
@@ -72,7 +72,7 @@ namespace TeamCoding.VisualStudio.Models
             CaretPositionChanged?.Invoke(this, e);
         }
 
-        private static async System.Threading.Tasks.Task<int[]> GetMemberHashCode(SnapshotPoint snapshotPoint)
+        private static async System.Threading.Tasks.Task<int[]> GetMemberHashCodes(SnapshotPoint snapshotPoint)
         {
             var syntaxRoot = await snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
@@ -95,7 +95,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCode(view.Caret.Position.BufferPosition);
+            sourceControlInfo.CaretMemberHashCodes = await GetMemberHashCodes(view.Caret.Position.BufferPosition);
 
             if (sourceControlInfo != null)
             {
