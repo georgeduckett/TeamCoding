@@ -38,20 +38,14 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// Adornment pen.
         /// </summary>
         private readonly Pen pen;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TextAdornment"/> class.
-        /// </summary>
-        /// <param name="view">Text view to create the adornment for</param>
         public TextAdornment(IWpfTextView view)
         {
             if (view == null)
             {
-                throw new ArgumentNullException("view");
+                throw new ArgumentNullException(nameof(view));
             }
 
             Layer = view.GetAdornmentLayer("TextAdornment");
-
             View = view;
             View.LayoutChanged += OnLayoutChanged;
 
@@ -85,8 +79,9 @@ namespace TeamCoding.VisualStudio.TextAdornment
                                                                     .Select(of => new { CaretMemberHashCode = of.CaretMemberHashCode[0], of.IdeUserIdentity })
                                                                     .GroupBy(of => of.CaretMemberHashCode)
                                                                     .ToDictionary(g => g.Key, g => g.Select(of => of.IdeUserIdentity).Distinct());
-            foreach (var node in newOrChangedNodes.Select(n => new { Node = n, Hash =  n.GetTreePositionHashCode() }))
-            { // TODO: Why is the hash code the same for all nodes here??
+            var nodesWithHashCode = newOrChangedNodes.Select(n => new { Node = n, Hash = n.GetTreePositionHashCode() }).ToArray();
+            foreach (var node in nodesWithHashCode)
+            {
                 if (CaretMemberHashCodeToDataPointString.ContainsKey(node.Hash))
                 {
                     // TODO: Render something indicating the user is here!
