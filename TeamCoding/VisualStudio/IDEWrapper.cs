@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -17,6 +18,10 @@ namespace TeamCoding.VisualStudio
     /// </summary>
     public class IDEWrapper
     {
+        public class DocumentSavedEventArgs : EventArgs
+        {
+            public string DocumentFilePath { get; set; }
+        }
         private readonly UserImageCache UserImages;
         private readonly EnvDTE.WindowEvents WindowEvents;
         private readonly Visual WpfMainWindow;
@@ -31,7 +36,6 @@ namespace TeamCoding.VisualStudio
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             WindowEvents.WindowCreated += WindowEvents_WindowCreated;
         }
-
         private void WindowEvents_WindowCreated(EnvDTE.Window window)
         {
             InvokeAsync(() =>

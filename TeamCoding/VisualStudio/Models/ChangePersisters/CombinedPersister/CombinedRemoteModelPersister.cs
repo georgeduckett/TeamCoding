@@ -28,7 +28,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
             }
         }
 
-        public IEnumerable<RemotelyAccessedDocumentData> GetOpenFiles() => RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles()).GroupBy(scdd => new
+        public IEnumerable<RemotelyAccessedDocumentData> GetOpenFiles() => RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles().ToArray()).GroupBy(scdd => new
         {
             scdd.Repository,
             scdd.RepositoryBranch,

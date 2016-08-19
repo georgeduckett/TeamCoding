@@ -30,7 +30,7 @@ namespace TeamCoding.VisualStudio.Models
                     uuid = mo.Properties["UUID"].Value.ToString();
                     break;
                 }
-                return uuid;
+                return uuid + System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
             }
         }, false);
 
@@ -74,7 +74,6 @@ namespace TeamCoding.VisualStudio.Models
 
         private static async System.Threading.Tasks.Task<int?> GetMemberHashCode(SnapshotPoint snapshotPoint)
         {
-            // TODO: Use the hash-code somewhere (in code-lens?)
             var syntaxRoot = await snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
             int? memberHashCode = null;
@@ -132,6 +131,7 @@ namespace TeamCoding.VisualStudio.Models
 
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
         {
+            TeamCodingPackage.Current.SourceControlRepo.RemoveCachedRepoData(textDocument.FilePath);
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textDocument.FilePath);
             if (sourceControlInfo != null)
             {

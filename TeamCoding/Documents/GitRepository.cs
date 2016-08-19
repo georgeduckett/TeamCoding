@@ -1,7 +1,9 @@
 ﻿using LibGit2Sharp;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TeamCoding.VisualStudio;
 
 namespace TeamCoding.Documents
 {
@@ -10,6 +12,11 @@ namespace TeamCoding.Documents
     /// </summary>
     public class GitRepository
     {
+        private readonly Dictionary<string, DocumentRepoMetaData> RepoData = new Dictionary<string, DocumentRepoMetaData>();
+        public void RemoveCachedRepoData(string docFilePath)
+        {
+            RepoData.Remove(docFilePath);
+        }
         private string GetRepoPath(string fullFilePath)
         {
             var repoPath = Repository.Discover(fullFilePath);
@@ -21,6 +28,15 @@ namespace TeamCoding.Documents
         public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
             // TODO: Handle repositories other than Git
+            if (RepoData.ContainsKey(fullFilePath))
+            {
+                var fileRepoData = RepoData[fullFilePath];
+
+                fileRepoData.LastActioned = DateTime.UtcNow;
+
+                return fileRepoData;
+            }
+
             var relativePath = GetRepoPath(fullFilePath);
 
             // It's ok to return null here since calling methods will handle it and it allows us to not have some global "is this a repository setting"
@@ -38,8 +54,8 @@ namespace TeamCoding.Documents
             // It's possible there is a local change that actually makes it the same as the remote, but I think that's ok to say the user is editing anyway
             var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any() ||
                            repo.Diff.Compare<TreeChanges>(remoteMasterTree, repoHeadTree, new[] { fullFilePath }).Any();
-            
-            return new DocumentRepoMetaData()
+
+            RepoData[fullFilePath] = new DocumentRepoMetaData()
             {
                 RepoUrl = repo.Head.TrackedBranch.Remote.Url,
                 RepoBranch = repo.Head.TrackedBranch.CanonicalName,
@@ -47,6 +63,8 @@ namespace TeamCoding.Documents
                 BeingEdited = isEdited,
                 LastActioned = DateTime.UtcNow
             };
+
+            return RepoData[fullFilePath];
         }
     }
 }

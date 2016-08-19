@@ -22,18 +22,18 @@ namespace TeamCoding
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(Guids.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    [ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideOptionPage(typeof(OptionPageGrid), OptionPageGrid.OptionsName, "General", 0, 0, true)]
     public sealed class TeamCodingPackage : Package
     {
         public static TeamCodingPackage Current { get; private set; }
-        public readonly GitRepository SourceControlRepo = new GitRepository();
         public readonly Logger Logger = new Logger();
         private uint SolutionEventsHandlerId;
         public HttpClient HttpClient { get; private set; }
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
         public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
+        public GitRepository SourceControlRepo { get; private set; }
         public IIdentityProvider IdentityProvider { get; private set; }
         public Settings Settings { get; private set; }
         public LocalIDEModel LocalIdeModel { get; private set; }
@@ -65,6 +65,7 @@ namespace TeamCoding
                 Redis = new RedisWrapper();
                 LocalIdeModel = new LocalIDEModel();
                 IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
+                SourceControlRepo = new GitRepository();
                 IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
