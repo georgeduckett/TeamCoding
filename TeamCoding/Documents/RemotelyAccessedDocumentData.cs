@@ -25,6 +25,8 @@ namespace TeamCoding.Documents
             hash = hash * 31 + HasFocus.GetHashCode();
             hash = hash * 31 + (CaretPositionInfo?.LeafMemberCaretOffset.GetHashCode() ?? 0);
             hash = hash * 31 + (CaretPositionInfo?.MemberHashCodes.GetHashCode() ?? 0);
+
+            return hash;
         }
         public bool Equals(RemotelyAccessedDocumentData other)
         {
