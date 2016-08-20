@@ -36,6 +36,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// </summary>
         private readonly Brush brush;
 
+        private readonly string RelativePath;
+
         /// <summary>
         /// Adornment pen.
         /// </summary>
@@ -46,6 +48,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
             {
                 throw new ArgumentNullException(nameof(view));
             }
+
+            RelativePath = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath()).RelativePath;
 
             Layer = view.GetAdornmentLayer("TextAdornment");
             View = view;
@@ -74,10 +78,10 @@ namespace TeamCoding.VisualStudio.TextAdornment
         {
             var syntaxTree = await e.NewSnapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxTreeAsync();
             var newOrChangedNodes =
-                e.NewOrReformattedLines.Select(l => l.Extent).SelectMany(extent => syntaxTree.GetRoot().DescendantNodes(new TextSpan(extent.Start, extent.Length))).Distinct();
-            
+                e.NewOrReformattedLines.SelectMany(line => syntaxTree.GetRoot().DescendantNodes(new TextSpan(line.Extent.Start, line.Extent.Length))).Distinct();
+
             var CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                                    .Where(of => of.CaretPositionInfo != null)
+                                                                    .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
                                                                     .Select(of => new
                                                                     {
                                                                         CaretMemberHashCode = of.CaretPositionInfo.MemberHashCodes[0],
