@@ -3,10 +3,12 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio
@@ -25,6 +27,7 @@ namespace TeamCoding.VisualStudio
             TextDocFactory = textDocumentFactoryService;
             TextClassifierService = textClassifierService;
             TextDocFactory.TextDocumentDisposed += TextDocFactory_TextDocumentDisposed;
+            Timer.Elapsed += Timer_Elapsed;
         }
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
@@ -43,9 +46,23 @@ namespace TeamCoding.VisualStudio
             }
         }
 
-        private async void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        private readonly Timer Timer = new Timer(500) { Enabled = false, AutoReset = false };
+        private CaretPositionChangedEventArgs CaretPositionChangedArgs;
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
-            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
+            Timer.Stop();
+            CaretPositionChangedArgs = e;
+            Timer.Start();
+        }
+
+        private async void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            CaretPositionChangedEventArgs localCaretPositionChangedArgs;
+            lock (CaretPositionChangedArgs)
+            {
+                localCaretPositionChangedArgs = CaretPositionChangedArgs;
+            };
+            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(CaretPositionChangedArgs);
         }
 
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)

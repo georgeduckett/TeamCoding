@@ -13,13 +13,14 @@ using Microsoft.VisualStudio.Utilities;
 using TeamCoding.Extensions;
 using Microsoft.CodeAnalysis;
 using TeamCoding.IdentityManagement;
+using Microsoft.VisualStudio.Shell;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
     /// <summary>
     /// TextAdornment places red boxes behind all the "a"s in the editor window
     /// </summary>
-    internal sealed class TextAdornment
+    internal sealed class TextAdornment : IDisposable
     {
         /// <summary>
         /// The layer of the adornment.
@@ -49,10 +50,11 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 throw new ArgumentNullException(nameof(view));
             }
 
-            RelativePath = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath()).RelativePath;
-
             Layer = view.GetAdornmentLayer("TextAdornment");
+
             View = view;
+            RelativePath = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath()).RelativePath;
+            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             View.LayoutChanged += OnLayoutChanged;
 
             // Create the pen and brush to color the box behind the a's
@@ -63,6 +65,43 @@ namespace TeamCoding.VisualStudio.TextAdornment
             penBrush.Freeze();
             pen = new Pen(penBrush, 0.5);
             pen.Freeze();
+        }
+
+        private async void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
+        {
+            var CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
+                                                                    .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
+                                                                    .Select(of => new
+                                                                    {
+                                                                        CaretMemberHashCode = of.CaretPositionInfo.MemberHashCodes[0],
+                                                                        of.CaretPositionInfo.LeafMemberCaretOffset,
+                                                                        of.IdeUserIdentity
+                                                                    })
+                                                                    .GroupBy(of => of.CaretMemberHashCode)
+                                                                    .ToDictionary(g => g.Key, g => g.Select(of => new { of.IdeUserIdentity, of.LeafMemberCaretOffset }).Distinct());
+
+            if(CaretMemberHashCodeToDataPointString.Keys.Count == 0)
+            {
+                return;
+            }
+
+            var syntaxTree = await View.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxTreeAsync();
+            var rootNode = await syntaxTree.GetRootAsync();
+            var nodes = rootNode.DescendantNodesAndSelf();
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            Layer.RemoveAllAdornments();
+            foreach (var node in nodes)
+            {
+                var nodeTreeHashCode = node.GetTreePositionHashCode();
+                if (CaretMemberHashCodeToDataPointString.ContainsKey(nodeTreeHashCode))
+                {
+                    foreach (var matchedRemoteCaret in CaretMemberHashCodeToDataPointString[nodeTreeHashCode])
+                    {
+                        CreateVisual(node, matchedRemoteCaret.LeafMemberCaretOffset, matchedRemoteCaret.IdeUserIdentity);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -76,10 +115,6 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// <param name="e">The event arguments.</param>
         internal async void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            var syntaxTree = await e.NewSnapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxTreeAsync();
-            var newOrChangedNodes =
-                e.NewOrReformattedLines.SelectMany(line => syntaxTree.GetRoot().DescendantNodes(new TextSpan(line.Extent.Start, line.Extent.Length))).Distinct();
-
             var CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                                                     .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
                                                                     .Select(of => new
@@ -90,6 +125,15 @@ namespace TeamCoding.VisualStudio.TextAdornment
                                                                     })
                                                                     .GroupBy(of => of.CaretMemberHashCode)
                                                                     .ToDictionary(g => g.Key, g => g.Select(of => new { of.IdeUserIdentity, of.LeafMemberCaretOffset }).Distinct());
+            if (CaretMemberHashCodeToDataPointString.Keys.Count == 0)
+            {
+                return;
+            }
+
+            var syntaxTree = await e.NewSnapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxTreeAsync();
+            var newOrChangedNodes =
+                e.NewOrReformattedLines.SelectMany(line => syntaxTree.GetRoot().DescendantNodes(new TextSpan(line.Extent.Start, line.Extent.Length))).Distinct();
+
             foreach (var node in newOrChangedNodes)
             {
                 var nodeTreeHashCode = node.GetTreePositionHashCode();
@@ -127,6 +171,11 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
             }
+        }
+
+        public void Dispose()
+        {
+            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
         }
     }
 }
