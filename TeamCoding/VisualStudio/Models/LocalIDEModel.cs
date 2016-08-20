@@ -79,7 +79,7 @@ namespace TeamCoding.VisualStudio.Models
             int[] memberHashCodes = null;
             switch (caretToken.Language)
             {
-                case "C#": case "Visual Basic": // TODO: Use the actual token, *not* the parent (syntaxnode)
+                case "C#": case "Visual Basic":
                     memberHashCodes = caretToken.Parent.AncestorsAndSelf()
                                                 .Select(n => n.GetTreePositionHashCode()).ToArray();
                     break;
