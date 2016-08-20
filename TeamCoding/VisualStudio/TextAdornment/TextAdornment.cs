@@ -17,32 +17,13 @@ using Microsoft.VisualStudio.Shell;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
-    /// <summary>
-    /// TextAdornment places red boxes behind all the "a"s in the editor window
-    /// </summary>
     internal sealed class TextAdornment : IDisposable
     {
-        /// <summary>
-        /// The layer of the adornment.
-        /// </summary>
         private readonly IAdornmentLayer Layer;
-
-        /// <summary>
-        /// Text view where the adornment is created.
-        /// </summary>
         private readonly IWpfTextView View;
-
-        /// <summary>
-        /// Adornment brush.
-        /// </summary>
-        private readonly Brush brush;
+        private readonly Pen CaretPen;
 
         private readonly string RelativePath;
-
-        /// <summary>
-        /// Adornment pen.
-        /// </summary>
-        private readonly Pen pen;
         public TextAdornment(IWpfTextView view)
         {
             if (view == null)
@@ -57,14 +38,10 @@ namespace TeamCoding.VisualStudio.TextAdornment
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             View.LayoutChanged += OnLayoutChanged;
 
-            // Create the pen and brush to color the box behind the a's
-            brush = new SolidColorBrush(Color.FromArgb(0x20, 0x00, 0x00, 0xff));
-            brush.Freeze();
-
             var penBrush = new SolidColorBrush(Colors.Red);
             penBrush.Freeze();
-            pen = new Pen(penBrush, 0.5);
-            pen.Freeze();
+            CaretPen = new Pen(penBrush, 1);
+            CaretPen.Freeze();
         }
 
         private async void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
@@ -149,12 +126,13 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private void CreateVisual(SyntaxNode node, int caretOffset, UserIdentity userIdentity)
         {
-            // TODO: Improve what we render here
+            // TODO: Change the colour of the remote caret to be different for each remote user, add user image above caret
             var span = new SnapshotSpan(View.TextSnapshot, node.SpanStart + caretOffset, 1);
             Geometry geometry = View.TextViewLines.GetMarkerGeometry(span);
             if (geometry != null)
             {
-                var drawing = new GeometryDrawing(brush, pen, geometry);
+                geometry = new LineGeometry(geometry.Bounds.TopLeft, geometry.Bounds.BottomLeft);
+                var drawing = new GeometryDrawing(null, CaretPen, geometry);
                 drawing.Freeze();
 
                 var drawingImage = new DrawingImage(drawing);
