@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.TeamFoundation.CodeSense.Common;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace TeamCoding.Extensions
 {
     public static class SyntaxNodeExtensions
     {
+        private readonly static ConcurrentDictionary<SyntaxNode, int> CachedHashes = new ConcurrentDictionary<SyntaxNode, int>();
         public static int GetTreePositionHashCode(this SyntaxNode node)
         {
             if (node == null)
@@ -19,11 +21,20 @@ namespace TeamCoding.Extensions
                 throw new ArgumentNullException(nameof(node));
             }
 
+            int hash;
+            if(CachedHashes.TryGetValue(node, out hash))
+            {
+                return hash;
+            }
+
             unchecked
             {
                 // Use a hash of the content of the node and all parents, hashed together
-                return node.AncestorsAndSelf().Select(a => a.ToString().GetHashCode()).Aggregate(17, (acc, next) => acc * 31 + next);
+                hash = node.AncestorsAndSelf().Select(a => a.ToString().GetHashCode()).Aggregate(17, (acc, next) => acc * 31 + next);
             }
+
+            CachedHashes.AddOrUpdate(node, hash, (n, e) => e);
+            return hash;
         }
     }
 }
