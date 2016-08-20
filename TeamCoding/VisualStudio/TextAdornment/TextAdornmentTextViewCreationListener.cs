@@ -28,7 +28,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// </summary>
         [Export(typeof(AdornmentLayerDefinition))]
         [Name("TextAdornment")]
-        [Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
+        [Order(After = PredefinedAdornmentLayers.Text)]
         private AdornmentLayerDefinition editorAdornmentLayer;
 
 #pragma warning restore 649, 169

@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using TeamCoding.Documents;
 using TeamCoding.IdentityManagement;
 using TeamCoding.Extensions;
+using Microsoft.VisualStudio.Shell;
 
 namespace TeamCoding.VisualStudio
 {
@@ -20,12 +21,6 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        private readonly IDEWrapper IdeWrapper;
-
-        public UserImageCache(IDEWrapper ideWrapper)
-        {
-            IdeWrapper = ideWrapper;
-        }
         public Panel CreateUserIdentityControl(UserIdentity userIdentity)
         {
             var firstLetter = userIdentity.Id[0];
@@ -60,7 +55,7 @@ namespace TeamCoding.VisualStudio
 
             if (userIdentity.ImageUrl != null)
             {
-                IdeWrapper.InvokeAsync(async () =>
+                ThreadHelper.JoinableTaskFactory.Run(async () =>
                 {
                     try
                     {

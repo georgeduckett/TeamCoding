@@ -127,12 +127,12 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private void CreateVisual(SyntaxNode node, int caretOffset, UserIdentity userIdentity)
         {
             // TODO: Change the colour of the remote caret to be different for each remote user, add user image above caret
-            var span = new SnapshotSpan(View.TextSnapshot, node.SpanStart + caretOffset, 1);
-            Geometry geometry = View.TextViewLines.GetMarkerGeometry(span);
-            if (geometry != null)
+            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, node.SpanStart + caretOffset, 1);
+            Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);
+            if (characterGeometry != null)
             {
-                geometry = new LineGeometry(geometry.Bounds.TopLeft, geometry.Bounds.BottomLeft);
-                var drawing = new GeometryDrawing(null, CaretPen, geometry);
+                var caretGeometry = new LineGeometry(characterGeometry.Bounds.TopLeft, characterGeometry.Bounds.BottomLeft);
+                var drawing = new GeometryDrawing(null, CaretPen, caretGeometry);
                 drawing.Freeze();
 
                 var drawingImage = new DrawingImage(drawing);
@@ -144,10 +144,18 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 };
 
                 // Align the image with the top of the bounds of the text geometry
-                Canvas.SetLeft(image, geometry.Bounds.Left);
-                Canvas.SetTop(image, geometry.Bounds.Top);
+                Canvas.SetLeft(image, caretGeometry.Bounds.Left);
+                Canvas.SetTop(image, caretGeometry.Bounds.Top);
 
-                Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, image, null);
+
+                var userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
+                userControl.Opacity = 0.75f;
+                userControl.Width = caretGeometry.Bounds.Height / 1.5f;
+                userControl.Height = caretGeometry.Bounds.Height / 1.5f;
+                Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - characterGeometry.Bounds.Width / 2 - 1);
+                Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
+                Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, null);
             }
         }
 

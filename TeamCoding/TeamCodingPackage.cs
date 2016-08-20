@@ -28,6 +28,7 @@ namespace TeamCoding
     {
         public static TeamCodingPackage Current { get; private set; }
         public readonly Logger Logger = new Logger();
+        public readonly UserImageCache UserImages = new UserImageCache();
         private uint SolutionEventsHandlerId;
         public HttpClient HttpClient { get; private set; }
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
@@ -38,6 +39,7 @@ namespace TeamCoding
         public Settings Settings { get; private set; }
         public LocalIDEModel LocalIdeModel { get; private set; }
         public RedisWrapper Redis { get; private set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
         /// </summary>
