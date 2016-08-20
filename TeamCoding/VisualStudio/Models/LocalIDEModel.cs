@@ -74,7 +74,12 @@ namespace TeamCoding.VisualStudio.Models
 
         private static async System.Threading.Tasks.Task<DocumentRepoMetaData.CaretInfo> GetCaretInfo(SnapshotPoint snapshotPoint)
         {
-            var syntaxRoot = await snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxRootAsync();
+            var document = snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+            if(document == null)
+            {
+                return null;
+            }
+            var syntaxRoot = await document.GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
             int[] memberHashCodes = null;
             switch (caretToken.Language)
