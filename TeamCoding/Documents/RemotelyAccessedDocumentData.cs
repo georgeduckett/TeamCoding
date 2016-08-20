@@ -17,8 +17,14 @@ namespace TeamCoding.Documents
         public DocumentRepoMetaData.CaretInfo CaretPositionInfo { get; set; }
         public override int GetHashCode()
         {
-            // TODO: Use better hash combination
-            return Repository.GetHashCode() ^ RepositoryBranch.GetHashCode() ^ IdeUserIdentity.Id.GetHashCode() ^ BeingEdited.GetHashCode() ^ HasFocus.GetHashCode() ^ (CaretPositionInfo?.LeafMemberCaretOffset.GetHashCode() ?? 0) ^ (CaretPositionInfo?.MemberHashCodes.GetHashCode() ?? 0);
+            var hash = 17;
+            hash = hash * 31 + Repository.GetHashCode();
+            hash = hash * 31 + RepositoryBranch.GetHashCode();
+            hash = hash * 31 + IdeUserIdentity.GetHashCode();
+            hash = hash * 31 + BeingEdited.GetHashCode();
+            hash = hash * 31 + HasFocus.GetHashCode();
+            hash = hash * 31 + (CaretPositionInfo?.LeafMemberCaretOffset.GetHashCode() ?? 0);
+            hash = hash * 31 + (CaretPositionInfo?.MemberHashCodes.GetHashCode() ?? 0);
         }
         public bool Equals(RemotelyAccessedDocumentData other)
         {
