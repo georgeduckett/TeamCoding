@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Documents;
 using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio.CodeLens
@@ -14,8 +15,8 @@ namespace TeamCoding.VisualStudio.CodeLens
     public class CurrentUsersDataPointUpdater : IDisposable
     {
         private readonly List<CurrentUsersDataPointViewModel> DataPointModels = new List<CurrentUsersDataPointViewModel>();
-        private Dictionary<Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier, string> CaretMemberHashCodeToDataPointString = new Dictionary<Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier, string>();
-        private readonly Dictionary<SyntaxNode, Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier> NodeToHash = new Dictionary<SyntaxNode, Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier>(); // TODO: Consolidate SyntaxNode->NodeId to a class
+        private Dictionary<SyntaxNodeIdentifier, string> CaretMemberHashCodeToDataPointString = new Dictionary<SyntaxNodeIdentifier, string>();
+        private readonly Dictionary<SyntaxNode, SyntaxNodeIdentifier> NodeToHash = new Dictionary<SyntaxNode, SyntaxNodeIdentifier>(); // TODO: Consolidate SyntaxNode->NodeId to a class
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointUpdater(): base()
         {
@@ -57,7 +58,7 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
         {
-            Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier hash;
+            SyntaxNodeIdentifier hash;
             if (!NodeToHash.ContainsKey(codeElementDescriptor.SyntaxNode))
             {
                 hash = codeElementDescriptor.SyntaxNode.GetTreePositionHashCode();

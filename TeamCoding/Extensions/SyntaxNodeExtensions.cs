@@ -8,31 +8,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Documents;
 
 namespace TeamCoding.Extensions
 {
     public static class SyntaxNodeExtensions
     {
-        private readonly static ConcurrentDictionary<SyntaxNode, Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier> CachedHashes =
-            new ConcurrentDictionary<SyntaxNode, Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier>();
-        public static Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier GetTreePositionHashCode(this SyntaxNode node)
+        private readonly static ConcurrentDictionary<SyntaxNode, SyntaxNodeIdentifier> CachedHashes =
+            new ConcurrentDictionary<SyntaxNode, SyntaxNodeIdentifier>();
+        public static SyntaxNodeIdentifier GetTreePositionHashCode(this SyntaxNode node)
         {
             if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
             }
 
-            Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier hash;
+            SyntaxNodeIdentifier hash;
             if(CachedHashes.TryGetValue(node, out hash))
             {
                 return hash;
             }
-
-            unchecked
-            {
-                // Use a hash of the content of the node and all parents, hashed together
-                hash = new Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier(node.AncestorsAndSelf().Select(a => a.ToString().GetHashCode()).Aggregate(17, (acc, next) => acc * 31 + next));
-            }
+            
+            hash = new SyntaxNodeIdentifier(node.AncestorsAndSelf().Select(a => a.GetHashCode()).ToArray());
 
             CachedHashes.AddOrUpdate(node, hash, (n, e) => e);
             return hash;
