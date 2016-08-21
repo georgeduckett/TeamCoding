@@ -24,7 +24,7 @@ namespace TeamCoding.Documents
             hash = hash * 31 + BeingEdited.GetHashCode();
             hash = hash * 31 + HasFocus.GetHashCode();
             hash = hash * 31 + (CaretPositionInfo?.LeafMemberCaretOffset.GetHashCode() ?? 0);
-            hash = hash * 31 + (CaretPositionInfo?.MemberHashCodes.GetHashCode() ?? 0);
+            hash = hash * 31 + (CaretPositionInfo?.SyntaxNodeIds.GetHashCode() ?? 0);
 
             return hash;
         }
@@ -40,7 +40,7 @@ namespace TeamCoding.Documents
                    BeingEdited == other.BeingEdited &&
                    HasFocus == other.HasFocus &&
                    CaretPositionInfo?.LeafMemberCaretOffset == other.CaretPositionInfo?.LeafMemberCaretOffset &&
-                   CaretPositionInfo?.MemberHashCodes == other.CaretPositionInfo?.MemberHashCodes;
+                   CaretPositionInfo?.SyntaxNodeIds == other.CaretPositionInfo?.SyntaxNodeIds;
         }
         public override bool Equals(object obj)
         {

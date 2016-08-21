@@ -15,7 +15,7 @@ namespace TeamCoding.VisualStudio.CodeLens
     {
         private readonly List<CurrentUsersDataPointViewModel> DataPointModels = new List<CurrentUsersDataPointViewModel>();
         private Dictionary<int, string> CaretMemberHashCodeToDataPointString = new Dictionary<int, string>();
-        private readonly Dictionary<SyntaxNode, int> NodeToHash = new Dictionary<SyntaxNode, int>();
+        private readonly Dictionary<SyntaxNode, int> NodeToHash = new Dictionary<SyntaxNode, int>(); // TODO: Consolidate SyntaxNode->NodeId to a class
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointUpdater(): base()
         {
@@ -35,7 +35,7 @@ namespace TeamCoding.VisualStudio.CodeLens
 
             CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                                                     .Where(of => of.CaretPositionInfo != null)
-                                                                    .SelectMany(of => of.CaretPositionInfo.MemberHashCodes.Select(c => new { CaretMemberHashCode = c, of.IdeUserIdentity.DisplayName }))
+                                                                    .SelectMany(of => of.CaretPositionInfo.SyntaxNodeIds.Select(c => new { CaretMemberHashCode = c, of.IdeUserIdentity.DisplayName }))
                                                                     .GroupBy(of => of.CaretMemberHashCode)
                                                                     .ToDictionary(g => g.Key, g => "Current coders: " + string.Join(", ", g.Select(of => of.DisplayName).Distinct()));
 

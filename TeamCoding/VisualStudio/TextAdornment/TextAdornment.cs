@@ -51,7 +51,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
                                                                     .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
                                                                     .Select(of => new
                                                                     {
-                                                                        CaretMemberHashCode = of.CaretPositionInfo.MemberHashCodes[0],
+                                                                        CaretMemberHashCode = of.CaretPositionInfo.SyntaxNodeIds[0],
                                                                         of.CaretPositionInfo.LeafMemberCaretOffset,
                                                                         of.IdeUserIdentity
                                                                     })
@@ -97,7 +97,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
                                                                     .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
                                                                     .Select(of => new
                                                                     {
-                                                                        CaretMemberHashCode = of.CaretPositionInfo.MemberHashCodes[0],
+                                                                        CaretMemberHashCode = of.CaretPositionInfo.SyntaxNodeIds[0],
                                                                         of.CaretPositionInfo.LeafMemberCaretOffset,
                                                                         of.IdeUserIdentity
                                                                     })

@@ -92,7 +92,7 @@ namespace TeamCoding.VisualStudio.Models
                     TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); break;
             }
             
-            return new DocumentRepoMetaData.CaretInfo() { MemberHashCodes = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - caretToken.Parent.SpanStart };
+            return new DocumentRepoMetaData.CaretInfo() { SyntaxNodeIds = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - caretToken.Parent.SpanStart };
         }
 
         public async System.Threading.Tasks.Task OnOpenedTextView(IWpfTextView view)
