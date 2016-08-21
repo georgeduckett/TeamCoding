@@ -55,7 +55,7 @@ namespace TeamCoding.VisualStudio
             if (withBorder)
             {
                 border.BorderThickness = new Thickness(1);
-                border.BorderBrush = new SolidColorBrush(userIdentity.GetUserColour()); // TODO: Use cached brush
+                border.BorderBrush = UserColours.GetUserBrush(userIdentity);
             }
             grid.Children.Add(border);
 
