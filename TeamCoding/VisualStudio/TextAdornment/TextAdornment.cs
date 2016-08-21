@@ -127,7 +127,6 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private void CreateVisual(SyntaxNode node, int caretOffset, UserIdentity userIdentity)
         {
-            // TODO: Change the colour of the remote caret to be different for each remote user, add user image above caret
             var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, node.SpanStart + caretOffset, 1);
             Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);
             if (characterGeometry != null)
