@@ -134,7 +134,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             {
                 var caretGeometry = new LineGeometry(characterGeometry.Bounds.TopLeft, characterGeometry.Bounds.BottomLeft);
                 var userBrush = new SolidColorBrush(userIdentity.GetUserColour());
-                var drawing = new GeometryDrawing(null, new Pen(userBrush, 1), caretGeometry); // TODO: Cache the pens/brushes
+                var drawing = new GeometryDrawing(null, new Pen(userBrush, 1), caretGeometry); // TODO: Cache the pens/brushes (in the user identity, or it's own class)
                 drawing.Freeze();
 
                 var drawingImage = new DrawingImage(drawing);
@@ -151,12 +151,10 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, image, null);
 
-                FrameworkElement userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
-                userControl = new Border() { Child = userControl, BorderThickness = new Thickness(1), BorderBrush = userBrush };
-                userControl.Opacity = 0.75f;
-                userControl.Width = caretGeometry.Bounds.Height / 1.5f;
-                userControl.Height = caretGeometry.Bounds.Height / 1.5f;
-                Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - characterGeometry.Bounds.Width / 2 - 1);
+                FrameworkElement userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity, true);
+                userControl.Width = caretGeometry.Bounds.Height / 1.25f;
+                userControl.Height = caretGeometry.Bounds.Height / 1.25f;
+                Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - userControl.Width / 2);
                 Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, null);
             }

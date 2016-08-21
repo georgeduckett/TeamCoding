@@ -21,7 +21,7 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public Panel CreateUserIdentityControl(UserIdentity userIdentity)
+        public Panel CreateUserIdentityControl(UserIdentity userIdentity, bool withBorder = false)
         {
             var firstLetter = userIdentity.Id[0];
             var grid = new Grid();
@@ -46,12 +46,18 @@ namespace TeamCoding.VisualStudio
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             });
-            grid.Children.Add(new Border()
+            var border = new Border()
             {
                 BorderThickness = new Thickness(1),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
-            });
+            };
+            if (withBorder)
+            {
+                border.BorderThickness = new Thickness(1);
+                border.BorderBrush = new SolidColorBrush(userIdentity.GetUserColour());
+            }
+            grid.Children.Add(border);
 
             if (userIdentity.ImageUrl != null)
             {
