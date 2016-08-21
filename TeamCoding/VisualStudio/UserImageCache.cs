@@ -55,7 +55,7 @@ namespace TeamCoding.VisualStudio
             if (withBorder)
             {
                 border.BorderThickness = new Thickness(1);
-                border.BorderBrush = new SolidColorBrush(userIdentity.GetUserColour());
+                border.BorderBrush = new SolidColorBrush(userIdentity.GetUserColour()); // TODO: Use cached brush
             }
             grid.Children.Add(border);
 
@@ -83,7 +83,7 @@ namespace TeamCoding.VisualStudio
             var textBlockControl = parentControl.FindChild<TextBlock>();
             var firstLetter = (matchedRemoteDoc.IdeUserIdentity.Id)[0];
             textBlockControl.Text = firstLetter.ToString();
-            parentControl.Background = VisuallyDistinctColours.GetRandomColour(firstLetter);
+            parentControl.Background = UserColours.GetUserBrush(matchedRemoteDoc.IdeUserIdentity);
 
             var textBlockFormattedText = textBlockControl.GetBoundingRect();
             if (textBlockFormattedText.Top >= 5)

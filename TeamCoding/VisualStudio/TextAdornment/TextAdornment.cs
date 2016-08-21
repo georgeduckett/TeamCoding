@@ -132,8 +132,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             if (characterGeometry != null)
             {
                 var caretGeometry = new LineGeometry(characterGeometry.Bounds.TopLeft, characterGeometry.Bounds.BottomLeft);
-                var userBrush = new SolidColorBrush(userIdentity.GetUserColour());
-                var drawing = new GeometryDrawing(null, new Pen(userBrush, 1), caretGeometry); // TODO: Cache the pens/brushes (in the user identity, or it's own class)
+                var drawing = new GeometryDrawing(null, UserColours.GetUserPen(userIdentity), caretGeometry);
                 drawing.Freeze();
 
                 var drawingImage = new DrawingImage(drawing);

@@ -116,6 +116,7 @@
     <Compile Include="VisualStudio\SolutionEventsHandler.cs" />
     <Compile Include="VisualStudio\TextAdornment\TextAdornment.cs" />
     <Compile Include="VisualStudio\TextAdornment\TextAdornmentTextViewCreationListener.cs" />
+    <Compile Include="VisualStudio\UserColours.cs" />
     <Compile Include="VisualStudio\UserImageCache.cs" />
     <Compile Include="IdentityManagement\VSIdentityProvider.cs" />
     <Compile Include="TeamCodingPackage.cs" />
