@@ -14,6 +14,7 @@ using TeamCoding.Extensions;
 using Microsoft.CodeAnalysis;
 using TeamCoding.IdentityManagement;
 using Microsoft.VisualStudio.Shell;
+using System.Windows;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -132,7 +133,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
             if (characterGeometry != null)
             {
                 var caretGeometry = new LineGeometry(characterGeometry.Bounds.TopLeft, characterGeometry.Bounds.BottomLeft);
-                var drawing = new GeometryDrawing(null, CaretPen, caretGeometry);
+                var userBrush = new SolidColorBrush(userIdentity.GetUserColour());
+                var drawing = new GeometryDrawing(null, new Pen(userBrush, 1), caretGeometry); // TODO: Cache the pens/brushes
                 drawing.Freeze();
 
                 var drawingImage = new DrawingImage(drawing);
@@ -149,7 +151,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, image, null);
 
-                var userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
+                FrameworkElement userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
+                userControl = new Border() { Child = userControl, BorderThickness = new Thickness(1), BorderBrush = userBrush };
                 userControl.Opacity = 0.75f;
                 userControl.Width = caretGeometry.Bounds.Height / 1.5f;
                 userControl.Height = caretGeometry.Bounds.Height / 1.5f;
