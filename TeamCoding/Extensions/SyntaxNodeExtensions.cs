@@ -13,15 +13,16 @@ namespace TeamCoding.Extensions
 {
     public static class SyntaxNodeExtensions
     {
-        private readonly static ConcurrentDictionary<SyntaxNode, int> CachedHashes = new ConcurrentDictionary<SyntaxNode, int>();
-        public static int GetTreePositionHashCode(this SyntaxNode node)
+        private readonly static ConcurrentDictionary<SyntaxNode, Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier> CachedHashes =
+            new ConcurrentDictionary<SyntaxNode, Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier>();
+        public static Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier GetTreePositionHashCode(this SyntaxNode node)
         {
             if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
             }
 
-            int hash;
+            Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier hash;
             if(CachedHashes.TryGetValue(node, out hash))
             {
                 return hash;
@@ -30,7 +31,7 @@ namespace TeamCoding.Extensions
             unchecked
             {
                 // Use a hash of the content of the node and all parents, hashed together
-                hash = node.AncestorsAndSelf().Select(a => a.ToString().GetHashCode()).Aggregate(17, (acc, next) => acc * 31 + next);
+                hash = new Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier(node.AncestorsAndSelf().Select(a => a.ToString().GetHashCode()).Aggregate(17, (acc, next) => acc * 31 + next));
             }
 
             CachedHashes.AddOrUpdate(node, hash, (n, e) => e);

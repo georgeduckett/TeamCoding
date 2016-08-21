@@ -11,8 +11,26 @@ namespace TeamCoding.Documents
         [ProtoBuf.ProtoContract]
         public class CaretInfo
         {
+            [ProtoBuf.ProtoContract]
+            public class SyntaxNodeIdentifier
+            {
+                [ProtoBuf.ProtoMember(1)]
+                public int Id;
+                public SyntaxNodeIdentifier() { } // For protobuf
+                public SyntaxNodeIdentifier(int id) { Id = id; }
+                public override bool Equals(object obj)
+                {
+                    var syntaxNodeIdentifier = obj as SyntaxNodeIdentifier;
+                    if (syntaxNodeIdentifier == null) { return false; }
+                    return Id.Equals(syntaxNodeIdentifier.Id);
+                }
+                public override int GetHashCode()
+                {
+                    return Id.GetHashCode();
+                }
+            }
             [ProtoBuf.ProtoMember(1)]
-            public int[] SyntaxNodeIds { get; set; }
+            public SyntaxNodeIdentifier[] SyntaxNodeIds { get; set; }
             [ProtoBuf.ProtoMember(2)]
             public int LeafMemberCaretOffset { get; set; }
         }

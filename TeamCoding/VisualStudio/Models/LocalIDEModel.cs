@@ -81,7 +81,7 @@ namespace TeamCoding.VisualStudio.Models
             }
             var syntaxRoot = await document.GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
-            int[] memberHashCodes = null;
+            Documents.DocumentRepoMetaData.CaretInfo.SyntaxNodeIdentifier[] memberHashCodes = null;
             switch (caretToken.Language)
             {
                 case "C#": case "Visual Basic":
