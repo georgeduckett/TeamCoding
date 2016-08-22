@@ -80,6 +80,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
                     while (waitCount-- != 0 && !IsFileReady(modelSyncFile)) { System.Threading.Thread.Sleep(100); }
                     if (waitCount == 0)
                     {
+                        TeamCodingPackage.Current.Logger.WriteError($"Could not get access to file {modelSyncFile}. Skipped.");
                         continue;
                     }
                     // If any file hasn't been modified in the last minute an a half, delete it (tidy up files left from crashes etc.)
