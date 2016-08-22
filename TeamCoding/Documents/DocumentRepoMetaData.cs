@@ -13,7 +13,7 @@ namespace TeamCoding.Documents
         public class CaretInfo
         {
             [ProtoBuf.ProtoMember(1)]
-            public SyntaxNodeIdentifier[] SyntaxNodeIds { get; set; }
+            public int[] SyntaxNodeIds { get; set; }
             [ProtoBuf.ProtoMember(2)]
             public int LeafMemberCaretOffset { get; set; }
         }

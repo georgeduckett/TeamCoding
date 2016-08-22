@@ -15,7 +15,7 @@ namespace TeamCoding.VisualStudio.CodeLens
     public class CurrentUsersDataPointUpdater : IDisposable
     {
         private readonly List<CurrentUsersDataPointViewModel> DataPointModels = new List<CurrentUsersDataPointViewModel>();
-        private Dictionary<SyntaxNodeIdentifier, string> CaretMemberHashCodeToDataPointString = new Dictionary<SyntaxNodeIdentifier, string>();
+        private Dictionary<int[], string> CaretMemberHashCodeToDataPointString = new Dictionary<int[], string>(new IntArrayEqualityComparer());
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointUpdater(): base()
         {
@@ -34,20 +34,20 @@ namespace TeamCoding.VisualStudio.CodeLens
             var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
 
             CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                                    .Where(of => of.CaretPositionInfo != null)
-                                                                    .SelectMany(of => of.CaretPositionInfo.SyntaxNodeIds.Select(c => new { CaretMemberHashCode = c, of.IdeUserIdentity.DisplayName }))
-                                                                    .GroupBy(of => of.CaretMemberHashCode)
-                                                                    .ToDictionary(g => g.Key, g => "Current coders: " + string.Join(", ", g.Select(of => of.DisplayName).Distinct()));
+                                              .Where(of => of.CaretPositionInfo != null)
+                                              .Select(of => new
+                                              {
+                                                  CaretMemberHashCodes = of.CaretPositionInfo.SyntaxNodeIds,
+                                                  of.IdeUserIdentity.DisplayName
+                                              })
+                                              .GroupBy(of => of.CaretMemberHashCodes, new IntArrayEqualityComparer())
+                                              .ToDictionary(g => g.Key, g => "Current coders: " + string.Join(", ", g.Select(of => of.DisplayName).Distinct()));
 
             if (!oldCaretMemberHashCodeToDataPointString.DictionaryEqual(CaretMemberHashCodeToDataPointString))
             {
                 foreach (var dataPointModel in DataPointModels)
                 {
-                    if (dataPointModel.IsDisposed)
-                    {
-                        SyntaxNodeIdentifier.Cache.RemoveCachedIdentifier(((CurrentUsersDataPoint)dataPointModel.DataPoint).CodeElementDescriptor.SyntaxNode);
-                    }
-                    else
+                    if (!dataPointModel.IsDisposed)
                     {
                         dataPointModel.RefreshModel();
                     }
@@ -57,10 +57,23 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
         {
-            var hash = codeElementDescriptor.SyntaxNode.GetTreePositionHashCode();
-            if (CaretMemberHashCodeToDataPointString.ContainsKey(hash))
+            foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
             {
-                return Task.FromResult(CaretMemberHashCodeToDataPointString[hash]);
+                var node = codeElementDescriptor.SyntaxNode;
+
+                // First find the first node that we start the node chain from
+                var matchedNode = node.AncestorsAndSelf().FirstOrDefault(n => (n is Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax) ||
+                                                                              (n is Microsoft.CodeAnalysis.VisualBasic.Syntax.MethodBaseSyntax));
+
+                if (matchedNode?.GetValueBasedHashCode() == caret.Last())
+                {
+                    // Now walk up the tree, and up the caret hashes ensuring we match all the way up
+                    var nodeancestorhashes = matchedNode.AncestorsAndSelf().Select(a => a.GetValueBasedHashCode());
+                    if (nodeancestorhashes.SequenceEqual(caret.Reverse()))
+                    {
+                        return Task.FromResult(CaretMemberHashCodeToDataPointString[caret]);
+                    }
+                }
             }
             return Task.FromResult<string>(null);
         }

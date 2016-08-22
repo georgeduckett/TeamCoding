@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis;
 using TeamCoding.IdentityManagement;
 using Microsoft.VisualStudio.Shell;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -47,37 +48,51 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private async void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
-            var CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                                    .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
-                                                                    .Select(of => new
-                                                                    {
-                                                                        CaretMemberHashCode = of.CaretPositionInfo.SyntaxNodeIds[0],
-                                                                        of.CaretPositionInfo.LeafMemberCaretOffset,
-                                                                        of.IdeUserIdentity
-                                                                    })
-                                                                    .GroupBy(of => of.CaretMemberHashCode)
-                                                                    .ToDictionary(g => g.Key, g => g.Select(of => new { of.IdeUserIdentity, of.LeafMemberCaretOffset }).Distinct());
+            var CaretPositions = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
+                                                          .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
+                                                          .Select(of => new
+                                                          {
+                                                              CaretMemberHashCodes = of.CaretPositionInfo.SyntaxNodeIds,
+                                                              of.CaretPositionInfo.LeafMemberCaretOffset,
+                                                              of.IdeUserIdentity
+                                                          }).ToArray();
 
-            if(CaretMemberHashCodeToDataPointString.Keys.Count == 0)
+            if(CaretPositions.Length == 0)
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                Layer.RemoveAllAdornments();
                 return;
             }
 
-            var syntaxTree = await View.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxTreeAsync();
+            var document = View.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+            if(document == null)
+            {
+                return;
+            }
+            var syntaxTree = await document.GetSyntaxTreeAsync();
             var rootNode = await syntaxTree.GetRootAsync();
-            var nodes = rootNode.DescendantNodesAndSelf();
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Layer.RemoveAllAdornments();
-            foreach (var node in nodes)
+
+            foreach(var caret in CaretPositions)
             {
-                var nodeTreeHashCode = node.GetTreePositionHashCode();
-                if (CaretMemberHashCodeToDataPointString.ContainsKey(nodeTreeHashCode))
+                if (rootNode.GetValueBasedHashCode() != caret.CaretMemberHashCodes[0])
                 {
-                    foreach (var matchedRemoteCaret in CaretMemberHashCodeToDataPointString[nodeTreeHashCode])
-                    {
-                        CreateVisual(node, matchedRemoteCaret.LeafMemberCaretOffset, matchedRemoteCaret.IdeUserIdentity);
-                    }
+                    continue;
+                }
+                var nodes = new[] { rootNode };
+                var i = 1;
+                while (nodes.Length != 0 && i < caret.CaretMemberHashCodes.Length)
+                {
+                    nodes = nodes.SelectMany(node => node.ChildNodes().Where(c => c.GetValueBasedHashCode() == caret.CaretMemberHashCodes[i])).ToArray();
+                    i++;
+                }
+
+                foreach(var node in nodes)
+                {
+                    // We got to the end, matching all nodes all the way down
+                    CreateVisual(node, caret.LeafMemberCaretOffset, caret.IdeUserIdentity);
                 }
             }
         }
@@ -91,43 +106,18 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// </remarks>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        internal async void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            var CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                                    .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
-                                                                    .Select(of => new
-                                                                    {
-                                                                        CaretMemberHashCode = of.CaretPositionInfo.SyntaxNodeIds[0],
-                                                                        of.CaretPositionInfo.LeafMemberCaretOffset,
-                                                                        of.IdeUserIdentity
-                                                                    })
-                                                                    .GroupBy(of => of.CaretMemberHashCode)
-                                                                    .ToDictionary(g => g.Key, g => g.Select(of => new { of.IdeUserIdentity, of.LeafMemberCaretOffset }).Distinct());
-            if (CaretMemberHashCodeToDataPointString.Keys.Count == 0)
-            {
-                return;
-            }
-
-            var syntaxTree = await e.NewSnapshot.GetOpenDocumentInCurrentContextWithChanges().GetSyntaxTreeAsync();
-            var newOrChangedNodes =
-                e.NewOrReformattedLines.SelectMany(line => syntaxTree.GetRoot().DescendantNodes(new TextSpan(line.Extent.Start, line.Extent.Length))).Distinct();
-
-            foreach (var node in newOrChangedNodes)
-            {
-                var nodeTreeHashCode = node.GetTreePositionHashCode();
-                if (CaretMemberHashCodeToDataPointString.ContainsKey(nodeTreeHashCode))
-                {
-                    foreach (var matchedRemoteCaret in CaretMemberHashCodeToDataPointString[nodeTreeHashCode])
-                    {
-                        CreateVisual(node, matchedRemoteCaret.LeafMemberCaretOffset, matchedRemoteCaret.IdeUserIdentity);
-                    }
-                }
-            }
+            RemoteModelChangeManager_RemoteModelReceived(sender, EventArgs.Empty);
         }
 
         private void CreateVisual(SyntaxNode node, int caretOffset, UserIdentity userIdentity)
         {
-            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, node.SpanStart + caretOffset, 1);
+            if (node.SpanStart + caretOffset > View.TextSnapshot.Length)
+            {
+                return;
+            }
+            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, Math.Min(node.SpanStart + caretOffset, node.Span.End), 1);
             Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);
             if (characterGeometry != null)
             {

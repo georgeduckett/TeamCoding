@@ -10,6 +10,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace TeamCoding.VisualStudio.Models
 {
@@ -81,18 +83,23 @@ namespace TeamCoding.VisualStudio.Models
             }
             var syntaxRoot = await document.GetSyntaxRootAsync();
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
-            SyntaxNodeIdentifier[] memberHashCodes = null;
+            int[] memberHashCodes = null;
+            IEnumerable<SyntaxNode> memberNodes = null;
+
+            var desiredLeafNode = caretToken.Parent.AncestorsAndSelf().FirstOrDefault(n => (n is Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax) ||
+                                                                                           (n is Microsoft.CodeAnalysis.VisualBasic.Syntax.MethodBaseSyntax)); // TODO: Make these nodes a shared list somewhere
+
             switch (caretToken.Language)
             {
                 case "C#": case "Visual Basic":
-                    memberHashCodes = caretToken.Parent.AncestorsAndSelf()
-                                                .Select(n => n.GetTreePositionHashCode()).ToArray();
+                    memberNodes = caretToken.Parent.AncestorsAndSelf().Reverse().TakeWhileInclusive(n => n != desiredLeafNode).ToArray();
+                    memberHashCodes = memberNodes.Select(n => n.GetValueBasedHashCode()).ToArray();
                     break;
                 default:
-                    TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); break;
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); return null;
             }
             
-            return new DocumentRepoMetaData.CaretInfo() { SyntaxNodeIds = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - caretToken.Parent.SpanStart };
+            return new DocumentRepoMetaData.CaretInfo() { SyntaxNodeIds = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - memberNodes.Last().SpanStart };
         }
 
         public async System.Threading.Tasks.Task OnOpenedTextView(IWpfTextView view)
