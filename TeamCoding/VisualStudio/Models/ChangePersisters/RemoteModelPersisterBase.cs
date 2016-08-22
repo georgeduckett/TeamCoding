@@ -34,7 +34,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
             }
             else if(remoteModel.Id == LocalIDEModel.Id.Value && !System.Diagnostics.Debugger.IsAttached)
             {
-                // If we're not debugging or profiling and the remote model is the same as the local model, then don't process it
+                // If we're not debugging and the remote model is the same as the local model, then don't process it
             }
             else if (remoteModel.OpenFiles.Count == 0)
             {
