@@ -16,7 +16,6 @@ namespace TeamCoding.VisualStudio.CodeLens
     {
         private readonly List<CurrentUsersDataPointViewModel> DataPointModels = new List<CurrentUsersDataPointViewModel>();
         private Dictionary<SyntaxNodeIdentifier, string> CaretMemberHashCodeToDataPointString = new Dictionary<SyntaxNodeIdentifier, string>();
-        private readonly Dictionary<SyntaxNode, SyntaxNodeIdentifier> NodeToHash = new Dictionary<SyntaxNode, SyntaxNodeIdentifier>(); // TODO: Consolidate SyntaxNode->NodeId to a class
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointUpdater(): base()
         {
@@ -46,7 +45,7 @@ namespace TeamCoding.VisualStudio.CodeLens
                 {
                     if (dataPointModel.IsDisposed)
                     {
-                        NodeToHash.Remove(((CurrentUsersDataPoint)dataPointModel.DataPoint).CodeElementDescriptor.SyntaxNode);
+                        SyntaxNodeIdentifier.Cache.RemoveCachedIdentifier(((CurrentUsersDataPoint)dataPointModel.DataPoint).CodeElementDescriptor.SyntaxNode);
                     }
                     else
                     {
@@ -58,16 +57,7 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
         {
-            SyntaxNodeIdentifier hash;
-            if (!NodeToHash.ContainsKey(codeElementDescriptor.SyntaxNode))
-            {
-                hash = codeElementDescriptor.SyntaxNode.GetTreePositionHashCode();
-                NodeToHash.Add(codeElementDescriptor.SyntaxNode, hash);
-            }
-            else
-            {
-                hash = NodeToHash[codeElementDescriptor.SyntaxNode];
-            }
+            var hash = codeElementDescriptor.SyntaxNode.GetTreePositionHashCode();
             if (CaretMemberHashCodeToDataPointString.ContainsKey(hash))
             {
                 return Task.FromResult(CaretMemberHashCodeToDataPointString[hash]);
