@@ -76,7 +76,12 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             {
                 foreach (var modelSyncFile in Directory.GetFiles(PersistenceFolderPath, ModelSyncFileFormat))
                 {
-                    while (!IsFileReady(modelSyncFile)) { System.Threading.Thread.Sleep(100); } // TODO: If we wait too long just abort (continue)
+                    int waitCount = 100;
+                    while (waitCount-- != 0 && !IsFileReady(modelSyncFile)) { System.Threading.Thread.Sleep(100); }
+                    if (waitCount == 0)
+                    {
+                        continue;
+                    }
                     // If any file hasn't been modified in the last minute an a half, delete it (tidy up files left from crashes etc.)
                     if ((DateTime.UtcNow - File.GetLastWriteTimeUtc(modelSyncFile)).TotalSeconds > 90)
                     {
