@@ -32,10 +32,12 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 ClearRemoteModels();
                 RemoteModelReceived?.Invoke(this, EventArgs.Empty);
             }
-            else if(remoteModel.Id == LocalIDEModel.Id.Value && !System.Diagnostics.Debugger.IsAttached)
+#if !DEBUG
+            else if(remoteModel.Id == LocalIDEModel.Id.Value)
             {
-                // If we're not debugging and the remote model is the same as the local model, then don't process it
+                // If the remote model is the same as the local model, then don't process it
             }
+#endif
             else if (remoteModel.OpenFiles.Count == 0)
             {
                 if (RemoteModels.ContainsKey(remoteModel.Id))

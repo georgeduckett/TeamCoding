@@ -56,11 +56,11 @@
     <Compile Include="CredentialManagement\NativeMethods.cs" />
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
     <Compile Include="Documents\DocumentRepoMetaData.cs" />
-    <Compile Include="Documents\SyntaxNodeIdentifier.cs" />
     <Compile Include="Events\DelayedEvent.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DTEExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
@@ -72,6 +72,7 @@
     <Compile Include="Guids.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
     <Compile Include="IdentityManagement\VSOptionsIdentityProvider.cs" />
+    <Compile Include="IntArrayEqualityComparer.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Options\OptionPageGrid.cs">
       <SubType>Component</SubType>
