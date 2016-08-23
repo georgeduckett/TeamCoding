@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.VisualBasic;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.VisualStudio.CodeSense.Client.Common;
 using System;
 using System.Collections.Generic;
@@ -14,8 +16,8 @@ namespace TeamCoding.Extensions
     {
         public static bool IsTrackedLeafNode(this SyntaxNode syntaxNode)
         {
-            return syntaxNode is Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax ||
-                   syntaxNode is Microsoft.CodeAnalysis.VisualBasic.Syntax.MethodBaseSyntax;
+            return syntaxNode is MemberDeclarationSyntax ||
+                   syntaxNode is MethodBaseSyntax;
         }
         public static int GetValueBasedHashCode(this SyntaxNode syntaxNode)
         {
@@ -24,10 +26,10 @@ namespace TeamCoding.Extensions
                 throw new ArgumentNullException(nameof(syntaxNode));
             }
 
-            var identityHash = CommonSyntaxNodeExtensions.GetCodeElementIdentityCommon(syntaxNode)?.GetHashCode() ?? 0;
+            var identityHash = syntaxNode.GetCodeElementIdentityCommon()?.GetHashCode() ?? 0;
 
-            var methodDeclarationNode = syntaxNode as Microsoft.CodeAnalysis.CSharp.Syntax.BaseMethodDeclarationSyntax;
-            var methodBaseNode = syntaxNode as Microsoft.CodeAnalysis.VisualBasic.Syntax.MethodBaseSyntax;
+            var methodDeclarationNode = syntaxNode as BaseMethodDeclarationSyntax;
+            var methodBaseNode = syntaxNode as MethodBaseSyntax;
 
             if (methodDeclarationNode != null)
             {
@@ -50,7 +52,7 @@ namespace TeamCoding.Extensions
                 }
             }
 
-            if (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0)
+            if (!(syntaxNode is ICompilationUnitSyntax) && (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0))
             {
                 return syntaxNode.ToString().GetHashCode();
             }
