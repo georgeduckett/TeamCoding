@@ -61,17 +61,37 @@ namespace TeamCoding.VisualStudio.CodeLens
             {
                 var node = codeElementDescriptor.SyntaxNode;
 
-                // Find the first node that we start the node chain from
-                var matchedNode = node.AncestorsAndSelf().FirstOrDefault(n => n.IsTrackedLeafNode());
-
-                if (matchedNode?.GetValueBasedHashCode() == caret.Last())
+                // Find the first node that we start the node chain from (any node that is tracked; a class or member declaration etc)
+                var syntaxNodeChain = node.AncestorsAndSelf().ToArray();
+                var trackedLeafNodes = syntaxNodeChain.Where(n => n.IsTrackedLeafNode()).Reverse().ToArray();
+                
+                var foundMatch = false;
+                for (int i = 0; i < trackedLeafNodes.Length; i++)
                 {
-                    // Now walk up the tree, and up the method hashes ensuring we match all the way up
-                    var nodeancestorhashes = matchedNode.AncestorsAndSelf().Select(a => a.GetValueBasedHashCode());
-                    if (nodeancestorhashes.SequenceEqual(caret.Reverse()))
+                    var matchedLeafNode = trackedLeafNodes[i];
+                    var caretMatchedHashIndex = Array.LastIndexOf(caret, matchedLeafNode.GetValueBasedHashCode());
+
+                    if (caretMatchedHashIndex == -1)
                     {
-                        return Task.FromResult(CaretMemberHashCodeToDataPointString[caret]);
+                        foundMatch = false;
+                        continue;
                     }
+                    
+                    // Now walk up the tree from the matching one, and up the method hashes ensuring we match all the way up
+                    var nodeancestorhashes = matchedLeafNode.AncestorsAndSelf().Select(a => a.GetValueBasedHashCode());
+                    if (nodeancestorhashes.SequenceEqual(caret.Take(caretMatchedHashIndex + 1).Reverse()))
+                    {
+                        foundMatch = true;
+                    }
+                    else
+                    {
+                        foundMatch = false;
+                    }
+                }
+
+                if (foundMatch)
+                {
+                    return Task.FromResult(CaretMemberHashCodeToDataPointString[caret]);
                 }
             }
             return Task.FromResult<string>(null);
