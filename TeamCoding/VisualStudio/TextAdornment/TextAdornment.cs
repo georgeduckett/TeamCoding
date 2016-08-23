@@ -37,6 +37,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
             View = view;
             RelativePath = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath()).RelativePath;
+
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             View.LayoutChanged += OnLayoutChanged;
 

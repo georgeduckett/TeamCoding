@@ -39,6 +39,7 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
+                if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textView.GetTextDocumentFilePath()) == null) return;
                 TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView).Wait();
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;

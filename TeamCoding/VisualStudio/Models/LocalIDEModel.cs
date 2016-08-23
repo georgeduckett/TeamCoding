@@ -109,6 +109,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
+
             sourceControlInfo.CaretPositionInfo = await GetCaretInfo(view.Caret.Position.BufferPosition);
 
             if (sourceControlInfo != null)

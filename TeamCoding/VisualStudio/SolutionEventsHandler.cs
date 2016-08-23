@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace TeamCoding.VisualStudio
             {
                 TeamCodingPackage.Current.Settings.LoadFromJsonFile();
             }
+
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }
         public int OnQueryBackgroundLoadProjectBatch(out bool pfShouldDelayLoadToNextIdle)
