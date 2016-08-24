@@ -27,7 +27,7 @@ namespace TeamCoding.Documents
         }
         public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
-            // TODO: Handle repositories other than Git
+            // TODO: Handle repositories other than Git using http://www.codewrecks.com/blog/index.php/2010/09/13/how-to-get-tfs-server-address-from-a-local-folder-mapped-to-a-workspace/
             if (RepoData.ContainsKey(fullFilePath))
             {
                 var fileRepoData = RepoData[fullFilePath];

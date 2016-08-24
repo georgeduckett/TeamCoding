@@ -118,8 +118,6 @@ namespace TeamCoding.VisualStudio.Models
                 {
                     if (!OpenFiles.ContainsKey(filePath))
                     {
-                        // TODO: maybe use https://msdn.microsoft.com/en-us/library/envdte.sourcecontrol.aspx to check if it's in source control
-
                         OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => sourceControlInfo);
                     }
                 }
