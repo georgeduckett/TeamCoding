@@ -17,7 +17,8 @@ namespace TeamCoding.Extensions
         public static bool IsTrackedLeafNode(this SyntaxNode syntaxNode)
         {
             return syntaxNode is MemberDeclarationSyntax ||
-                   syntaxNode is MethodBaseSyntax;
+                   syntaxNode is TypeBlockSyntax ||
+                   syntaxNode is MethodBlockBaseSyntax;
         }
         public static int GetValueBasedHashCode(this SyntaxNode syntaxNode)
         {
@@ -29,11 +30,11 @@ namespace TeamCoding.Extensions
             var identityHash = syntaxNode.GetCodeElementIdentityCommon()?.GetHashCode() ?? 0;
 
             var methodDeclarationNode = syntaxNode as BaseMethodDeclarationSyntax;
-            var methodBaseNode = syntaxNode as MethodBaseSyntax;
+            var methodBaseNode = syntaxNode as MethodBlockBaseSyntax;
 
             if (methodDeclarationNode != null)
             {
-                // We could have seveal methods with the overloads, so base the hash on the paramter types too
+                // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
 
                 foreach(var param in methodDeclarationNode.ParameterList.Parameters)
@@ -43,12 +44,15 @@ namespace TeamCoding.Extensions
             }
             else if (methodBaseNode != null)
             {
-                // We could have seveal methods with the overloads, so base the hash on the paramter types too
+                // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
 
-                foreach (var param in methodBaseNode.ParameterList.Parameters)
+                if (methodBaseNode.BlockStatement?.ParameterList != null)
                 {
-                    identityHash = identityHash * 31 + param.AsClause.Type.GetValueBasedHashCode();
+                    foreach (var param in methodBaseNode.BlockStatement.ParameterList.Parameters)
+                    {
+                        identityHash = identityHash * 31 + param.AsClause.Type.GetValueBasedHashCode();
+                    }
                 }
             }
 

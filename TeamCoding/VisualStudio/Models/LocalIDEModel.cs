@@ -167,7 +167,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = textBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-
+            
             lock (OpenFilesLock)
             {
                 if (sourceControlInfo == null)
