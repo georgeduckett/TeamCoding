@@ -16,4 +16,6 @@ An example of a valid `teamcoding.json` file can be found in the options menu.
 
 **Reporting Bugs**: When reporting bugs ([here](https://github.com/georgeduckett/TeamCoding/issues)) please include information from the `Team Coding` tab in the output window (if relevent). If there were any exceptions they should be visible there, which can help track down the cause.
 
-**Links:** [GitHub Repo](https://github.com/georgeduckett/TeamCoding/) [![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding)
+**Links:** [GitHub Repo](https://github.com/georgeduckett/TeamCoding/)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding)
