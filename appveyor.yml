@@ -1,11 +1,16 @@
 #image: Visual Studio 2015
 
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 #install:
 #- ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
+
 
 #before_build:
 #  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
 #  - ps: Vsix-TokenReplacement TeamCoding\source.extension.cs 'Version = "([0-9\\.]+)"' 'Version = "{version}"'
+
 
 build_script:
   - nuget restore -Verbosity quiet
@@ -13,3 +18,6 @@ build_script:
 
 #after_test:
 #  - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
