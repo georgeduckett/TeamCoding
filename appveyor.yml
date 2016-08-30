@@ -14,10 +14,8 @@ install:
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SetForegroundWindow(IntPtr hWnd);
 	  '@
-
       Add-Type -MemberDefinition $pinvokes -Name NativeMethods -Namespace MyUtils;
       Add-Type -AssemblyName System.Windows.Forms;
-      
       Start-Process C:\SSDTSetup.exe;
       Sleep -Seconds 2;
       $hwnd = [MyUtils.NativeMethods]::FindWindow("WixStdBA", "Microsoft SQL Server Data Tools for Visual Studio 2015");
