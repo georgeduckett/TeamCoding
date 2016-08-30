@@ -20,10 +20,6 @@ install:
       $hwnd = [MyUtils.NativeMethods]::FindWindow("WixStdBA", "Microsoft SQL Server Data Tools for Visual Studio 2015");
       Sleep -Seconds 1;
       [MyUtils.NativeMethods]::SetForegroundWindow($hwnd);
-      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
-      Sleep -Seconds 1;
-      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-      Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
       Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
