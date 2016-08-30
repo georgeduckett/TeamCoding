@@ -12,7 +12,7 @@ An example of a valid `teamcoding.json` file can be found in the options menu.
 
 **User Identity:** It tries to get your email address as a user identity from various sources (saved Windows Credentials for GitHub, your logged in identity from Visual Studio, your machine name). This will be made public to your team. It uses Gravatar to get a user image from the email address.
 
-**Roadmap:** Still very much alpha, please report bugs as [GitHub issues](https://github.com/georgeduckett/TeamCoding/issues). Currently sharing options are a shared folder, and Redis. If you want others (along with any other feature requests) please raise them as issues. Will initially support Git repos for determining what to share. In the pipeline is support of other source control systems, as well as a shared-coding experience (multiple users editing the same document).
+**Roadmap:** Still very much alpha, please report bugs as [GitHub issues](https://github.com/georgeduckett/TeamCoding/issues). Currently sharing options are a shared folder, and Redis. If you want others (along with any other feature requests) please raise them as issues. Supports Git repos and Team Foundation Services / Visual Studio Online for determining what to share. In the pipeline a shared-coding experience (multiple users editing the same document(s)).
 
 **Reporting Bugs**: When reporting bugs ([here](https://github.com/georgeduckett/TeamCoding/issues)) please include information from the `Team Coding` tab in the output window (if relevent). If there were any exceptions they should be visible there, which can help track down the cause.
 
