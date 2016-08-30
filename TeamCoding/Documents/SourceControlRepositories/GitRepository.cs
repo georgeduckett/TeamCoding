@@ -5,18 +5,13 @@ using System.IO;
 using System.Linq;
 using TeamCoding.VisualStudio;
 
-namespace TeamCoding.Documents
+namespace TeamCoding.Documents.SourceControlRepositories
 {
     /// <summary>
     /// Provides methods to get information about a file in a Git repository
     /// </summary>
-    public class GitRepository
+    public class GitRepository : ISourceControlRepository
     {
-        private readonly Dictionary<string, DocumentRepoMetaData> RepoData = new Dictionary<string, DocumentRepoMetaData>();
-        public void RemoveCachedRepoData(string docFilePath)
-        {
-            RepoData.Remove(docFilePath);
-        }
         private string GetRepoPath(string fullFilePath)
         {
             var repoPath = Repository.Discover(fullFilePath);
@@ -27,16 +22,6 @@ namespace TeamCoding.Documents
         }
         public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
-            // TODO: Handle repositories other than Git using http://www.codewrecks.com/blog/index.php/2010/09/13/how-to-get-tfs-server-address-from-a-local-folder-mapped-to-a-workspace/
-            if (RepoData.ContainsKey(fullFilePath))
-            {
-                var fileRepoData = RepoData[fullFilePath];
-
-                fileRepoData.LastActioned = DateTime.UtcNow;
-
-                return fileRepoData;
-            }
-
             var relativePath = GetRepoPath(fullFilePath);
 
             // It's ok to return null here since calling methods will handle it and it allows us to not have some global "is this a repository setting"
@@ -55,7 +40,7 @@ namespace TeamCoding.Documents
             var isEdited = repo.Diff.Compare<TreeChanges>(new[] { fullFilePath }).Any() ||
                            repo.Diff.Compare<TreeChanges>(remoteMasterTree, repoHeadTree, new[] { fullFilePath }).Any();
 
-            RepoData[fullFilePath] = new DocumentRepoMetaData()
+            return new DocumentRepoMetaData()
             {
                 RepoUrl = repo.Head.TrackedBranch.Remote.Url,
                 RepoBranch = repo.Head.TrackedBranch.CanonicalName,
@@ -63,8 +48,6 @@ namespace TeamCoding.Documents
                 BeingEdited = isEdited,
                 LastActioned = DateTime.UtcNow
             };
-
-            return RepoData[fullFilePath];
         }
     }
 }

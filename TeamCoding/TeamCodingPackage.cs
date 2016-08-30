@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using TeamCoding.Documents;
+using TeamCoding.Documents.SourceControlRepositories;
 using TeamCoding.IdentityManagement;
 using TeamCoding.Logging;
 using TeamCoding.Options;
@@ -34,7 +35,7 @@ namespace TeamCoding
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
         public IRemoteModelPersister RemoteModelChangeManager { get; private set; }
         public IDEWrapper IDEWrapper { get; private set; }
-        public GitRepository SourceControlRepo { get; private set; }
+        public CachedSourceControlRepository SourceControlRepo { get; private set; }
         public IIdentityProvider IdentityProvider { get; private set; }
         public Settings Settings { get; private set; }
         public LocalIDEModel LocalIdeModel { get; private set; }
@@ -67,7 +68,7 @@ namespace TeamCoding
                 Redis = new RedisWrapper();
                 LocalIdeModel = new LocalIDEModel();
                 IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
-                SourceControlRepo = new GitRepository();
+                SourceControlRepo = new CachedSourceControlRepository(new GitRepository(), new TeamFoundationServiceRepository());
                 IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
