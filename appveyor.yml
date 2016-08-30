@@ -12,7 +12,7 @@ install:
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
-      '@
+      '@;
       Add-Type -MemberDefinition $pinvokes -Name NativeMethods -Namespace MyUtils;
       Add-Type -AssemblyName System.Windows.Forms;
       Start-Process C:\SSDTSetup.exe;
