@@ -39,7 +39,10 @@ install:
       [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
       Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
-      Sleep -Minutes 10;
+      Sleep -Seconds 60;
+	  while ([MyUtils.NativeMethods]::FindWindow("button", "Close") -eq 0) { }
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
 
 #before_build:
 #  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
