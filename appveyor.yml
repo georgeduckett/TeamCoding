@@ -5,15 +5,14 @@
 
 install:
   - ps: >-
-	  (New-Object System.Net.WebClient).DownloadFile('https://download.microsoft.com/download/D/9/9/D994CE20-DE0D-494B-BAA0-C3FC20E5E989/Dev14/EN/SSDTSetup.exe','c:\SSDTSetup.exe');
-	  $pinvokes = @'
-		[DllImport("user32.dll", CharSet=CharSet.Auto)]
-		public static extern IntPtr FindWindow(string className, string windowName);
-
-		[DllImport("user32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SetForegroundWindow(IntPtr hWnd);
-	  '@
+      (New-Object System.Net.WebClient).DownloadFile('https://download.microsoft.com/download/D/9/9/D994CE20-DE0D-494B-BAA0-C3FC20E5E989/Dev14/EN/SSDTSetup.exe','c:\SSDTSetup.exe');
+      $pinvokes = @'
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        public static extern IntPtr FindWindow(string className, string windowName);
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+      '@
       Add-Type -MemberDefinition $pinvokes -Name NativeMethods -Namespace MyUtils;
       Add-Type -AssemblyName System.Windows.Forms;
       Start-Process C:\SSDTSetup.exe;
