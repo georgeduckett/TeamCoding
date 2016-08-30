@@ -22,6 +22,26 @@ install:
       [MyUtils.NativeMethods]::SetForegroundWindow($hwnd);
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
       Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait(" ");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
 
 #before_build:
