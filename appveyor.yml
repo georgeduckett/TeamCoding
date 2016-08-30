@@ -5,61 +5,61 @@
 
 install:
   - ps: >-
-  (New-Object System.Net.WebClient).DownloadFile('https://download.microsoft.com/download/D/9/9/D994CE20-DE0D-494B-BAA0-C3FC20E5E989/Dev14/EN/SSDTSetup.exe','c:\SSDTSetup.exe');
-  $pinvokes = @'
-    [DllImport("user32.dll", CharSet=CharSet.Auto)]
-    public static extern IntPtr FindWindow(string className, string windowName);
+	  (New-Object System.Net.WebClient).DownloadFile('https://download.microsoft.com/download/D/9/9/D994CE20-DE0D-494B-BAA0-C3FC20E5E989/Dev14/EN/SSDTSetup.exe','c:\SSDTSetup.exe');
+	  $pinvokes = @'
+		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+		public static extern IntPtr FindWindow(string className, string windowName);
 
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool SetForegroundWindow(IntPtr hWnd);
-'@
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool SetForegroundWindow(IntPtr hWnd);
+	  '@
 
-Add-Type -AssemblyName System.Windows.Forms;
-Add-Type -MemberDefinition $pinvokes -Name NativeMethods -Namespace MyUtils;
-
-Start-Process C:\SSDTSetup.exe;
-Sleep -Seconds 2;
-$hwnd = [MyUtils.NativeMethods]::FindWindow("WixStdBA", "Microsoft SQL Server Data Tools for Visual Studio 2015");
-[MyUtils.NativeMethods]::SetForegroundWindow($hwnd)
-[System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
-Sleep -Seconds 2;
-[System.Windows.Forms.SendKeys]::SendWait(" ");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait(" ");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait(" ");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait(" ");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{TAB}");
-Sleep -Seconds 1;
-[System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
-Echo "Done!";
+      Add-Type -MemberDefinition $pinvokes -Name NativeMethods -Namespace MyUtils;
+      Add-Type -AssemblyName System.Windows.Forms;
+      
+      Start-Process C:\SSDTSetup.exe;
+      Sleep -Seconds 2;
+      $hwnd = [MyUtils.NativeMethods]::FindWindow("WixStdBA", "Microsoft SQL Server Data Tools for Visual Studio 2015");
+      [MyUtils.NativeMethods]::SetForegroundWindow($hwnd)
+      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+      Sleep -Seconds 2;
+      [System.Windows.Forms.SendKeys]::SendWait(" ");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait(" ");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait(" ");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait(" ");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+      Echo "Done!";
 
 #before_build:
 #  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
