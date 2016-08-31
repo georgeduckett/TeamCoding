@@ -40,7 +40,16 @@ install:
       Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
       Sleep -Seconds 60;
-      while ([MyUtils.NativeMethods]::FindWindowEx($hwnd, 0, "button", "Close") -eq 0) { }
+      $zero = [IntPtr]::Zero;
+      while ([MyUtils.NativeMethods]::FindWindowEx($hwnd, $zero, "Static", "Setup Successful") -eq 0) { }
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+      Sleep -Seconds 1;
+      [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
       Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
 
