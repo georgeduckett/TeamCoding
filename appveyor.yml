@@ -39,8 +39,8 @@ install:
       [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
       Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
-      Sleep -Seconds 600;
-      while ([MyUtils.NativeMethods]::FindWindowEx($hwnd, [IntPtr]::Zero, "Static", "Setup Successful") -eq 0) { }
+      Sleep -Seconds 60;
+      while ([MyUtils.NativeMethods]::FindWindowEx($hwnd, [IntPtr]::Zero, "progress bar", "") -neq 0) { }
       Sleep -Seconds 1;
       [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
       Sleep -Seconds 1;
