@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,16 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="110" xml:space="preserve">
-    <value>Team Coding</value>
+    <value>TeamCoding</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>The Team Coding Visual Studio extension helps discover team members who are working in the same area of a solution as you.</value>
+    <value>The Team Coding Visual Studio extension helps discover team members who are working in the same area of a Git repository as you. You can set your own username and user image url via settings (Tools-&gt;Options-&gt;Team Coding), or let it try and figure them out automatically. Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited. It will also display text in CodeLens (disable in CodeLens settings) indicating whether someone is currently working on a class/member based on where their caret (text cursor) is as well as showing a coloured caret where they are working for C# and visual basic code.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\TeamCodingPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="CurrentUsersDataPointProviderName" xml:space="preserve">
-    <value>Current Users</value>
+    <value>source.extension.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

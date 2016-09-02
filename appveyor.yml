@@ -3,6 +3,7 @@ init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
   - ps: >-
+      (New-Object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex;
       (New-Object System.Net.WebClient).DownloadFile('https://download.microsoft.com/download/D/9/9/D994CE20-DE0D-494B-BAA0-C3FC20E5E989/Dev14/EN/SSDTSetup.exe','c:\SSDTSetup.exe');
       $pinvokes = @'
         [DllImport("user32.dll", CharSet=CharSet.Auto)]
@@ -41,17 +42,17 @@ install:
       [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
       Sleep -Seconds 600;
 
-#before_build:
-#  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
-#  - ps: Vsix-TokenReplacement TeamCoding\source.extension.cs 'Version = "([0-9\\.]+)"' 'Version = "{version}"'
-
+before_build:
+  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
+  - ps: Vsix-TokenReplacement TeamCoding\source.extension.cs 'Version = "([0-9\\.]+)"' 'Version = "{version}"'
 
 build_script:
   - nuget restore -Verbosity quiet
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
-#after_test:
-#  - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
+after_test:
+  - ps: Vsix-PushArtifacts
+# | Vsix-PublishToGallery
 
 #on_finish:
 #  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
