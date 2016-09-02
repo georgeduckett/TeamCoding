@@ -56,3 +56,10 @@ after_test:
 
 #on_finish:
 #  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+deploy:
+  - provider: Environment
+    name: github
+    on:
+      branch: master
+      appveyor_repo_tag: true
