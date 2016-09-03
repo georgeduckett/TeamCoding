@@ -61,5 +61,4 @@ deploy:
   - provider: Environment
     name: github
     on:
-      branch: master
       appveyor_repo_tag: true
