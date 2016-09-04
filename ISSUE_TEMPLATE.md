@@ -16,3 +16,6 @@ Explain what it's doing and why it's wrong
 
 ### Expected behavior
 Explain what it should be doing after it's fixed.
+
+### Team Coding Output
+Copy-Paste the log from the output window titled Team Coding (if relevent).

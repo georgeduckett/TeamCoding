@@ -11,9 +11,10 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.VisualStudio.CodeLens
 {
-    [Export(typeof(ICodeLensDataPointProvider)), Name("Team Coding")]
+    [Export(typeof(ICodeLensDataPointProvider)), Name(CodeLensName)]
     public class CurrentUsersDataPointProvider : ICodeLensDataPointProvider
     {
+        public const string CodeLensName = "Team Coding";
         [Import]
         private readonly CurrentUsersDataPointUpdater DataPointUpdater = null;
         [Import]

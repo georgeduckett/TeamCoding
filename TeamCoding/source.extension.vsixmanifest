@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="0.1" Language="en-US" Publisher="George Duckett" />
+    <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="0.2.0" Language="en-US" Publisher="George Duckett" />
     <DisplayName>TeamCoding</DisplayName>
-    <Description xml:space="preserve">The Team Coding Visual Studio extension helps discover team members who are working in the same area of a Git repository as you. You can set your own username and user image url via settings (Tools-&gt;Options-&gt;Team Coding), or let it try and figure them out automatically. Once working it will display user icons at the top of your tabs when other users have the same document open, with a white border when the tab is selected and a grey border when it's edited. It will also display text in CodeLens (disable in CodeLens settings) indicating whether someone is currently working on a class/member based on where their caret (text cursor) is as well as showing a coloured caret where they are working for C# and visual basic code.</Description>
+    <Description xml:space="preserve">The Team Coding Visual Studio extension helps discover team members who are working in the same area of a source controlled solution as you. It displays icons on tabs, text in CodeLens is as well as showing a coloured caret where they are working for C# and visual basic code.</Description>
     <MoreInfo>https://github.com/georgeduckett/TeamCoding</MoreInfo>
     <License>Resources\License.txt</License>
     <GettingStartedGuide>Resources\GettingStarted.txt</GettingStartedGuide>
