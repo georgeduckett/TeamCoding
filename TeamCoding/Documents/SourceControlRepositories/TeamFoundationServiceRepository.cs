@@ -1,4 +1,5 @@
-﻿using Microsoft.TeamFoundation.Client;
+﻿using Microsoft.TeamFoundation;
+using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
@@ -23,10 +24,16 @@ namespace TeamCoding.Documents.SourceControlRepositories
             var versionControlServer = projectCollection.GetService<VersionControlServer>();
             if (versionControlServer == null) return null;
 
-            if (!versionControlServer.ServerItemExists(fullFilePath, ItemType.File)) return null;
-
+            try
+            {
+                if (!versionControlServer.ServerItemExists(fullFilePath, ItemType.File)) return null;
+            }
+            catch (TeamFoundationServerUnauthorizedException ex)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
+                return null;
+            }
             
-
             var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
             return new DocumentRepoMetaData()
             { // TODO: Populate the branch property
