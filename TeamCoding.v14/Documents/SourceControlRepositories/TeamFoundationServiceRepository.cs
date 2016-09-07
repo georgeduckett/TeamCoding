@@ -30,10 +30,11 @@ namespace TeamCoding.Documents.SourceControlRepositories
             }
             catch (TeamFoundationServerUnauthorizedException ex)
             {
-                TeamCodingPackage.Current.Logger.WriteError(ex);
+                // TODO: Add logging back in to TeamFoundationServiceRepository
+                // TeamCodingPackage.Current.Logger.WriteError(ex);
                 return null;
             }
-            
+
             var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
             return new DocumentRepoMetaData()
             { // TODO: Populate the branch property
