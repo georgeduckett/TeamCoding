@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -28,6 +29,7 @@ namespace TeamCoding
     public sealed class TeamCodingPackage : Package
     {
         public static TeamCodingPackage Current { get; private set; }
+        [Export]
         public readonly Logger Logger = new Logger();
         public readonly UserImageCache UserImages = new UserImageCache();
         private uint SolutionEventsHandlerId;
