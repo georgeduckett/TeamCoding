@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.VisualStudio.CodeSense.Roslyn;
+﻿using Microsoft.VisualStudio.CodeSense.Roslyn;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -57,7 +56,8 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
         {
-            foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
+            // TODO: Get CodeLens working again
+            /*foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
             {
                 var node = codeElementDescriptor.SyntaxNode;
 
@@ -93,7 +93,7 @@ namespace TeamCoding.VisualStudio.CodeLens
                 {
                     return Task.FromResult(CaretMemberHashCodeToDataPointString[caret]);
                 }
-            }
+            }*/
             return Task.FromResult<string>(null);
         }
         protected virtual void Dispose(bool disposing)

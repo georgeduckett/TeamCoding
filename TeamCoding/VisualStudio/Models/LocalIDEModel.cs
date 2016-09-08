@@ -9,8 +9,6 @@ using System.Management;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 
 namespace TeamCoding.VisualStudio.Models
@@ -65,7 +63,7 @@ namespace TeamCoding.VisualStudio.Models
         {
             var filePath = e.TextView.TextBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretPositionInfo = await GetCaretInfo(e.NewPosition.BufferPosition);
+            sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfo(e.NewPosition.BufferPosition);
             if (sourceControlInfo != null)
             {
                 lock (OpenFilesLock)
@@ -77,40 +75,12 @@ namespace TeamCoding.VisualStudio.Models
             }
             CaretPositionChanged?.Invoke(this, e);
         }
-
-        private static async System.Threading.Tasks.Task<DocumentRepoMetaData.CaretInfo> GetCaretInfo(SnapshotPoint snapshotPoint)
-        {
-            var document = snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
-            if(document == null)
-            {
-                return null;
-            }
-            var syntaxRoot = await document.GetSyntaxRootAsync();
-            var caretToken = syntaxRoot.FindToken(snapshotPoint);
-            int[] memberHashCodes = null;
-            IEnumerable<SyntaxNode> memberNodes = null;
-
-            var desiredLeafNode = caretToken.Parent.AncestorsAndSelf().FirstOrDefault(n => n.IsTrackedLeafNode());
-
-            switch (caretToken.Language)
-            {
-                case "C#": case "Visual Basic":
-                    memberNodes = caretToken.Parent.AncestorsAndSelf().Reverse().TakeWhileInclusive(n => n != desiredLeafNode).ToArray();
-                    memberHashCodes = memberNodes.Select(n => n.GetValueBasedHashCode()).ToArray();
-                    break;
-                default:
-                    TeamCodingPackage.Current.Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); return null;
-            }
-            
-            return new DocumentRepoMetaData.CaretInfo() { SyntaxNodeIds = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - memberNodes.Last().SpanStart };
-        }
-
         public async System.Threading.Tasks.Task OnOpenedTextView(IWpfTextView view)
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
 
-            sourceControlInfo.CaretPositionInfo = await GetCaretInfo(view.Caret.Position.BufferPosition);
+            sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfo(view.Caret.Position.BufferPosition);
 
             if (sourceControlInfo != null)
             {

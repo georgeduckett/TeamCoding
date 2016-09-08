@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
+﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -40,6 +39,9 @@ namespace TeamCoding.VisualStudio
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textView.GetTextDocumentFilePath()) == null) return;
+
+                var test = AppDomain.CurrentDomain.GetAssemblies().OrderBy(a => a.FullName).ToArray();
+
                 TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView).Wait();
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;

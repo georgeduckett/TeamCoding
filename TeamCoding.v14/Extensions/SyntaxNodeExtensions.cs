@@ -37,7 +37,7 @@ namespace TeamCoding.Extensions
                 // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
 
-                foreach(var param in methodDeclarationNode.ParameterList.Parameters)
+                foreach (var param in methodDeclarationNode.ParameterList.Parameters)
                 {
                     identityHash = identityHash * 31 + param.Type.GetValueBasedHashCode();
                 }

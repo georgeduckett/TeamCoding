@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamCoding.v14", "TeamCodin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamCoding.Interfaces", "TeamCoding.Interfaces\TeamCoding.Interfaces.csproj", "{A72EB923-18EB-42A9-938E-533CFC5B15EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamCoding.v15", "TeamCoding.v15\TeamCoding.v15.csproj", "{5BCC781B-0C52-4E96-BC43-8B1E02BC442B}"
+EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
@@ -39,6 +41,10 @@ Global
 		{A72EB923-18EB-42A9-938E-533CFC5B15EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A72EB923-18EB-42A9-938E-533CFC5B15EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A72EB923-18EB-42A9-938E-533CFC5B15EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BCC781B-0C52-4E96-BC43-8B1E02BC442B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCC781B-0C52-4E96-BC43-8B1E02BC442B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCC781B-0C52-4E96-BC43-8B1E02BC442B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCC781B-0C52-4E96-BC43-8B1E02BC442B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,12 +2,16 @@
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using TeamCoding.Documents;
 using TeamCoding.Documents.SourceControlRepositories;
 using TeamCoding.IdentityManagement;
+using TeamCoding.Interfaces.Documents;
 using TeamCoding.Logging;
 using TeamCoding.Options;
 using TeamCoding.VisualStudio;
@@ -42,6 +46,8 @@ namespace TeamCoding
         public Settings Settings { get; private set; }
         public LocalIDEModel LocalIdeModel { get; private set; }
         public RedisWrapper Redis { get; private set; }
+        public ICaretInfoProvider CaretInfoProvider { get; private set; }
+        public ICaretAdornmentDataProvider CaretAdornmentDataProvider { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamCodingPackage"/> class.
@@ -70,7 +76,12 @@ namespace TeamCoding
                 Redis = new RedisWrapper();
                 LocalIdeModel = new LocalIDEModel();
                 IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
-                SourceControlRepo = new CachedSourceControlRepository(new GitRepository(), new TeamFoundationServiceRepository());
+
+
+                var versionedAssembly = GetVersionedAssembly();
+                CaretInfoProvider = GetVersionedType<ICaretInfoProvider>(versionedAssembly, "TeamCoding.Documents.CaretInfoProvider");
+                CaretAdornmentDataProvider = GetVersionedType<ICaretAdornmentDataProvider>(versionedAssembly, "TeamCoding.Documents.CaretAdornmentDataProvider");
+                SourceControlRepo = new CachedSourceControlRepository(new GitRepository(), GetVersionedType<ISourceControlRepository>(versionedAssembly, "TeamCoding.Documents.SourceControlRepositories.TeamFoundationServiceRepository"));
                 IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
@@ -83,6 +94,24 @@ namespace TeamCoding
             {
                 Logger.WriteError(ex);
             }
+        }
+        private T GetVersionedType<T>(Assembly versionedAssembly, string typeName)
+        {
+            return (T)Activator.CreateInstance(versionedAssembly.GetType(typeName));
+        }
+        private Assembly GetVersionedAssembly()
+        {
+            return Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(typeof(TeamCodingPackage).Assembly.Location), $"TeamCoding.v{GetMajorVsVersion()}.dll"));
+        }
+        private int GetMajorVsVersion()
+        {
+            var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+            Version version;
+            if (Version.TryParse(dte.Version, out version))
+            {
+                return version.Major;
+            }
+            return 15;
         }
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {

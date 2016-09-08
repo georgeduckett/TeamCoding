@@ -5,17 +5,15 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
-using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using TeamCoding.Extensions;
-using Microsoft.CodeAnalysis;
 using TeamCoding.IdentityManagement;
 using Microsoft.VisualStudio.Shell;
 using System.Windows;
 using System.Collections.Generic;
+using TeamCoding.Interfaces.Documents;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -65,30 +63,12 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 return;
             }
 
-            var document = View.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-            if(document == null)
-            {
-                return;
-            }
-            var syntaxTree = await document.GetSyntaxTreeAsync();
-            var rootNode = await syntaxTree.GetRootAsync();
-
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Layer.RemoveAllAdornments();
 
             foreach(var caret in CaretPositions)
             {
-                if (rootNode.GetValueBasedHashCode() != caret.CaretMemberHashCodes[0])
-                {
-                    continue;
-                }
-                var nodes = new[] { rootNode };
-                var i = 1;
-                while (nodes.Length != 0 && i < caret.CaretMemberHashCodes.Length)
-                {
-                    nodes = nodes.SelectMany(node => node.ChildNodes().Where(c => c.GetValueBasedHashCode() == caret.CaretMemberHashCodes[i])).ToArray();
-                    i++;
-                }
+                var nodes = await TeamCodingPackage.Current.CaretAdornmentDataProvider.GetCaretAdornmentData(View.TextSnapshot, caret.CaretMemberHashCodes);
 
                 foreach(var node in nodes)
                 {
@@ -112,13 +92,13 @@ namespace TeamCoding.VisualStudio.TextAdornment
             RemoteModelChangeManager_RemoteModelReceived(sender, EventArgs.Empty);
         }
 
-        private void CreateVisual(SyntaxNode node, int caretOffset, UserIdentity userIdentity)
+        private void CreateVisual(CaretAdornmentData nodeData, int caretOffset, UserIdentity userIdentity)
         {
-            if (node.SpanStart + caretOffset > View.TextSnapshot.Length)
+            if (nodeData.SpanStart + caretOffset > View.TextSnapshot.Length)
             {
                 return;
             }
-            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, Math.Min(node.SpanStart + caretOffset, node.Span.End), 1);
+            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, Math.Min(nodeData.SpanStart + caretOffset, nodeData.SpanEnd), 1);
             Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);
             if (characterGeometry != null)
             {
