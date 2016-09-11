@@ -20,6 +20,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamCoding.Interfaces", "Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamCoding.v15", "TeamCoding.v15\TeamCoding.v15.csproj", "{5BCC781B-0C52-4E96-BC43-8B1E02BC442B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{B84A6007-02A1-47F1-A9EF-CABA9A80833B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v14", "v14", "{7445A02E-33F9-4EDD-8F0B-7CD203C3B147}"
+	ProjectSection(SolutionItems) = preProject
+		References\v14\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll = References\v14\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll
+		References\v14\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v14\Microsoft.VisualStudio.CodeSense.Client.Common.dll
+		References\v14\Microsoft.VisualStudio.CodeSense.dll = References\v14\Microsoft.VisualStudio.CodeSense.dll
+		References\v14\Microsoft.VisualStudio.CodeSense.Roslyn.dll = References\v14\Microsoft.VisualStudio.CodeSense.Roslyn.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v15", "v15", "{63183E3E-79EB-4A9D-82E3-24C7DBAB77A9}"
+	ProjectSection(SolutionItems) = preProject
+		References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll = References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll
+		References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll
+		References\v15\Microsoft.VisualStudio.CodeSense.dll = References\v15\Microsoft.VisualStudio.CodeSense.dll
+		References\v15\Microsoft.VisualStudio.CodeSense.Roslyn.dll = References\v15\Microsoft.VisualStudio.CodeSense.Roslyn.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,5 +63,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B84A6007-02A1-47F1-A9EF-CABA9A80833B} = {6FF7BA71-B302-495E-A2BB-4EDDC2C83E54}
+		{7445A02E-33F9-4EDD-8F0B-7CD203C3B147} = {B84A6007-02A1-47F1-A9EF-CABA9A80833B}
+		{63183E3E-79EB-4A9D-82E3-24C7DBAB77A9} = {B84A6007-02A1-47F1-A9EF-CABA9A80833B}
 	EndGlobalSection
 EndGlobal
