@@ -75,7 +75,6 @@
     <Compile Include="Documents\SourceControlRepositories\CachedSourceControlRepository.cs" />
     <Compile Include="Events\DelayedEvent.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
-    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DTEExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -87,7 +86,6 @@
     <Compile Include="Guids.cs" />
     <Compile Include="IdentityManagement\CachedFailoverIdentityProvider.cs" />
     <Compile Include="IdentityManagement\VSOptionsIdentityProvider.cs" />
-    <Compile Include="IntArrayEqualityComparer.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Options\OptionPageGrid.cs">
       <SubType>Component</SubType>
@@ -105,14 +103,6 @@
     <Compile Include="Options\UserSettings.cs" />
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-    </Compile>
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPoint.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointUpdater.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModel.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointProvider.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModelProvider.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml.cs">
-      <DependentUpon>CurrentUsersTemplateProvider.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedRemoteModelPersister.cs" />
@@ -222,7 +212,6 @@
       <HintPath>..\packages\LibGit2Sharp.0.22.0\lib\net40\LibGit2Sharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Alm.Shared, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.16.204221202\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
       <Private>True</Private>
@@ -251,21 +240,9 @@
       <HintPath>..\packages\Microsoft.TeamFoundation.VersionControl.All.12.0.30723.2\lib\net45\Microsoft.TeamFoundation.VersionControl.UIFeatures.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\CodeAnalysisWorkspace\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodeSense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\CodeSense\Framework\Microsoft.VisualStudio.CodeSense.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodeSense.Client.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\CodeSense\Framework\Microsoft.VisualStudio.CodeSense.Client.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodeSense.Roslyn, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\CodeSense\Framework\Microsoft.VisualStudio.CodeSense.Roslyn.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.ComponentModelHost.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.CoreUtility.14.3.25407\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
@@ -274,7 +251,6 @@
     <Reference Include="Microsoft.VisualStudio.Platform.WindowManagement, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Microsoft.VisualStudio.Platform.WindowManagement.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Shell.14.0.14.3.25407\lib\Microsoft.VisualStudio.Shell.14.0.dll</HintPath>
@@ -387,10 +363,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
@@ -416,14 +388,15 @@
     <ProjectReference Include="..\TeamCoding.v14\TeamCoding.v14.csproj">
       <Project>{1bc98758-87ae-488e-9b2f-4e06acc83646}</Project>
       <Name>TeamCoding.v14</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
     <ProjectReference Include="..\TeamCoding.v15\TeamCoding.v15.csproj">
       <Project>{5bcc781b-0c52-4e96-bc43-8b1e02bc442b}</Project>
       <Name>TeamCoding.v15</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -18,7 +18,7 @@ namespace TeamCoding.VisualStudio.CodeLens
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointUpdater(): base()
         {
-            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+            //TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
         public void AddDataPointModel(CurrentUsersDataPointViewModel dataPointModel)
         {
@@ -30,7 +30,7 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
-            var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
+            /*var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
 
             CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                               .Where(of => of.CaretPositionInfo != null)
@@ -52,7 +52,7 @@ namespace TeamCoding.VisualStudio.CodeLens
                     }
                 }
                 DataPointModels.RemoveAll(dvm => dvm.IsDisposed);
-            }
+            }*/
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
         {
@@ -102,7 +102,7 @@ namespace TeamCoding.VisualStudio.CodeLens
             {
                 if (disposing)
                 {
-                    TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
+                    //TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
                 }
                 disposedValue = true;
             }
