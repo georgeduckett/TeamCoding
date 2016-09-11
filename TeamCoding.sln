@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v14", "v14", "{7445A02E-33F
 		References\v14\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v14\Microsoft.VisualStudio.CodeSense.Client.Common.dll
 		References\v14\Microsoft.VisualStudio.CodeSense.dll = References\v14\Microsoft.VisualStudio.CodeSense.dll
 		References\v14\Microsoft.VisualStudio.CodeSense.Roslyn.dll = References\v14\Microsoft.VisualStudio.CodeSense.Roslyn.dll
+		References\v14\Microsoft.VisualStudio.Text.Internal.dll = References\v14\Microsoft.VisualStudio.Text.Internal.dll
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v15", "v15", "{63183E3E-79EB-4A9D-82E3-24C7DBAB77A9}"
@@ -42,6 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v15", "v15", "{63183E3E-79E
 		References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.dll = References\v15\Microsoft.VisualStudio.CodeSense.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.Roslyn.dll = References\v15\Microsoft.VisualStudio.CodeSense.Roslyn.dll
+		References\v15\Microsoft.VisualStudio.Text.Internal.dll = References\v15\Microsoft.VisualStudio.Text.Internal.dll
 	EndProjectSection
 EndProject
 Global
