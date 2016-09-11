@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.Alm.Shared, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\PrivateAssemblies\Microsoft.Alm.Shared.dll</HintPath>
+      <HintPath>..\References\v15\Microsoft.Alm.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.0.0-beta3\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
@@ -95,7 +95,7 @@
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.CodeSense.Client.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\CodeSense\Framework\Microsoft.TeamFoundation.CodeSense.Client.Common.dll</HintPath>
+      <HintPath>..\References\v15\Microsoft.TeamFoundation.CodeSense.Client.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Services.Client.15.104.0-preview\lib\net45\Microsoft.TeamFoundation.Common.dll</HintPath>
@@ -215,7 +215,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Alm.Shared, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.Alm.Shared.dll</HintPath>
+      <HintPath>..\References\v15\Microsoft.VisualStudio.Alm.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

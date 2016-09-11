@@ -24,7 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v14", "v14", "{7445A02E-33F9-4EDD-8F0B-7CD203C3B147}"
 	ProjectSection(SolutionItems) = preProject
+		References\v14\Microsoft.Alm.Shared.dll = References\v14\Microsoft.Alm.Shared.dll
+		References\v14\Microsoft.TeamFoundation.CodeSense.Client.Common.dll = References\v14\Microsoft.TeamFoundation.CodeSense.Client.Common.dll
 		References\v14\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll = References\v14\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll
+		References\v14\Microsoft.VisualStudio.Alm.Shared.dll = References\v14\Microsoft.VisualStudio.Alm.Shared.dll
 		References\v14\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v14\Microsoft.VisualStudio.CodeSense.Client.Common.dll
 		References\v14\Microsoft.VisualStudio.CodeSense.dll = References\v14\Microsoft.VisualStudio.CodeSense.dll
 		References\v14\Microsoft.VisualStudio.CodeSense.Roslyn.dll = References\v14\Microsoft.VisualStudio.CodeSense.Roslyn.dll
@@ -32,7 +35,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v14", "v14", "{7445A02E-33F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v15", "v15", "{63183E3E-79EB-4A9D-82E3-24C7DBAB77A9}"
 	ProjectSection(SolutionItems) = preProject
+		References\v15\Microsoft.Alm.Shared.dll = References\v15\Microsoft.Alm.Shared.dll
+		References\v15\Microsoft.TeamFoundation.CodeSense.Client.Common.dll = References\v15\Microsoft.TeamFoundation.CodeSense.Client.Common.dll
 		References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll = References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll
+		References\v15\Microsoft.VisualStudio.Alm.Shared.dll = References\v15\Microsoft.VisualStudio.Alm.Shared.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.dll = References\v15\Microsoft.VisualStudio.CodeSense.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.Roslyn.dll = References\v15\Microsoft.VisualStudio.CodeSense.Roslyn.dll
