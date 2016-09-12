@@ -50,7 +50,10 @@ namespace TeamCoding.VisualStudio.CodeLens
                 {
                     if (!dataPointModel.IsDisposed)
                     {
-                        dataPointModel.RefreshModel();
+                        if (dataPointModel.RefreshCommand.CanExecute(null))
+                        {
+                            dataPointModel.RefreshCommand.Execute(null);
+                        }
                     }
                 }
                 DataPointModels.RemoveAll(dvm => dvm.IsDisposed);

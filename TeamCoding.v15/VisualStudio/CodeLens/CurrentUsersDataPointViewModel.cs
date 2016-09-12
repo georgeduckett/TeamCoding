@@ -12,8 +12,7 @@ namespace TeamCoding.VisualStudio.CodeLens
     public class CurrentUsersDataPointV15ViewModel : GlyphDataPointViewModel
     {
         private readonly CurrentUsersDataPointV15Updater DataPointUpdater;
-        public override bool IsVisible { get { return Data != null && !string.IsNullOrEmpty((string)Data); } }
-        public override string AdditionalInformation { get { return "Current users in this area"; } }
+        public override string AdditionalInformation => "Current users in this area";
         public CurrentUsersDataPointV15ViewModel(CurrentUsersDataPointV15Updater dataPointUpdater, ICodeLensDataPoint dataPoint) : base(dataPoint)
         {
             DataPointUpdater = dataPointUpdater;
@@ -21,11 +20,14 @@ namespace TeamCoding.VisualStudio.CodeLens
             HasDetails = false;
             PropertyChanged += CurrentUsersDataPointV15ViewModel_PropertyChanged;
         }
-        public void RefreshModel() => Refresh();
         private void CurrentUsersDataPointV15ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            Descriptor = (string)Data;
+            if (e.PropertyName == nameof(Data))
+            {
+                Descriptor = (string)Data;
+            }
         }
+        protected override bool? HasDataCore(object dataValue) => (base.HasDataCore(dataValue) ?? false) && !string.IsNullOrEmpty(dataValue as string);
         protected override void Dispose(bool disposing)
         {
             if (disposing)
