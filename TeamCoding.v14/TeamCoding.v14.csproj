@@ -407,9 +407,6 @@
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointUpdater.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModel.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModelProvider.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml.cs">
-      <DependentUpon>CurrentUsersTemplateProvider.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
@@ -424,12 +421,6 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.TeamFoundationServer.ExtendedClient.14.102.0\build\Microsoft.TeamFoundationServer.ExtendedClient.targets" Condition="Exists('..\packages\Microsoft.TeamFoundationServer.ExtendedClient.14.102.0\build\Microsoft.TeamFoundationServer.ExtendedClient.targets')" />

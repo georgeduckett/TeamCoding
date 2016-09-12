@@ -32,6 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Alm.Shared, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -396,11 +402,6 @@
       <Link>Extensions\SyntaxNodeExtensions.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml.cs">
-      <DependentUpon>CurrentUsersTemplateProvider.xaml.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModelProvider.cs">
       <DependentUpon>CurrentUsersDataPointViewModelProvider.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -428,6 +429,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Key.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -444,14 +446,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CurrentUsersTemplateProvider.xaml</LastGenOutput>
-    </Content>
-    <Content Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CurrentUsersTemplateProvider.xaml.cs</LastGenOutput>
-    </Content>
     <Content Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModelProvider.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CurrentUsersDataPointViewModelProvider.cs</LastGenOutput>
@@ -472,15 +466,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CurrentUsersDataPoint.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="VisualStudio\CodeLens\CurrentUsersTemplateProvider.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CurrentUsersTemplateProvider.tt</DependentUpon>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.TeamFoundationServer.ExtendedClient.15.104.0-preview\build\Microsoft.TeamFoundationServer.ExtendedClient.targets" Condition="Exists('..\packages\Microsoft.TeamFoundationServer.ExtendedClient.15.104.0-preview\build\Microsoft.TeamFoundationServer.ExtendedClient.targets')" />
