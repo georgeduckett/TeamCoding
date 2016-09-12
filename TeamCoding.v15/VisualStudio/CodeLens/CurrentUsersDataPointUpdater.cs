@@ -13,12 +13,14 @@ namespace TeamCoding.VisualStudio.CodeLens
     [Export(typeof(CurrentUsersDataPointV15Updater))]
     public class CurrentUsersDataPointV15Updater : IDisposable
     {
+        // Can't use an import here since this is loaded dynamically it doesn't have access to the main project's MEF exports
+        private readonly ITeamCodingPackageProvider TeamCodingPackageProvider = TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>();
         private readonly List<CurrentUsersDataPointV15ViewModel> DataPointModels = new List<CurrentUsersDataPointV15ViewModel>();
         private Dictionary<int[], string> CaretMemberHashCodeToDataPointString = new Dictionary<int[], string>(new IntArrayEqualityComparer());
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointV15Updater(): base()
         {
-            //TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+            TeamCodingPackageProvider.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
         public void AddDataPointModel(CurrentUsersDataPointV15ViewModel dataPointModel)
         {
@@ -30,9 +32,9 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
-            /*var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
+            var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
 
-            CaretMemberHashCodeToDataPointString = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
+            CaretMemberHashCodeToDataPointString = TeamCodingPackageProvider.RemoteModelChangeManager.GetOpenFiles()
                                               .Where(of => of.CaretPositionInfo != null)
                                               .Select(of => new
                                               {
@@ -52,12 +54,11 @@ namespace TeamCoding.VisualStudio.CodeLens
                     }
                 }
                 DataPointModels.RemoveAll(dvm => dvm.IsDisposed);
-            }*/
+            }
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
-        {
-            // TODO: Get CodeLens working again
-            /*foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
+        { // TODO: Get code lens working in VS15
+            foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
             {
                 var node = codeElementDescriptor.SyntaxNode;
 
@@ -93,7 +94,7 @@ namespace TeamCoding.VisualStudio.CodeLens
                 {
                     return Task.FromResult(CaretMemberHashCodeToDataPointString[caret]);
                 }
-            }*/
+            }
             return Task.FromResult<string>(null);
         }
         protected virtual void Dispose(bool disposing)
@@ -102,7 +103,7 @@ namespace TeamCoding.VisualStudio.CodeLens
             {
                 if (disposing)
                 {
-                    //TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
+                    TeamCodingPackageProvider.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
                 }
                 disposedValue = true;
             }
