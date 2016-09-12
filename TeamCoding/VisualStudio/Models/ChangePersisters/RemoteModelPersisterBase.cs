@@ -11,7 +11,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     {
         public event EventHandler RemoteModelReceived;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
-        public IEnumerable<RemotelyAccessedDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new RemotelyAccessedDocumentData()
+        public IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new RemotelyAccessedDocumentData()
         {
             Repository = of.RepoUrl,
             RepositoryBranch = of.RepoBranch,
@@ -32,10 +32,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 ClearRemoteModels();
                 RemoteModelReceived?.Invoke(this, EventArgs.Empty);
             }
-            else if(remoteModel.Id == LocalIDEModel.Id.Value)
+            /*else if(remoteModel.Id == LocalIDEModel.Id.Value)
             {
                 // If the remote model is the same as the local model, then don't process it
-            }
+            }*/
             else if (remoteModel.OpenFiles.Count == 0)
             {
                 if (RemoteModels.ContainsKey(remoteModel.Id))

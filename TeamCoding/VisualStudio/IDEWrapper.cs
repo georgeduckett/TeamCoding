@@ -124,7 +124,7 @@ namespace TeamCoding.VisualStudio
             }
         }
 
-        private void UpdateTabImages(DockPanel titlePanel, string filePath, IEnumerable<RemotelyAccessedDocumentData> remoteOpenFiles)
+        private void UpdateTabImages(DockPanel titlePanel, string filePath, IEnumerable<IRemotelyAccessedDocumentData> remoteOpenFiles)
         {
             var repoInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
             if (repoInfo == null) return;
@@ -138,11 +138,11 @@ namespace TeamCoding.VisualStudio
             AddImages(titlePanel, remoteDocuments);
         }
 
-        private void UpdateOrRemoveImages(DockPanel tabPanel, List<RemotelyAccessedDocumentData> remoteDocuments)
+        private void UpdateOrRemoveImages(DockPanel tabPanel, List<IRemotelyAccessedDocumentData> remoteDocuments)
         {
-            foreach (var userImageControl in tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is RemotelyAccessedDocumentData).ToArray())
+            foreach (var userImageControl in tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).ToArray())
             {
-                var imageDocData = (RemotelyAccessedDocumentData)userImageControl.Tag;
+                var imageDocData = (IRemotelyAccessedDocumentData)userImageControl.Tag;
 
                 var matchedRemoteDoc = remoteDocuments.SingleOrDefault(rd => rd.RelativePath == imageDocData.RelativePath &&
                                                                              rd.IdeUserIdentity.Id == imageDocData.IdeUserIdentity.Id);
@@ -186,11 +186,11 @@ namespace TeamCoding.VisualStudio
                 }
             }
         }
-        private void AddImages(DockPanel tabPanel, List<RemotelyAccessedDocumentData> remoteDocuments)
+        private void AddImages(DockPanel tabPanel, List<IRemotelyAccessedDocumentData> remoteDocuments)
         {
             foreach (var remoteTabItem in remoteDocuments)
             {
-                if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is RemotelyAccessedDocumentData).Any(i => (i.Tag as RemotelyAccessedDocumentData).Equals(remoteTabItem)))
+                if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).Any(i => (i.Tag as IRemotelyAccessedDocumentData).Equals(remoteTabItem)))
                 {
                     var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity);
 

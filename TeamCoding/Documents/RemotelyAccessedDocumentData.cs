@@ -6,12 +6,12 @@ namespace TeamCoding.Documents
     /// <summary>
     /// Contains data about a document belonging to source control that's open by a user
     /// </summary>
-    public class RemotelyAccessedDocumentData : IEquatable<RemotelyAccessedDocumentData>
+    public class RemotelyAccessedDocumentData : IEquatable<IRemotelyAccessedDocumentData>, IRemotelyAccessedDocumentData
     {
         public string Repository { get; set; }
         public string RepositoryBranch { get; set; }
         public string RelativePath { get; set; }
-        public UserIdentity IdeUserIdentity { get; set; }
+        public IUserIdentity IdeUserIdentity { get; set; }
         public bool BeingEdited { get; set; }
         public bool HasFocus { get; set; }
         public DocumentRepoMetaData.CaretInfo CaretPositionInfo { get; set; }
@@ -28,7 +28,7 @@ namespace TeamCoding.Documents
 
             return hash;
         }
-        public bool Equals(RemotelyAccessedDocumentData other)
+        public bool Equals(IRemotelyAccessedDocumentData other)
         {
             if (other == null)
                 return false;
@@ -44,7 +44,7 @@ namespace TeamCoding.Documents
         }
         public override bool Equals(object obj)
         {
-            var typedObj = obj as RemotelyAccessedDocumentData;
+            var typedObj = obj as IRemotelyAccessedDocumentData;
             return Equals(typedObj);
         }
     }

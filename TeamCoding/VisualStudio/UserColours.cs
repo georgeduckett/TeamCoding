@@ -16,7 +16,7 @@ namespace TeamCoding.VisualStudio
         {
             return VisuallyDistinctColours.GetColourFromSeed(user.Id.GetHashCode());
         }
-        public static SolidColorBrush GetUserBrush(UserIdentity user)
+        public static SolidColorBrush GetUserBrush(IUserIdentity user)
         {
             var hash = user.Id.GetHashCode();
 
@@ -28,7 +28,7 @@ namespace TeamCoding.VisualStudio
             }
             return brush;
         }
-        public static Pen GetUserPen(UserIdentity user)
+        public static Pen GetUserPen(IUserIdentity user)
         {
             var hash = user.Id.GetHashCode();
 

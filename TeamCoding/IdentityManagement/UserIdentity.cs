@@ -14,7 +14,7 @@ namespace TeamCoding.IdentityManagement
     /// A user's identity
     /// </summary>
     [ProtoBuf.ProtoContract]
-    public class UserIdentity
+    public class UserIdentity : IUserIdentity
     {
         [ProtoBuf.ProtoMember(1)]
         public string Id { get; set; }

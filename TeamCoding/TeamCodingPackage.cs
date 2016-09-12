@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using TeamCoding.Documents;
 using TeamCoding.Documents.SourceControlRepositories;
 using TeamCoding.IdentityManagement;
+using TeamCoding.Interfaces;
 using TeamCoding.Interfaces.Documents;
 using TeamCoding.Logging;
 using TeamCoding.Options;

@@ -118,7 +118,6 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\SharedFolderLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\FileBasedPersister\SharedFolderRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\ILocalModelPerisister.cs" />
-    <Compile Include="VisualStudio\Models\ChangePersisters\IRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisWrapper.cs" />

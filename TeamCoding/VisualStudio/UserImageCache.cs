@@ -21,7 +21,7 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public Panel CreateUserIdentityControl(UserIdentity userIdentity, bool withBorder = false)
+        public Panel CreateUserIdentityControl(IUserIdentity userIdentity, bool withBorder = false)
         {
             var firstLetter = userIdentity.Id[0];
             var grid = new Grid();
@@ -78,7 +78,7 @@ namespace TeamCoding.VisualStudio
             }
             return grid;
         }
-        internal void SetUserControlProperties(Panel parentControl, RemotelyAccessedDocumentData matchedRemoteDoc)
+        internal void SetUserControlProperties(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
             var textBlockControl = parentControl.FindChild<TextBlock>();
             var firstLetter = (matchedRemoteDoc.IdeUserIdentity.Id)[0];
@@ -117,7 +117,7 @@ namespace TeamCoding.VisualStudio
             SetImageSource(parentControl, matchedRemoteDoc);
         }
 
-        private void SetImageSource(Panel parentControl, RemotelyAccessedDocumentData matchedRemoteDoc)
+        private void SetImageSource(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
             ImageSource imageSource = null;
             if (matchedRemoteDoc.IdeUserIdentity.ImageBytes != null)

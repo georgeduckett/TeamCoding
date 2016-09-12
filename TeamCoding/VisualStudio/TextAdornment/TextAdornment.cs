@@ -92,7 +92,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             RemoteModelChangeManager_RemoteModelReceived(sender, EventArgs.Empty);
         }
 
-        private void CreateVisual(CaretAdornmentData nodeData, int caretOffset, UserIdentity userIdentity)
+        private void CreateVisual(CaretAdornmentData nodeData, int caretOffset, IUserIdentity userIdentity)
         {
             if (nodeData.SpanStart + caretOffset > View.TextSnapshot.Length)
             {
