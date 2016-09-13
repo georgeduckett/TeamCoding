@@ -74,6 +74,7 @@
     <Compile Include="IdentityManagement\IUserIdentity.cs" />
     <Compile Include="IntArrayEqualityComparer.cs" />
     <Compile Include="ITeamCodingPackageProvider.cs" />
+    <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamCodingProjectTypeProvider.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\IRemoteModelPersister.cs" />

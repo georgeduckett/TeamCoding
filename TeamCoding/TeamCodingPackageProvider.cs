@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Interfaces.Documents;
+using TeamCoding.Logging;
 using TeamCoding.VisualStudio.Models.ChangePersisters;
 
 namespace TeamCoding
@@ -17,5 +18,6 @@ namespace TeamCoding
         public ICaretInfoProvider CaretInfoProvider => TeamCodingPackage.Current.CaretInfoProvider;
         public HttpClient HttpClient => TeamCodingPackage.Current.HttpClient;
         public IRemoteModelPersister RemoteModelChangeManager => TeamCodingPackage.Current.RemoteModelChangeManager;
+        public ILogger Logger => TeamCodingPackage.Current.Logger;
     }
 }

@@ -30,8 +30,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
             }
             catch (TeamFoundationServerUnauthorizedException ex)
             {
-                // TODO: Add logging back in to TeamFoundationServiceRepository
-                // TeamCodingPackage.Current.Logger.WriteError(ex);
+                TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
                 return null;
             }
 

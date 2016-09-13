@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
 using TeamCoding.Extensions;
+using TeamCoding.VisualStudio.Models.ChangePersisters;
 
 namespace TeamCoding.VisualStudio.CodeLens
 {
@@ -14,13 +15,13 @@ namespace TeamCoding.VisualStudio.CodeLens
     public class CurrentUsersDataPointUpdater : IDisposable
     {
         // Can't use an import here since this is loaded dynamically it doesn't have access to the main project's MEF exports
-        private readonly ITeamCodingPackageProvider TeamCodingPackageProvider = TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>();
+        private readonly IRemoteModelPersister RemoteModelChangeManager = TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().RemoteModelChangeManager;
         private readonly List<CurrentUsersDataPointViewModel> DataPointModels = new List<CurrentUsersDataPointViewModel>();
         private Dictionary<int[], string> CaretMemberHashCodeToDataPointString = new Dictionary<int[], string>(new IntArrayEqualityComparer());
         private bool disposedValue = false; // To detect redundant calls
         public CurrentUsersDataPointUpdater(): base()
         {
-            TeamCodingPackageProvider.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+            RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
         }
         public void AddDataPointModel(CurrentUsersDataPointViewModel dataPointModel)
         {
@@ -34,7 +35,7 @@ namespace TeamCoding.VisualStudio.CodeLens
         {
             var oldCaretMemberHashCodeToDataPointString = CaretMemberHashCodeToDataPointString;
 
-            CaretMemberHashCodeToDataPointString = TeamCodingPackageProvider.RemoteModelChangeManager.GetOpenFiles()
+            CaretMemberHashCodeToDataPointString = RemoteModelChangeManager.GetOpenFiles()
                                               .Where(of => of.CaretPositionInfo != null)
                                               .Select(of => new
                                               {
@@ -60,7 +61,7 @@ namespace TeamCoding.VisualStudio.CodeLens
             }
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
-        { // TODO: Get code lens working in VS15
+        {
             foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
             {
                 var node = codeElementDescriptor.SyntaxNode;
@@ -106,7 +107,7 @@ namespace TeamCoding.VisualStudio.CodeLens
             {
                 if (disposing)
                 {
-                    TeamCodingPackageProvider.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
+                    RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
                 }
                 disposedValue = true;
             }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.Logging
 {
-    public class Logger
+    public class Logger : ILogger
     {
         public const string OutputWindowCategory = "Team Coding";
         private IVsOutputWindowPane TeamCodingPane;

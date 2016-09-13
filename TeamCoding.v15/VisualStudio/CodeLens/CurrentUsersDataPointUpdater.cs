@@ -60,7 +60,7 @@ namespace TeamCoding.VisualStudio.CodeLens
             }
         }
         public Task<string> GetTextForDataPoint(ICodeElementDescriptor codeElementDescriptor)
-        { // TODO: Get code lens working in VS15
+        {
             foreach (var caret in CaretMemberHashCodeToDataPointString.Keys)
             {
                 var node = codeElementDescriptor.SyntaxNode;
