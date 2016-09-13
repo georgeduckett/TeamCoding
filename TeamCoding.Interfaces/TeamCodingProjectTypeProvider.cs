@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace TeamCoding
 {
     /// <summary>
-    /// Provides singleton instances of concrete types from the TeamCoding project implementing specified interfances
+    /// Provides singleton instances of concrete types from the TeamCoding project implementing specified interfaces.
+    /// If the instance was created using MEF or through something else then it won't re-use that.
     /// </summary>
     public static class TeamCodingProjectTypeProvider
     {
