@@ -23,6 +23,8 @@
                 <TextBox x:Name="txtRedisServer" Margin="98,62,0,0" Height="23" VerticalAlignment="Top" Text="{Binding RedisServer}" ToolTip="Set a redis server to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblRedisServer, Mode=OneWay}"/>
                 <CheckBox x:Name="chkUsingJsonSettings" Content="{x:Static local:OptionsPage.chkUsingJsonSettingsCaption}" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
                 <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="cmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,0,0"/>
+                <Label x:Name="lblSlackToken" Content="Slack Token" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackToken, Mode=OneWay}" Margin="0,88,0,0" Height="26" VerticalAlignment="Top"/>
+                <TextBox x:Name="txtSlackToken" Margin="98,90,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackToken}" ToolTip="Set a Slack token to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblSlackToken, Mode=OneWay}"/>
             </Grid>
         </GroupBox>
         <StatusBar Height="25" VerticalAlignment="Bottom">

@@ -48,8 +48,12 @@ namespace TeamCoding.Logging
             ActivityLog.TryLogInformation(OutputWindowCategory, text);
             TeamCodingPane.OutputStringThreadSafe($"{DateTime.Now} {text}{Environment.NewLine}");
         }
-        public void WriteError(string error)
+        public void WriteError(string error, Exception ex = null)
         {
+            if(ex != null)
+            {
+                WriteError(ex);
+            }
             LogText(error);
             TeamCodingPane.Activate();
         }

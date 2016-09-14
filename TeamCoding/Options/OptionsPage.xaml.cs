@@ -22,8 +22,8 @@ namespace TeamCoding.Options
     /// </summary>
     public partial class OptionsPage : UserControl
     {
-        public const string chkUsingJsonSettingsCaption = "Using " + TeamCoding.Options.Settings.TeamCodingConfigFileName;
-        public const string cmdShowJsonExampleCaption = "Show example " + TeamCoding.Options.Settings.TeamCodingConfigFileName;
+        public const string chkUsingJsonSettingsCaption = "Using " + Settings.TeamCodingConfigFileName;
+        public const string cmdShowJsonExampleCaption = "Show example " + Settings.TeamCodingConfigFileName;
 
         public OptionsPage(OptionPageGrid optionPageGrid)
         {
@@ -45,7 +45,7 @@ namespace TeamCoding.Options
 
             foreach (var child in grpPersistence.Children().OfType<FrameworkElement>())
             {
-                child.IsEnabled &= !loadedFromFile;
+                child.IsEnabled = !loadedFromFile;
             }
 
             chkUsingJsonSettings.IsChecked = loadedFromFile;

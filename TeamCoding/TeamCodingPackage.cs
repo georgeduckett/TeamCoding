@@ -22,6 +22,7 @@ using TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister;
 
 namespace TeamCoding
 {
@@ -47,6 +48,7 @@ namespace TeamCoding
         public Settings Settings { get; private set; }
         public LocalIDEModel LocalIdeModel { get; private set; }
         public RedisWrapper Redis { get; private set; }
+        public SlackWrapper Slack { get; private set; }
         public ICaretInfoProvider CaretInfoProvider { get; private set; }
         public ICaretAdornmentDataProvider CaretAdornmentDataProvider { get; private set; }
 
@@ -56,7 +58,32 @@ namespace TeamCoding
         public TeamCodingPackage()
         {
             Current = this;
-    }
+
+
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
+            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            var test = Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(typeof(TeamCodingPackage).Assembly.Location), $"RestSharp.dll"));
+        }
+
+        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        {
+            if(e.Exception is FileLoadException)
+            {
+
+            }
+        }
+
+        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
+            
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return null;
+        }
+
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -75,6 +102,7 @@ namespace TeamCoding
                 var result = pSolution.AdviseSolutionEvents(new SolutionEventsHandler(), out SolutionEventsHandlerId);
                 Settings = new Settings();
                 Redis = new RedisWrapper();
+                Slack = new SlackWrapper();
                 LocalIdeModel = new LocalIDEModel();
                 IDEWrapper = new IDEWrapper((EnvDTE.DTE)GetService(typeof(EnvDTE.DTE)));
 
@@ -87,8 +115,8 @@ namespace TeamCoding
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
                                                                       new MachineIdentityProvider());
-                RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister());
-                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel));
+                RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister(), new SlackRemoteModelPersister());
+                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel), new SlackLocalModelPersister(LocalIdeModel));
                 RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             }
             catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)

@@ -10,6 +10,7 @@
         <TextBox x:Name="txtExampleConfigJson" TextWrapping="WrapWithOverflow" xml:space="preserve" AcceptsReturn="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" >{
   "FileBasedPersisterPath": "\\\\FileServer\\TeamCodingPersistence",
   "RedisServer": "localhost"
+  "SlackToken": "xxxx-00000000000-xxxxxxxxxxxxxxxxxxxxxxxx
 }</TextBox>
     </Grid>
 </platformUi:DialogWindow>

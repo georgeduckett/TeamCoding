@@ -39,6 +39,23 @@ namespace TeamCoding.Extensions
             task.ContinueWith(WriteTaskException, TaskContinuationOptions.OnlyOnFaulted);
             return task;
         }
+        /// <summary>
+        /// Handles any exception caused by the task
+        /// </summary>
+        /// <param name="task">The task to handle exceptions for</param>
+        /// <param name="handleException">What to do if there is an exception</param>
+        /// <returns>A task that upon completion will have waited for the task, and handled any exception</returns>
+        public static async Task HandleException(this Task task, Action<Exception> handleException)
+        {
+            try
+            {
+                await task;
+            }
+            catch (Exception ex)
+            {
+                handleException(ex);
+            }
+        }
         public static Task HandleException(this Task task)
         {
             task.ContinueWith(WriteTaskException, TaskContinuationOptions.OnlyOnFaulted);

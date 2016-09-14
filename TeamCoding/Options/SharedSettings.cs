@@ -18,6 +18,11 @@ namespace TeamCoding.Options
         public event EventHandler RedisServerChanging { add { RedisServerProperty.Changing += value; } remove { RedisServerProperty.Changing -= value; } }
         private readonly Property<string> RedisServerProperty;
         public const string DefaultRedisServer = null;
+        public string SlackToken { get { return SlackTokenProperty.Value; } set { SlackTokenProperty.Value = value; } }
+        public event EventHandler SlackTokenChanged { add { SlackTokenProperty.Changed += value; } remove { SlackTokenProperty.Changed -= value; } }
+        public event EventHandler SlackTokenChanging { add { SlackTokenProperty.Changing += value; } remove { SlackTokenProperty.Changing -= value; } }
+        private readonly Property<string> SlackTokenProperty;
+        public const string DefaultSlackToken = null;
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
@@ -25,6 +30,9 @@ namespace TeamCoding.Options
 
             RedisServerProperty = new Property<string>(this);
             RedisServerProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(RedisServer)}: {RedisServer}");
+
+            SlackTokenProperty = new Property<string>(this);
+            SlackTokenProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackToken)}: {SlackToken}");
         }
     }
 }
