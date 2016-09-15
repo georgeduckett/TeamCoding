@@ -11,6 +11,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 {
     public class SlackWrapper : IDisposable
     {
+        private string BotId = null;
         private Task ConnectTask;
         private ISlackConnection SlackClient;
         private List<Action<string>> SubscribedActions = new List<Action<string>>();
@@ -45,6 +46,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 
                 if (SlackClient != null)
                 {
+                    BotId = SlackClient.Self.Id;
+                    // HACK: scrub the Self.Id field so we don't ignore ourselves
+                    typeof(ContactDetails).GetProperty(nameof(ContactDetails.Id)).SetValue(SlackClient.Self, null);
+
                     SlackClient.OnMessageReceived += SlackClient_OnMessageReceived;
                     SlackClient.OnDisconnect += SlackClient_OnDisconnect;
                 }
@@ -59,25 +64,41 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 
         private Task SlackClient_OnMessageReceived(SlackMessage message)
         {
-            lock (SubscribedActions)
+            if (message.User.Id == BotId)
             {
-                foreach(var action in SubscribedActions)
+                if (message.ChatHub.Name == "#teamcodingsync")
                 {
-                    action(message.RawData);
+                    lock (SubscribedActions)
+                    {
+                        foreach (var action in SubscribedActions)
+                        {
+                            action(message.Text);
+                        }
+                    }
                 }
+            }
+            else
+            {
+                // TODO: Do something when a user talks to the slack bot!
             }
             return Task.CompletedTask;
         }
-
         internal async Task Publish(string data)
-        {
+        { // TODO: Use slackattachments to have a nice user-readable slack message that's still parsable (maybe flattening the json, having some fields in the header and the rest as attachment fields)
             await ConnectTask; // Wait to be connected first
 
             if (SlackClient != null)
             {
-                // TODO: Maybe use slack attachments
-                await SlackClient.Say(new BotMessage() { Text = data }).HandleException();
-                TeamCodingPackage.Current.Logger.WriteInformation("Sent model");
+                var hub = SlackClient.ConnectedHubs.Select(kv => kv.Value).SingleOrDefault(h => h.Name == "#teamcodingsync"); // TODO: Allow channel to be customised (and add tooltips for slack settings)
+                if (hub != null)
+                { // TODO: Check the hub is a channel
+                    await SlackClient.Say(new BotMessage() { ChatHub = hub, Text = data }).HandleException();
+                    TeamCodingPackage.Current.Logger.WriteInformation("Sent model");
+                }
+                else
+                {
+                    TeamCodingPackage.Current.Logger.WriteInformation("Hub not found");
+                }
             }
             else
             {

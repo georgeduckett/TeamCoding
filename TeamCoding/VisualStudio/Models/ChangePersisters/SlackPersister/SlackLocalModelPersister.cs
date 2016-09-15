@@ -49,13 +49,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         }
         private void SendModel(RemoteIDEModel remoteModel)
         {
-            using (var ms = new MemoryStream())
-            {
-                ProtoBuf.Serializer.Serialize(ms, remoteModel);
-                TeamCodingPackage.Current.Logger.WriteInformation("Publishing Model");
-                TeamCodingPackage.Current.Slack.Publish("test").HandleException();
-                // TODO: Publish model to slack
-            }
+            TeamCodingPackage.Current.Logger.WriteInformation("Publishing Model");
+            TeamCodingPackage.Current.Slack.Publish(Newtonsoft.Json.JsonConvert.SerializeObject(remoteModel)).HandleException();
         }
         public void Dispose()
         {

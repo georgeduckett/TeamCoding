@@ -58,29 +58,24 @@ namespace TeamCoding
         public TeamCodingPackage()
         {
             Current = this;
-
-
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
-            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-            var test = Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(typeof(TeamCodingPackage).Assembly.Location), $"RestSharp.dll"));
         }
-
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
-        {
-            if(e.Exception is FileLoadException)
-            {
-
-            }
-        }
-
-        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
-        {
-            
-        }
-
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
+            var assemblyName= new AssemblyName(args.Name);
+            if (assemblyName.Name == "Newtonsoft.Json")
+            {
+                assemblyName.Version = new Version(9, 0);
+
+                AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+
+                var foundAssy = Assembly.Load(assemblyName);
+
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+                return foundAssy;
+            }
+
             return null;
         }
 

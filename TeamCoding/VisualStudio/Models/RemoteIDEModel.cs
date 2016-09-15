@@ -13,9 +13,9 @@ namespace TeamCoding.VisualStudio.Models
     public class RemoteIDEModel
     {
         [ProtoMember(1)]
-        public readonly string Id;
+        public string Id;
         [ProtoMember(2)]
-        public readonly UserIdentity IDEUserIdentity;
+        public UserIdentity IDEUserIdentity;
         [ProtoIgnore]
         private List<DocumentRepoMetaData> _OpenFiles;
         [ProtoMember(3)]
