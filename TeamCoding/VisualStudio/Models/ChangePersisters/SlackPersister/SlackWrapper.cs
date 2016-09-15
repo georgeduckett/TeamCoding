@@ -14,7 +14,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         private string BotId = null;
         private Task ConnectTask;
         private ISlackConnection SlackClient;
-        private List<Action<string>> SubscribedActions = new List<Action<string>>();
+        private List<Action<SlackMessage>> SubscribedActions = new List<Action<SlackMessage>>();
         public SlackWrapper()
         {
             ConnectTask = ConnectSlack();
@@ -72,7 +72,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                     {
                         foreach (var action in SubscribedActions)
                         {
-                            action(message.Text);
+                            action(message);
                         }
                     }
                 }
@@ -83,8 +83,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
             }
             return Task.CompletedTask;
         }
-        internal async Task Publish(string data)
-        { // TODO: Use slackattachments to have a nice user-readable slack message that's still parsable (maybe flattening the json, having some fields in the header and the rest as attachment fields)
+        internal async Task Publish(BotMessage message)
+        {
             await ConnectTask; // Wait to be connected first
 
             if (SlackClient != null)
@@ -92,7 +92,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                 var hub = SlackClient.ConnectedHubs.Select(kv => kv.Value).SingleOrDefault(h => h.Name == "#teamcodingsync"); // TODO: Allow channel to be customised (and add tooltips for slack settings)
                 if (hub != null)
                 { // TODO: Check the hub is a channel
-                    await SlackClient.Say(new BotMessage() { ChatHub = hub, Text = data }).HandleException();
+                    message.ChatHub = hub;
+                    await SlackClient.Say(message).HandleException();
                     TeamCodingPackage.Current.Logger.WriteInformation("Sent model");
                 }
                 else
@@ -105,7 +106,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                 TeamCodingPackage.Current.Logger.WriteInformation("SlackClient == null, didn't send model");
             }
         }
-        internal Task Subscribe(Action<string> action)
+        internal Task Subscribe(Action<SlackMessage> action)
         {
             lock (SubscribedActions)
             {

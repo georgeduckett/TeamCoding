@@ -14,6 +14,11 @@ namespace TeamCoding.Documents
     {
         public async Task<IEnumerable<CaretAdornmentData>> GetCaretAdornmentData(ITextSnapshot textSnapshot, int[] caretMemberHashcodes)
         {
+            if(caretMemberHashcodes == null || caretMemberHashcodes.Length == 0)
+            {
+                return Enumerable.Empty<CaretAdornmentData>();
+            }
+
             var document = textSnapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)
             {
