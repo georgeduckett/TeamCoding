@@ -47,7 +47,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                 if (SlackClient != null)
                 {
                     BotId = SlackClient.Self.Id;
-                    // HACK: scrub the Self.Id field so we don't ignore ourselves
+                    // Scrub the Self.Id field so we don't ignore ourselves
                     typeof(ContactDetails).GetProperty(nameof(ContactDetails.Id)).SetValue(SlackClient.Self, null);
 
                     SlackClient.OnMessageReceived += SlackClient_OnMessageReceived;

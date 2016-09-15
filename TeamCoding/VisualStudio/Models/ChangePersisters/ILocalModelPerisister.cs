@@ -10,6 +10,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     /// Handles sending local IDE model changes to other clients.
     /// </summary>
     public interface ILocalModelPerisister : IDisposable
-    {
+    {// TODO: Figure out a way of globally rate-limiting this (maybe customisable?)
     }
 }

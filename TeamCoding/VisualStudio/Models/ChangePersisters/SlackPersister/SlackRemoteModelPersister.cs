@@ -41,7 +41,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 
             OnRemoteModelReceived(receivedModel);
         }
-
+        // TODO: Move the To/From IdeModel methods to their own class
         private RemoteIDEModel ToIdeModel(BotMessage receivedMessage)
         {
             var result = new RemoteIDEModel();
@@ -64,8 +64,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                         arrayIndex = int.Parse(trimmedPropName.Substring(trimmedPropName.IndexOf('[') + 1, trimmedPropName.IndexOf(']') - trimmedPropName.IndexOf('[') - 1));
                         trimmedPropName = trimmedPropName.Substring(0, trimmedPropName.IndexOf('['));
                     }
-
-                    // TODO: Handle prop names with indexes
+                    
                     var prop = propObj.GetType().GetProperty(trimmedPropName);
                     var field = propObj.GetType().GetField(trimmedPropName);
                     if (prop != null)
@@ -92,7 +91,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                     if (arrayIndex != null)
                     {
                         var listObj = (System.Collections.IList)propObj;
-
+                        // NOTE: This might need changing to be simiar to the Array handling below if we use this for objects with an array of a coplex type (not the final property)
                         while (listObj.Count < arrayIndex + 1)
                         {
                             listObj.Add(Activator.CreateInstance(listObj.GetType().GetGenericArguments()[0]));
@@ -175,7 +174,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                     }
                     else
                     {
-                        throw new InvalidDataException();
+                        throw new InvalidDataException(); // TODO: Better error messages for converting to an object from fields
                     }
                 }
                 else
