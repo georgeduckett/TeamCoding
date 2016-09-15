@@ -10,7 +10,7 @@ using TeamCoding.Extensions;
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 {
     public class SlackWrapper : IDisposable
-    {
+    { // TODO: Add text/message somewhere (maybe config tooltip) indicating that the channel needs setting up (disable notifications!), how to create/install the slack bot etc.
         private string BotId = null;
         private Task ConnectTask;
         private ISlackConnection SlackClient;
