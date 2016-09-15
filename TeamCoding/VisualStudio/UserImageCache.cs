@@ -58,7 +58,7 @@ namespace TeamCoding.VisualStudio
                 border.BorderBrush = UserColours.GetUserBrush(userIdentity);
             }
             grid.Children.Add(border);
-
+            SetText(grid, userIdentity);
             if (userIdentity.ImageUrl != null)
             {
                 ThreadHelper.JoinableTaskFactory.Run(async () =>
@@ -80,20 +80,7 @@ namespace TeamCoding.VisualStudio
         }
         internal void SetUserControlProperties(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
-            var textBlockControl = parentControl.FindChild<TextBlock>();
-            var firstLetter = (matchedRemoteDoc.IdeUserIdentity.Id)[0];
-            textBlockControl.Text = firstLetter.ToString();
-            parentControl.Background = UserColours.GetUserBrush(matchedRemoteDoc.IdeUserIdentity);
-
-            var textBlockFormattedText = textBlockControl.GetBoundingRect();
-            if (textBlockFormattedText.Top >= 5)
-            { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
-                textBlockControl.Margin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
-            }
-            else
-            {
-                textBlockControl.Margin = new Thickness(0);
-            }
+            SetText(parentControl, matchedRemoteDoc.IdeUserIdentity);
 
             parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty) + matchedRemoteDoc.CaretPositionInfo;
 
@@ -115,6 +102,26 @@ namespace TeamCoding.VisualStudio
             }
 
             SetImageSource(parentControl, matchedRemoteDoc);
+        }
+
+        public static void SetText(Panel parentControl, IUserIdentity userIdentity)
+        {
+            var textBlockControl = parentControl.FindChild<TextBlock>();
+            var firstLetter = (userIdentity.Id)[0];
+            textBlockControl.Text = firstLetter.ToString();
+            parentControl.Background = UserColours.GetUserBrush(userIdentity);
+
+            textBlockControl.Foreground = Brushes.White; // TODO: Figure out if black or white is more readable for text, given the background
+
+            var textBlockFormattedText = textBlockControl.GetBoundingRect();
+            if (textBlockFormattedText.Top >= 5)
+            { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
+                textBlockControl.Margin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
+            }
+            else
+            {
+                textBlockControl.Margin = new Thickness(0);
+            }
         }
 
         private void SetImageSource(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
