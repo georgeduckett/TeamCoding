@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Shell;
 using System.Windows;
 using System.Collections.Generic;
 using TeamCoding.Interfaces.Documents;
+using TeamCoding.Documents;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -23,7 +24,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private readonly IWpfTextView View;
         private readonly Pen CaretPen;
 
-        private readonly string RelativePath;
+        private readonly DocumentRepoMetaData RepoDocument;
         public TextAdornment(IWpfTextView view)
         {
             if (view == null)
@@ -34,7 +35,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             Layer = view.GetAdornmentLayer("TextAdornment");
 
             View = view;
-            RelativePath = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath()).RelativePath;
+            RepoDocument = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
 
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             View.LayoutChanged += OnLayoutChanged;
@@ -48,7 +49,10 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private async void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
             var CaretPositions = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                          .Where(of => of.RelativePath == RelativePath && of.CaretPositionInfo != null)
+                                                          .Where(of => of.Repository == RepoDocument.RepoUrl && 
+                                                                       of.RelativePath == RepoDocument.RelativePath &&
+                                                                       of.RepositoryBranch == RepoDocument.RepoBranch &&
+                                                                       of.CaretPositionInfo != null)
                                                           .Select(of => new
                                                           {
                                                               CaretMemberHashCodes = of.CaretPositionInfo.SyntaxNodeIds,
