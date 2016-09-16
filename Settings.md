@@ -21,9 +21,11 @@ Define the slack bot token and channel. Messages will be posted to the channel s
   - Click `Save Integration`. Once saved you can now go back to your team's message screen.
   - Create a Slack channel. Click the + next to Channels when in your team's mesage screen. Name the channel and invite the bot created earlier. The channel name (including leading hash) will be what you enter in the Team Coding configuration. You will want to turn off notifications for the channel.
 
-**User Settings**
+## User Settings
 
 Using the user settings you can customise how you appear to others.
 
-- **Username**. The username people see when hovering over your avatar that appears on a tab. The first letter is used as the avatar if no image url is specified.
-- **Image URL**. The URL of an image to use as your avatar that appears on a tab or within a document.
+- **Username**.  
+The username people see when hovering over your avatar that appears on a tab. The first letter is used as the avatar if no image url is specified.
+- **Image URL**.  
+The URL of an image to use as your avatar that appears on a tab or within a document.
