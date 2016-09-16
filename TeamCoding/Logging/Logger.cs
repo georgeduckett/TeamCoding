@@ -2,7 +2,9 @@
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,25 +40,25 @@ namespace TeamCoding.Logging
                 }
             }
         }
-        public void WriteInformation(string info)
+        public void WriteInformation(string info, [CallerFilePath] string filePath = null, [CallerMemberName] string memberName = null)
         {
-            LogText(info);
+            LogText(info, filePath, memberName);
         }
-        private void LogText(string text)
+        private void LogText(string text, string filePath, string methodName)
         {
             EnsureOutputPane();
-            ActivityLog.TryLogInformation(OutputWindowCategory, text);
-            TeamCodingPane.OutputStringThreadSafe($"{DateTime.Now} {text}{Environment.NewLine}");
+            ActivityLog.TryLogInformation(OutputWindowCategory, $"{Path.GetFileNameWithoutExtension(filePath)}.{methodName}:{text}");
+            TeamCodingPane.OutputStringThreadSafe($"{DateTime.Now} {Path.GetFileNameWithoutExtension(filePath)}.{methodName}:{text}{Environment.NewLine}");
         }
-        public void WriteError(string error, Exception ex = null)
+        public void WriteError(string error, Exception ex = null, [CallerFilePath] string filePath = null, [CallerMemberName] string memberName = null)
         {
             if(ex != null)
             {
-                WriteError(ex);
+                WriteError(ex, filePath, memberName);
             }
-            LogText(error);
+            LogText(error, filePath, memberName);
             TeamCodingPane.Activate();
         }
-        public void WriteError(Exception ex) => WriteError(ex.ToString());
+        public void WriteError(Exception ex, [CallerFilePath] string filePath = null, [CallerMemberName] string memberName = null) => WriteError(ex.ToString(), null, filePath, memberName);
     }
 }
