@@ -19,6 +19,7 @@ namespace TeamCoding.Options
         public string FileBasedPersisterPath { get; set; } = SharedSettings.DefaultFileBasedPersisterPath;
         public string RedisServer { get; set; } = SharedSettings.DefaultRedisServer;
         public string SlackToken { get; set; } = SharedSettings.DefaultSlackToken;
+        public string SlackChannel { get; set; } = SharedSettings.DefaultSlackChannel;
         private OptionsPage OptionsPage;
         protected override UIElement Child { get { return OptionsPage ?? (OptionsPage = new OptionsPage(this)); } }
         protected override void OnApply(PageApplyEventArgs e)

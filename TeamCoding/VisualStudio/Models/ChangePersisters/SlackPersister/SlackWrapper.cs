@@ -101,13 +101,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                 {
                     TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel not specified.");
                 }
-                else if (TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel.StartsWith("#"))
+                else if (!TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel.StartsWith("#"))
                 {
                     TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel must start with a #. It is set as {TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel}");
                 }
                 else
                 {
-                    TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel {TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel} not found.");
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel {TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel} not found (it doesn't exist, or the bot the API token is for doesn't have access).");
                 }
             }
             else if(!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SlackToken))

@@ -27,7 +27,7 @@ namespace TeamCoding.Options
         public event EventHandler SlackChannelChanged { add { SlackChannelProperty.Changed += value; } remove { SlackChannelProperty.Changed -= value; } }
         public event EventHandler SlackChannelChanging { add { SlackChannelProperty.Changing += value; } remove { SlackChannelProperty.Changing -= value; } }
         private readonly Property<string> SlackChannelProperty;
-        public const string DefaultChannelToken = null;
+        public const string DefaultSlackChannel = null;
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
