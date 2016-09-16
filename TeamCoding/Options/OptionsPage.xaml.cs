@@ -53,13 +53,13 @@ namespace TeamCoding.Options
         private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             var senderTooltip = ((Control)sender).ToolTip;
-            sbiDescription.Content = senderTooltip;
+            sbitxtDescription.Text = senderTooltip.ToString();
             sbiTitle.Content = (AutomationProperties.GetLabeledBy(sender as DependencyObject) as Label).Content;
         }
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             ((TextBox)sender).GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
-            sbiTitle.Content = sbiDescription.Content = null;
+            sbiTitle.Content = sbitxtDescription.Text = null;
         }
 
         private void cmdShowJsonExample_Click(object sender, RoutedEventArgs e)

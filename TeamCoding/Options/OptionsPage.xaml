@@ -29,9 +29,11 @@
                 <TextBox x:Name="txtSlackChannel" Margin="98,118,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackChannel}" ToolTip="Set a Slack channel to use to share your coding sessions. Sync messages will be posted here (disable notifications!)." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackChannel, Mode=OneWay}"/>
             </Grid>
         </GroupBox>
-        <StatusBar Height="25" VerticalAlignment="Bottom">
+        <StatusBar VerticalAlignment="Bottom">
             <StatusBarItem Name="sbiTitle" FontSize="12" FontWeight="Bold"></StatusBarItem>
-            <StatusBarItem Name="sbiDescription" FontSize="12"></StatusBarItem>
+            <StatusBarItem Name="sbiDescription" FontSize="12">
+                <TextBlock Name="sbitxtDescription" TextWrapping="Wrap"></TextBlock>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </UserControl>

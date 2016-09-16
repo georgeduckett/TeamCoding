@@ -38,6 +38,7 @@ namespace TeamCoding
         [Export]
         public readonly Logger Logger = new Logger();
         public readonly UserImageCache UserImages = new UserImageCache();
+        public readonly ObjectSlackMessageConverter ObjectSlackMessageConverter = new ObjectSlackMessageConverter();
         private uint SolutionEventsHandlerId;
         public HttpClient HttpClient { get; private set; }
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }

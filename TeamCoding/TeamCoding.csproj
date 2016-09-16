@@ -123,6 +123,7 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RedisPersister\RedisWrapper.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\RemoteModelPersisterBase.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\ObjectSlackMessageConverter.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\SlackLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\SlackRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\SlackWrapper.cs" />
