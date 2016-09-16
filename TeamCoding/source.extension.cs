@@ -11,7 +11,7 @@ namespace TeamCoding
         public const string Name = "TeamCoding";
         public const string Description = "The Team Coding Visual Studio extension helps discover team members who are working in the same area of a source controlled solution as you. It displays icons on tabs, text in CodeLens is as well as showing a coloured caret where they are working for C# and visual basic code.";
         public const string Language = "en-US";
-        public const string Version = "0.2.0";
+        public const string Version = "0.4.0";
         public const string Author = "George Duckett";
         public const string Tags = "Collaboration, Teams, Source Control, Git, Pair Programming, Code Review";
     }
