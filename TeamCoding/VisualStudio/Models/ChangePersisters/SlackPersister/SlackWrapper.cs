@@ -18,18 +18,19 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         public SlackWrapper()
         {
             ConnectTask = ConnectSlack();
-            TeamCodingPackage.Current.Settings.SharedSettings.SlackTokenChanged += SharedSettings_SlackTokenChanged;
+            TeamCodingPackage.Current.Settings.SharedSettings.SlackTokenChanged += SharedSettings_SlackSettingsChanged;
+            TeamCodingPackage.Current.Settings.SharedSettings.SlackChannelChanged += SharedSettings_SlackSettingsChanged;
         }
-        private async Task ChangeRedisServer()
+        private async Task ChangeSlackServer()
         {
             // We don't worry about the result of the task as any exceptions are already handled
             await ConnectTask;
             ResetSlack();
             await ConnectSlack();
         }
-        private void SharedSettings_SlackTokenChanged(object sender, EventArgs e)
+        private void SharedSettings_SlackSettingsChanged(object sender, EventArgs e)
         {
-            ConnectTask = ChangeRedisServer();
+            ConnectTask = ChangeSlackServer();
         }
         private async Task ConnectSlack()
         {
@@ -66,7 +67,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         {
             if (message.User.Id == BotId)
             {
-                if (message.ChatHub.Name == "#teamcodingsync")
+                if (message.ChatHub.Name == TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel)
                 {
                     lock (SubscribedActions)
                     {
@@ -79,7 +80,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
             }
             else
             {
-                // TODO: Do something when a user talks to the slack bot!
+                // Don't reply back to messages from others, otherwise the user will get a message per user using the extension
             }
             return Task.CompletedTask;
         }
@@ -89,19 +90,27 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 
             if (SlackClient != null)
             {
-                var hub = SlackClient.ConnectedHubs.Select(kv => kv.Value).SingleOrDefault(h => h.Name == "#teamcodingsync"); // TODO: Allow channel to be customised (and add tooltips for slack settings)
+                var hub = SlackClient.ConnectedHubs.Select(kv => kv.Value).SingleOrDefault(h => h.Name == TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel);
                 if (hub != null)
-                { // TODO: Check the hub is a channel
+                {
                     message.ChatHub = hub;
                     await SlackClient.Say(message).HandleException();
-                    TeamCodingPackage.Current.Logger.WriteInformation("Sent model");
+                    TeamCodingPackage.Current.Logger.WriteInformation("Sent model via Slack");
+                }
+                else if (string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel))
+                {
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel not specified.");
+                }
+                else if (TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel.StartsWith("#"))
+                {
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel must start with a #. It is set as {TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel}");
                 }
                 else
                 {
-                    TeamCodingPackage.Current.Logger.WriteInformation("Hub not found");
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Slack channel {TeamCodingPackage.Current.Settings.SharedSettings.SlackChannel} not found.");
                 }
             }
-            else
+            else if(!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SlackToken))
             {
                 TeamCodingPackage.Current.Logger.WriteInformation("SlackClient == null, didn't send model");
             }

@@ -1,6 +1,7 @@
 <#@ template language="C#" debug="false" hostspecific="true" #>
 <#@ output extension=".md" #>
 <#@ assembly name="$(SolutionDir)\TeamCoding\bin\Debug\TeamCoding.dll" #>
+<#@ assembly name="$(SolutionDir)\TeamCoding\bin\Debug\TeamCoding.v14.dll" #>
 Team Coding
 --
 
@@ -8,7 +9,7 @@ Team Coding
 
 **Quickstart:** <#=System.IO.File.ReadAllText(Host.ResolveAssemblyReference("$(ProjectDir)") + "\\Resources\\GettingStarted.txt") #>
 
-**Settings:** The settings are located at Tools->Options-><#= typeof(TeamCoding.TeamCodingPackage).Assembly.GetType("TeamCoding.Options.OptionPageGrid").GetField("OptionsName").GetRawConstantValue() #>. There are configuration options for your user identity (how you appear to others) as well as configuration options for how to share open document information with others. Multiple methods can be used at once, you can also add a `<#= TeamCoding.Options.Settings.TeamCodingConfigFileName #>` file anywhere within the solution folder for it to override those settings. If this file is in place then for that solution settings don't need to be set in each developer's IDE. You can enable/disable the CodeLens addon in Tools->Options->Text Editor->All Language->Code Lens-><#= typeof(TeamCoding.TeamCodingPackage).Assembly.GetType("TeamCoding.VisualStudio.CodeLens.CurrentUsersDataPointProvider").GetField("CodeLensName").GetRawConstantValue() #>.
+**Settings:** The settings are located at Tools->Options-><#= TeamCoding.Options.OptionPageGrid.OptionsName #>. There are configuration options for your user identity (how you appear to others) as well as configuration options for how to share open document information with others. Multiple methods can be used at once, you can also add a `<#= TeamCoding.Options.Settings.TeamCodingConfigFileName #>` file anywhere within the solution folder for it to override those settings. If this file is in place then for that solution settings don't need to be set in each developer's IDE. You can enable/disable the CodeLens addon in Tools->Options->Text Editor->All Language->Code Lens-><#= TeamCoding.VisualStudio.CodeLens.CurrentUsersDataPointProvider.CodeLensName #>. For more details regarding the different user and shared options, see [Settings.md](https://github.com/georgeduckett/TeamCoding/blob/master/readme.md)
 
 **User Identity:** It tries to get your email address as a user identity from various sources (saved Windows Credentials for GitHub, your logged in identity from Visual Studio, your machine name). This will be made public to your team. It uses Gravatar to get a user image from the email address.
 

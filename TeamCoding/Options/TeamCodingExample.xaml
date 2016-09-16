@@ -11,6 +11,7 @@
   "FileBasedPersisterPath": "\\\\FileServer\\TeamCodingPersistence",
   "RedisServer": "localhost"
   "SlackToken": "xxxx-00000000000-xxxxxxxxxxxxxxxxxxxxxxxx
+  "SlackChannel": "#teamcodingextensionsync"
 }</TextBox>
     </Grid>
 </platformUi:DialogWindow>

@@ -23,6 +23,11 @@ namespace TeamCoding.Options
         public event EventHandler SlackTokenChanging { add { SlackTokenProperty.Changing += value; } remove { SlackTokenProperty.Changing -= value; } }
         private readonly Property<string> SlackTokenProperty;
         public const string DefaultSlackToken = null;
+        public string SlackChannel { get { return SlackChannelProperty.Value; } set { SlackChannelProperty.Value = value; } }
+        public event EventHandler SlackChannelChanged { add { SlackChannelProperty.Changed += value; } remove { SlackChannelProperty.Changed -= value; } }
+        public event EventHandler SlackChannelChanging { add { SlackChannelProperty.Changing += value; } remove { SlackChannelProperty.Changing -= value; } }
+        private readonly Property<string> SlackChannelProperty;
+        public const string DefaultChannelToken = null;
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
@@ -33,6 +38,9 @@ namespace TeamCoding.Options
 
             SlackTokenProperty = new Property<string>(this);
             SlackTokenProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackToken)}: {SlackToken}");
+
+            SlackChannelProperty = new Property<string>(this);
+            SlackChannelProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackChannel)}: {SlackChannel}");
         }
     }
 }

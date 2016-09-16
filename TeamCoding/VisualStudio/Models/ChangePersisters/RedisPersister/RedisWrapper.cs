@@ -62,7 +62,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 await RedisClient?.GetSubscriber()?.PublishAsync(channel, data)?.HandleException();
                 TeamCodingPackage.Current.Logger.WriteInformation("Sent model");
             }
-            else
+            else if(!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.RedisServer))
             {
                 TeamCodingPackage.Current.Logger.WriteInformation("Redisclient == null, didn't send model");
             }
