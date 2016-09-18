@@ -12,6 +12,7 @@
   "RedisServer": "localhost"
   "SlackToken": "xxxx-00000000000-xxxxxxxxxxxxxxxxxxxxxxxx
   "SlackChannel": "#teamcodingextensionsync"
+  "SqlServerConnectionString": "Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;"
 }</TextBox>
     </Grid>
 </platformUi:DialogWindow>

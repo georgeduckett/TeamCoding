@@ -27,6 +27,8 @@
                 <TextBox x:Name="txtSlackToken" Margin="98,90,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackToken}" ToolTip="Set a Slack token (a bot token, starting 'xoxb-') to use to share your coding sessions." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackToken, Mode=OneWay}"/>
                 <Label x:Name="lblSlackChannel" Content="Slack Channel" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackChannel, Mode=OneWay}" Margin="0,116,0,0" Height="26" VerticalAlignment="Top"/>
                 <TextBox x:Name="txtSlackChannel" Margin="98,118,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackChannel}" ToolTip="Set a Slack channel to use to share your coding sessions. Sync messages will be posted here (disable notifications!)." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackChannel, Mode=OneWay}"/>
+                <Label x:Name="lblSqlServerConnectionString" Content="Sql Server Conn." HorizontalAlignment="Left" Target="{Binding ElementName=txtSqlServerConnectionString, Mode=OneWay}" Margin="0,144,0,0" Height="26" VerticalAlignment="Top"/>
+                <TextBox x:Name="txtSqlServerConnectionString" Margin="98,146,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SqlServerConnectionString}" ToolTip="Set a connection to SQL Server to share your coding sessions. Uses a table called [dbo].[TeamCodingSync] and requires the database to have ENABLE_BROKER set." AutomationProperties.LabeledBy="{Binding ElementName=lblSqlServerConnectionString, Mode=OneWay}"/>
             </Grid>
         </GroupBox>
         <StatusBar VerticalAlignment="Bottom">

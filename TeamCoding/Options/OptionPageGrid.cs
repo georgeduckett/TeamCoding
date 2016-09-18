@@ -20,6 +20,7 @@ namespace TeamCoding.Options
         public string RedisServer { get; set; } = SharedSettings.DefaultRedisServer;
         public string SlackToken { get; set; } = SharedSettings.DefaultSlackToken;
         public string SlackChannel { get; set; } = SharedSettings.DefaultSlackChannel;
+        public string SqlServerConnectionString { get; set; } = SharedSettings.DefaultSqlServerConnectionString;
         private OptionsPage OptionsPage;
         protected override UIElement Child { get { return OptionsPage ?? (OptionsPage = new OptionsPage(this)); } }
         protected override void OnApply(PageApplyEventArgs e)

@@ -23,6 +23,7 @@ using TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister;
 
 namespace TeamCoding
 {
@@ -39,6 +40,7 @@ namespace TeamCoding
         public readonly Logger Logger = new Logger();
         public readonly UserImageCache UserImages = new UserImageCache();
         public readonly ObjectSlackMessageConverter ObjectSlackMessageConverter = new ObjectSlackMessageConverter();
+        public SqlConnectionWrapper ConnectionWrapper;
         private uint SolutionEventsHandlerId;
         public HttpClient HttpClient { get; private set; }
         public ILocalModelPerisister LocalModelChangeManager { get; private set; }
@@ -111,8 +113,15 @@ namespace TeamCoding
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
                                                                       new MachineIdentityProvider());
-                RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(), new SharedFolderRemoteModelPersister(), new SlackRemoteModelPersister());
-                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel), new SharedFolderLocalModelPersister(LocalIdeModel), new SlackLocalModelPersister(LocalIdeModel));
+                ConnectionWrapper = new SqlConnectionWrapper();
+                RemoteModelChangeManager = new CombinedRemoteModelPersister(new RedisRemoteModelPersister(),
+                                                                            new SharedFolderRemoteModelPersister(),
+                                                                            new SlackRemoteModelPersister(),
+                                                                            new SqlServerRemoteModelPersister(ConnectionWrapper));
+                LocalModelChangeManager = new CombinedLocalModelPersister(new RedisLocalModelPersister(LocalIdeModel),
+                                                                          new SharedFolderLocalModelPersister(LocalIdeModel),
+                                                                          new SlackLocalModelPersister(LocalIdeModel),
+                                                                          new SqlServerLocalModelPersister(ConnectionWrapper, LocalIdeModel));
                 RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
             }
             catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
@@ -149,6 +158,7 @@ namespace TeamCoding
                 (GetService(typeof(SVsSolution)) as IVsSolution).UnadviseSolutionEvents(SolutionEventsHandlerId);
             }
             Redis?.Dispose();
+            ConnectionWrapper?.Dispose();
             RemoteModelChangeManager?.Dispose();
             LocalModelChangeManager?.Dispose();
             HttpClient?.Dispose();

@@ -127,6 +127,10 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\SlackLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\SlackRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SlackPersister\SlackWrapper.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlConnectionWrapper.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlServerLocalModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlServerRemoteModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlWatcher.cs" />
     <Compile Include="VisualStudio\SolutionEventsHandler.cs" />
     <Compile Include="VisualStudio\TextAdornment\TextAdornment.cs" />
     <Compile Include="VisualStudio\TextAdornment\TextAdornmentTextViewCreationListener.cs" />
@@ -148,6 +152,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Readme.tt</DependentUpon>
     </None>
+    <None Include="app.config" />
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
@@ -187,6 +192,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\SqlServerPersisterCreateScript.sql" />
     <Content Include="Resources\TeamCodingPackage.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -206,6 +212,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.StrongName.1.50.2\lib\net451\Dapper.StrongName.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\packages\VSSDK.DTE.7.0.4\lib\net20\envdte.dll</HintPath>
@@ -358,6 +368,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.0\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
@@ -377,6 +388,7 @@
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="websocket-sharp-with-proxy-support, Version=1.0.2.28248, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
       <HintPath>..\packages\websocket-sharp-with-proxy-support.1.9.1\lib\net35-client\websocket-sharp-with-proxy-support.dll</HintPath>
       <Private>True</Private>

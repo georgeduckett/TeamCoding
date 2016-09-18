@@ -20,6 +20,8 @@ Define the slack bot token and channel. Messages will be posted to the channel s
   - If you want to you can customise the bot further, giving an image and description etc, but this is not required.
   - Click `Save Integration`. Once saved you can now go back to your team's message screen.
   - Create a Slack channel. Click the + next to Channels when in your team's mesage screen. Name the channel and invite the bot created earlier. The channel name (including leading hash) will be what you enter in the Team Coding configuration. You will want to turn off notifications for the channel.
+- **SQL Server**
+Define an SQL Server connection string. This should connect to a database with a [dbo].[TeamCodingSync] table as defined in [SqlServerPersisterCreateScript.sql](https://github.com/georgeduckett/TeamCoding/blob/master/Resources/SqlServerPersisterCreateScript.sql). Note, the service broker must be enabled for the database.
 
 ## User Settings
 

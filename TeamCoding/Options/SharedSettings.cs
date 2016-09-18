@@ -28,6 +28,11 @@ namespace TeamCoding.Options
         public event EventHandler SlackChannelChanging { add { SlackChannelProperty.Changing += value; } remove { SlackChannelProperty.Changing -= value; } }
         private readonly Property<string> SlackChannelProperty;
         public const string DefaultSlackChannel = null;
+        public string SqlServerConnectionString { get { return SqlServerConnectionStringProperty.Value; } set { SqlServerConnectionStringProperty.Value = value; } }
+        public event EventHandler SqlServerConnectionStringChanged { add { SqlServerConnectionStringProperty.Changed += value; } remove { SqlServerConnectionStringProperty.Changed -= value; } }
+        public event EventHandler SqlServerConnectionStringChanging { add { SqlServerConnectionStringProperty.Changing += value; } remove { SqlServerConnectionStringProperty.Changing -= value; } }
+        private readonly Property<string> SqlServerConnectionStringProperty;
+        public const string DefaultSqlServerConnectionString = null;
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
@@ -41,6 +46,9 @@ namespace TeamCoding.Options
 
             SlackChannelProperty = new Property<string>(this);
             SlackChannelProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackChannel)}: {SlackChannel}");
+
+            SqlServerConnectionStringProperty = new Property<string>(this);
+            SqlServerConnectionStringProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SqlServerConnectionString)}: {SqlServerConnectionString}");
         }
     }
 }
