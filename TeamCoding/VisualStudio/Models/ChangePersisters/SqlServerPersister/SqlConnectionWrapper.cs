@@ -72,7 +72,17 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
             if (!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
             {
                 TableWatcherConnection = new SqlConnection(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
-                TableWatcherConnection.Open();
+                try
+                {
+                    TableWatcherConnection.Open();
+                }
+                catch(SqlException ex)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError("Failed to open connection to Sql Server", ex);
+                    TableWatcherConnection.Dispose();
+                    TableWatcherConnection = null;
+                    return;
+                }
                 SqlDependency.Start(TableWatcherConnection.ConnectionString);
                 TableWatcher = new SqlWatcher(TableWatcherConnection.ConnectionString, SelectCommand);
                 TableWatcher.DataChanged += TableWatcher_DataChanged;
