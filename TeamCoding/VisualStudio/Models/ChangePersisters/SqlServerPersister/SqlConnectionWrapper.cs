@@ -109,7 +109,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
             // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
             lock (TableWatcherConnection)
             {
-                TableWatcherConnection.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+                TableWatcherConnection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
             }
             TableWatcher.DataChanged += TableWatcher_DataChanged;
             // Get the data
@@ -127,7 +127,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 {
                     lock (TableWatcherConnection)
                     {
-                        TableWatcherConnection.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
+                        TableWatcherConnection?.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
 USING (VALUES (@Model, @LastUpdated))
     AS source (Model, LastUpdated)
     ON target.Id = @Id
@@ -174,10 +174,10 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 END
 CLOSE Conv;
 DEALLOCATE Conv;");
+                TableWatcher?.Stop();
+                TableWatcherConnection?.Close();
+                TableWatcherConnection?.Dispose();
             }
-            TableWatcher?.Stop();
-            TableWatcherConnection?.Close();
-            TableWatcherConnection?.Dispose();
         }
     }
 }
