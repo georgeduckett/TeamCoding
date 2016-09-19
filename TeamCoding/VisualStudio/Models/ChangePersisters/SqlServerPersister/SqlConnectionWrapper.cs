@@ -25,13 +25,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         }
 
         private const string SelectCommand = "SELECT [Id], [Model], [LastUpdated] FROM [dbo].[TeamCodingSync]";
-        private SqlConnection TableWatcherConnection;
         public event EventHandler DataChanged;
         private DateTime LastSqlWriteTime = DateTime.UtcNow;
         private readonly Thread RowHeartBeatThread;
         private CancellationTokenSource SqlHeartBeatCancelSource;
         private CancellationToken SqlHeartBeatCancelToken;
         private SqlWatcher TableWatcher;
+        private SqlConnection GetConnection => new SqlConnection(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
         public SqlConnectionWrapper()
         {
             CreateRowWatcher();
@@ -49,9 +49,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                         var Difference = (UTCNow - LastSqlWriteTime).TotalSeconds;
                         if (Difference > 60)
                         { // If there have been no changes in the last minute, update the row again (prevent it being tidied up by others)
-                            lock (TableWatcherConnection)
+                            using (var connection = GetConnection)
                             {
-                                TableWatcherConnection?.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
+                                connection.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
                             }
                             LastSqlWriteTime = UTCNow;
                             SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
@@ -72,22 +72,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         }
         private void CreateRowWatcher()
         {
-            if (!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
+            var sqlServerConnectionString = TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString;
+            if (!string.IsNullOrEmpty(sqlServerConnectionString))
             {
-                TableWatcherConnection = new SqlConnection(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
-                try
-                {
-                    TableWatcherConnection.Open();
-                }
-                catch(SqlException ex)
-                {
-                    TeamCodingPackage.Current.Logger.WriteError("Failed to open connection to Sql Server", ex);
-                    TableWatcherConnection.Dispose();
-                    TableWatcherConnection = null;
-                    return;
-                }
-                SqlDependency.Start(TableWatcherConnection.ConnectionString);
-                TableWatcher = new SqlWatcher(TableWatcherConnection.ConnectionString, SelectCommand);
+                SqlDependency.Start(sqlServerConnectionString);
+                TableWatcher = new SqlWatcher(sqlServerConnectionString, SelectCommand);
                 TableWatcher.DataChanged += TableWatcher_DataChanged;
                 TableWatcher.Start();
             }
@@ -105,19 +94,22 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         }
         public IEnumerable<QueryData> GetData()
         {
-            TableWatcher.DataChanged -= TableWatcher_DataChanged;
-            // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
-            lock (TableWatcherConnection)
+            using (var connection = GetConnection)
             {
-                TableWatcherConnection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+                TableWatcher.DataChanged -= TableWatcher_DataChanged;
+
+                // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
+                connection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+
+                TableWatcher.DataChanged += TableWatcher_DataChanged;
+
+                // Get the data
+                return connection.Query<QueryData>(SelectCommand, new { Id = LocalIDEModel.Id.Value });
             }
-            TableWatcher.DataChanged += TableWatcher_DataChanged;
-            // Get the data
-            return TableWatcherConnection.Query<QueryData>(SelectCommand, new { Id = LocalIDEModel.Id.Value });
         }
         public void UpdateModel(RemoteIDEModel remoteModel)
         {
-            if (TableWatcherConnection == null) return;
+            if (string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString)) return;
 
             using (var ms = new MemoryStream())
             {
@@ -125,9 +117,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 LastSqlWriteTime = DateTime.UtcNow;
                 try
                 {
-                    lock (TableWatcherConnection)
+                    using(var connection = GetConnection)
                     {
-                        TableWatcherConnection?.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
+                        connection.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
 USING (VALUES (@Model, @LastUpdated))
     AS source (Model, LastUpdated)
     ON target.Id = @Id
@@ -148,9 +140,9 @@ WHEN NOT MATCHED THEN
         }
         public void Dispose()
         {
-            if (!string.IsNullOrEmpty(TableWatcherConnection?.ConnectionString))
+            if (!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
             {
-                SqlDependency.Stop(TableWatcherConnection.ConnectionString);
+                SqlDependency.Stop(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
             }
             SqlHeartBeatCancelSource.Cancel();
             RowHeartBeatThread.Join();
@@ -158,11 +150,11 @@ WHEN NOT MATCHED THEN
             {
                 TableWatcher.DataChanged -= TableWatcher_DataChanged;
             }
-            lock (TableWatcherConnection)
+            using(var connection = GetConnection)
             {
-                TableWatcherConnection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
+                connection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
                 // Delete any old sqldependency endpoints to prevent memory leaks
-                TableWatcherConnection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
+                connection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
 DECLARE Conv CURSOR FOR
 SELECT CEP.conversation_handle FROM sys.conversation_endpoints CEP
 WHERE CEP.state = 'DI' or CEP.state = 'CD'
@@ -175,8 +167,6 @@ END
 CLOSE Conv;
 DEALLOCATE Conv;");
                 TableWatcher?.Stop();
-                TableWatcherConnection?.Close();
-                TableWatcherConnection?.Dispose();
             }
         }
     }
