@@ -31,3 +31,8 @@ Using the user settings you can customise how you appear to others.
 The username people see when hovering over your avatar that appears on a tab. The first letter is used as the avatar if no image url is specified.
 - **Image URL**.  
 The URL of an image to use as your avatar that appears on a tab or within a document.
+- **User Tab Display / User Code Display**
+Controls how other users appear to you in the tabs and within code. Possible values are:
+  - Avatar: Show an image representing the user (if possible)
+  - Letter: Show the initial letter of the user's name.
+  - Colour: Show a consistent colour for each user.

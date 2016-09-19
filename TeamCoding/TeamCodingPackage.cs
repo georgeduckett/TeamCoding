@@ -149,7 +149,7 @@ namespace TeamCoding
         }
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
-            IDEWrapper.UpdateIDE();
+            IDEWrapper.UpdateIDE(false);
         }
         protected override void Dispose(bool disposing)
         {

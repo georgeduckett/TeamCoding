@@ -10,6 +10,7 @@ using TeamCoding.Documents;
 using TeamCoding.IdentityManagement;
 using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Shell;
+using TeamCoding.Options;
 
 namespace TeamCoding.VisualStudio
 {
@@ -21,7 +22,7 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public Panel CreateUserIdentityControl(IUserIdentity userIdentity, bool withBorder = false)
+        public Panel CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
         {
             var firstLetter = userIdentity.Id[0];
             var grid = new Grid();
@@ -58,8 +59,8 @@ namespace TeamCoding.VisualStudio
                 border.BorderBrush = UserColours.GetUserBrush(userIdentity);
             }
             grid.Children.Add(border);
-            SetText(grid, userIdentity);
-            if (userIdentity.ImageUrl != null)
+            SetTextAndColour(grid, userIdentity, displaySetting);
+            if (userIdentity.ImageUrl != null && displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
                 ThreadHelper.JoinableTaskFactory.Run(async () =>
                 {
@@ -78,11 +79,11 @@ namespace TeamCoding.VisualStudio
             }
             return grid;
         }
-        internal void SetUserControlProperties(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
+        internal void SetUserControlProperties(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
-            SetText(parentControl, matchedRemoteDoc.IdeUserIdentity);
+            SetTextAndColour(parentControl, matchedRemoteDoc.IdeUserIdentity, displaySetting);
 
-            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty) + matchedRemoteDoc.CaretPositionInfo;
+            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
 
             if (matchedRemoteDoc.HasFocus)
             {
@@ -101,26 +102,31 @@ namespace TeamCoding.VisualStudio
                 parentControl.Children.OfType<Border>().Single().Visibility = Visibility.Hidden;
             }
 
-            SetImageSource(parentControl, matchedRemoteDoc);
+            if (displaySetting == UserSettings.UserDisplaySetting.Avatar)
+            {
+                SetImageSource(parentControl, matchedRemoteDoc);
+            }
         }
-
-        public static void SetText(Panel parentControl, IUserIdentity userIdentity)
+        public static void SetTextAndColour(Panel parentControl, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
-            var textBlockControl = parentControl.FindChild<TextBlock>();
-            var firstLetter = (userIdentity.Id)[0];
-            textBlockControl.Text = firstLetter.ToString();
             parentControl.Background = UserColours.GetUserBrush(userIdentity);
 
-            textBlockControl.Foreground = Brushes.White; // TODO: Figure out if black or white is more readable for text, given the background
-
-            var textBlockFormattedText = textBlockControl.GetBoundingRect();
-            if (textBlockFormattedText.Top >= 5)
-            { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
-                textBlockControl.Margin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
-            }
-            else
+            if (displaySetting != UserSettings.UserDisplaySetting.Colour)
             {
-                textBlockControl.Margin = new Thickness(0);
+                var textBlockControl = parentControl.FindChild<TextBlock>();
+                var firstLetter = (userIdentity.Id)[0];
+                textBlockControl.Text = firstLetter.ToString();
+
+                textBlockControl.Foreground = Brushes.White; // TODO: Figure out if black or white is more readable for text, given the background
+                var textBlockFormattedText = textBlockControl.GetBoundingRect();
+                if (textBlockFormattedText.Top >= 5)
+                { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
+                    textBlockControl.Margin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
+                }
+                else
+                {
+                    textBlockControl.Margin = new Thickness(0);
+                }
             }
         }
 

@@ -32,13 +32,17 @@ namespace TeamCoding.Options
 
             foreach (var textBox in this.FindChildren<TextBox>())
             {
-                textBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
+                textBox.GotKeyboardFocus += Control_GotKeyboardFocus;
                 textBox.LostKeyboardFocus += TextBox_LostKeyboardFocus;
+            }
+            foreach(var comboBox in this.FindChildren<ComboBox>())
+            {
+                comboBox.GotKeyboardFocus += Control_GotKeyboardFocus;
+                comboBox.LostKeyboardFocus += ComboBox_LostKeyboardFocus;
             }
 
             Loaded += OptionsPage_Loaded;
         }
-
         private void OptionsPage_Loaded(object sender, RoutedEventArgs e)
         {
             var loadedFromFile = TeamCodingPackage.Current?.Settings?.LoadFromJsonFile() ?? false;
@@ -50,7 +54,7 @@ namespace TeamCoding.Options
 
             chkUsingJsonSettings.IsChecked = loadedFromFile;
         }
-        private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void Control_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             var senderTooltip = ((Control)sender).ToolTip;
             sbitxtDescription.Text = senderTooltip.ToString();
@@ -61,7 +65,11 @@ namespace TeamCoding.Options
             ((TextBox)sender).GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
             sbiTitle.Content = sbitxtDescription.Text = null;
         }
-
+        private void ComboBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            ((ComboBox)sender).GetBindingExpression(ComboBox.TextProperty)?.UpdateSource();
+            sbiTitle.Content = sbitxtDescription.Text = null;
+        }
         private void cmdShowJsonExample_Click(object sender, RoutedEventArgs e)
         {
             new TeamCodingExample().ShowModal();

@@ -16,6 +16,8 @@ namespace TeamCoding.Options
         public const string OptionsName = "Team Coding";
         public string Username { get; set; } = UserSettings.DefaultUsername;
         public string UserImageUrl { get; set; } = UserSettings.DefaultImageUrl;
+        public UserSettings.UserDisplaySetting UserCodeDisplay { get; set; } = UserSettings.DefaultUserCodeDisplay;
+        public UserSettings.UserDisplaySetting UserTabDisplay { get; set; } = UserSettings.DefaultUserTabDisplay;
         public string FileBasedPersisterPath { get; set; } = SharedSettings.DefaultFileBasedPersisterPath;
         public string RedisServer { get; set; } = SharedSettings.DefaultRedisServer;
         public string SlackToken { get; set; } = SharedSettings.DefaultSlackToken;
@@ -23,6 +25,8 @@ namespace TeamCoding.Options
         public string SqlServerConnectionString { get; set; } = SharedSettings.DefaultSqlServerConnectionString;
         private OptionsPage OptionsPage;
         protected override UIElement Child { get { return OptionsPage ?? (OptionsPage = new OptionsPage(this)); } }
+        public IEnumerable<UserSettings.UserDisplaySetting> UserDisplaySettings =>
+                Enum.GetValues(typeof(UserSettings.UserDisplaySetting)).Cast<UserSettings.UserDisplaySetting>();
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);

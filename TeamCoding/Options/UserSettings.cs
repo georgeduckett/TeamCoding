@@ -8,6 +8,8 @@ namespace TeamCoding.Options
 {
     public class UserSettings
     {
+        public enum UserDisplaySetting { Avatar, Letter, Colour }
+
         public string Username { get { return UsernameProperty.Value; } set { UsernameProperty.Value = value; } }
         public event EventHandler UsernameChanged { add { UsernameProperty.Changed += value; } remove { UsernameProperty.Changed -= value; } }
         public event EventHandler UsernameChanging { add { UsernameProperty.Changing += value; } remove { UsernameProperty.Changing -= value; } }
@@ -18,6 +20,16 @@ namespace TeamCoding.Options
         public event EventHandler UserImageUrlChanging { add { UserImageUrlProperty.Changing += value; } remove { UserImageUrlProperty.Changing -= value; } }
         private readonly Property<string> UserImageUrlProperty;
         public const string DefaultImageUrl = null;
+        public UserDisplaySetting UserCodeDisplay { get { return UserCodeDisplayProperty.Value; } set { UserCodeDisplayProperty.Value = value; } }
+        public event EventHandler UserCodeDisplayChanged { add { UserCodeDisplayProperty.Changed += value; } remove { UserCodeDisplayProperty.Changed -= value; } }
+        public event EventHandler UserCodeDisplayChanging { add { UserCodeDisplayProperty.Changing += value; } remove { UserCodeDisplayProperty.Changing -= value; } }
+        private readonly Property<UserDisplaySetting> UserCodeDisplayProperty;
+        public const UserDisplaySetting DefaultUserCodeDisplay = UserDisplaySetting.Avatar;
+        public UserDisplaySetting UserTabDisplay { get { return UserTabDisplayProperty.Value; } set { UserTabDisplayProperty.Value = value; } }
+        public event EventHandler UserTabDisplayChanged { add { UserTabDisplayProperty.Changed += value; } remove { UserTabDisplayProperty.Changed -= value; } }
+        public event EventHandler UserTabDisplayChanging { add { UserTabDisplayProperty.Changing += value; } remove { UserTabDisplayProperty.Changing -= value; } }
+        private readonly Property<UserDisplaySetting> UserTabDisplayProperty;
+        public const UserDisplaySetting DefaultUserTabDisplay = UserDisplaySetting.Avatar;
         public UserSettings()
         {
             UsernameProperty = new Property<string>(this);
@@ -25,6 +37,12 @@ namespace TeamCoding.Options
 
             UserImageUrlProperty = new Property<string>(this);
             UserImageUrlProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(UserImageUrl)}: {UserImageUrl}");
+
+            UserCodeDisplayProperty = new Property<UserDisplaySetting>(this);
+            UserCodeDisplayProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(UserCodeDisplay)}: {UserCodeDisplay}");
+
+            UserTabDisplayProperty = new Property<UserDisplaySetting>(this);
+            UserTabDisplayProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(UserTabDisplay)}: {UserTabDisplay}");
         }
     }
 }

@@ -124,11 +124,27 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, image, null);
 
-                FrameworkElement userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity, true);
-                userControl.Width = caretGeometry.Bounds.Height / 1.25f;
-                userControl.Height = caretGeometry.Bounds.Height / 1.25f;
+                FrameworkElement userControl = null;
+
+                if (TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay == Options.UserSettings.UserDisplaySetting.Colour)
+                {
+                    userControl = new Border()
+                    {
+                        Background = UserColours.GetUserBrush(userIdentity),
+                        CornerRadius = new CornerRadius((caretGeometry.Bounds.Height / 2) / 2)
+                    };
+                    userControl.Width = caretGeometry.Bounds.Height / 2;
+                    userControl.Height = caretGeometry.Bounds.Height / 2;
+                    Canvas.SetTop(userControl, caretGeometry.Bounds.Top - (userControl.Height * 0.75));
+                }
+                else
+                {
+                    userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity, TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay, true);
+                    userControl.Width = caretGeometry.Bounds.Height / 1.25f;
+                    userControl.Height = caretGeometry.Bounds.Height / 1.25f;
+                    Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
+                }
                 Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - userControl.Width / 2);
-                Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, null);
             }
         }
