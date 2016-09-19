@@ -54,7 +54,7 @@ namespace TeamCoding.VisualStudio
                 VerticalAlignment = VerticalAlignment.Stretch
             };
             if (withBorder)
-            {
+            { // TODO: Get a way of having the bottom border the user's colour if the code setting is a colour and the user setting is an avatar
                 border.BorderThickness = new Thickness(1);
                 border.BorderBrush = UserColours.GetUserBrush(userIdentity);
             }
