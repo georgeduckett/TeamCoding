@@ -49,7 +49,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                         var Difference = (UTCNow - LastSqlWriteTime).TotalSeconds;
                         if (Difference > 60)
                         { // If there have been no changes in the last minute, update the row again (prevent it being tidied up by others)
-                            TableWatcherConnection?.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
+                            lock (TableWatcherConnection)
+                            {
+                                TableWatcherConnection?.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
+                            }
                             LastSqlWriteTime = UTCNow;
                             SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
                         }
@@ -104,7 +107,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         {
             TableWatcher.DataChanged -= TableWatcher_DataChanged;
             // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
-            TableWatcherConnection.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+            lock (TableWatcherConnection)
+            {
+                TableWatcherConnection.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+            }
             TableWatcher.DataChanged += TableWatcher_DataChanged;
             // Get the data
             return TableWatcherConnection.Query<QueryData>(SelectCommand, new { Id = LocalIDEModel.Id.Value });
@@ -119,7 +125,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 LastSqlWriteTime = DateTime.UtcNow;
                 try
                 {
-                    TableWatcherConnection.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
+                    lock (TableWatcherConnection)
+                    {
+                        TableWatcherConnection.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
 USING (VALUES (@Model, @LastUpdated))
     AS source (Model, LastUpdated)
     ON target.Id = @Id
@@ -130,6 +138,7 @@ WHEN MATCHED THEN
 WHEN NOT MATCHED THEN
     INSERT ( Id, model, LastUpdated)
     VALUES ( @Id,  @Model, @LastUpdated);", new QueryData() { Id = remoteModel.Id, Model = ms.ToArray(), LastUpdated = LastSqlWriteTime });
+                    }
                 }
                 catch (SqlException ex)
                 {
@@ -149,9 +158,11 @@ WHEN NOT MATCHED THEN
             {
                 TableWatcher.DataChanged -= TableWatcher_DataChanged;
             }
-            TableWatcherConnection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
-            // Delete any old sqldependency endpoints to prevent memory leaks
-            TableWatcherConnection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
+            lock (TableWatcherConnection)
+            {
+                TableWatcherConnection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
+                // Delete any old sqldependency endpoints to prevent memory leaks
+                TableWatcherConnection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
 DECLARE Conv CURSOR FOR
 SELECT CEP.conversation_handle FROM sys.conversation_endpoints CEP
 WHERE CEP.state = 'DI' or CEP.state = 'CD'
@@ -163,6 +174,7 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 END
 CLOSE Conv;
 DEALLOCATE Conv;");
+            }
             TableWatcher?.Stop();
             TableWatcherConnection?.Close();
             TableWatcherConnection?.Dispose();
