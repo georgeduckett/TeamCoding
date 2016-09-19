@@ -20,3 +20,7 @@ The borders around the user image at the top of open tabs are coloured white for
 **Links:** [GitHub Repo](https://github.com/georgeduckett/TeamCoding/)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding)
+
+---
+
+![Demo Gif](http://i.giphy.com/3oz8xNb3MTsqzn67za.gif)
