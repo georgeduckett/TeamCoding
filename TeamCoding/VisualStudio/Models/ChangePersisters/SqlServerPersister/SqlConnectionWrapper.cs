@@ -129,7 +129,10 @@ WHEN NOT MATCHED THEN
         }
         public void Dispose()
         {
-            SqlDependency.Stop(TableWatcherConnection.ConnectionString);
+            if (!string.IsNullOrEmpty(TableWatcherConnection?.ConnectionString))
+            {
+                SqlDependency.Stop(TableWatcherConnection.ConnectionString);
+            }
             SqlHeartBeatCancelSource.Cancel();
             RowHeartBeatThread.Join();
             if (TableWatcher != null)
@@ -150,8 +153,8 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 END
 CLOSE Conv;
 DEALLOCATE Conv;");
-            TableWatcher.Stop();
-            TableWatcherConnection.Close();
+            TableWatcher?.Stop();
+            TableWatcherConnection?.Close();
             TableWatcherConnection?.Dispose();
         }
     }
