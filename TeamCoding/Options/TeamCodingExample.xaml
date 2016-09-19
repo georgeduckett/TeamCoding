@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TeamCoding.Options"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
-             mc:Ignorable="d" HasMinimizeButton="False" HasMaximizeButton="False" Height="193.466" Width="436.363">
+             mc:Ignorable="d" HasMinimizeButton="False" HasMaximizeButton="False" Height="193.466" Width="593.44">
     <Grid>
         <TextBox x:Name="txtExampleConfigJson" TextWrapping="WrapWithOverflow" xml:space="preserve" AcceptsReturn="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" >{
   "FileBasedPersisterPath": "\\\\FileServer\\TeamCodingPersistence",

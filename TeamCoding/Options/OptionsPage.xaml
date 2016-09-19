@@ -5,37 +5,39 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TeamCoding.Options"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="400">
-    <Grid>
-        <GroupBox Header="User Settings" Height="99" VerticalAlignment="Top">
-            <Grid>
-                <TextBox x:Name="txtUsername" Margin="68,10,0,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
-                <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtUsername, Mode=OneWay}" Margin="0,10,0,0"/>
-                <TextBox x:Name="txtUserImageUrl" Margin="68,44,0,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}" ToolTip="Set a custom image url. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUserImageUrl, Mode=OneWay}"/>
-                <Label x:Name="lblUserImageUrl" Content="User Url" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,41,0,0" Target="{Binding ElementName=txtUserImageUrl, Mode=OneWay}"/>
-            </Grid>
-        </GroupBox>
-        <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,104,0,63">
-            <Grid>
-                <Label x:Name="lblFileBasedPersisterPath" Content="File Share Folder" HorizontalAlignment="Left" Target="{Binding ElementName=txtFileBasedPersisterPath, Mode=OneWay}" Margin="0,34,0,0" Height="26" VerticalAlignment="Top"/>
-                <TextBox x:Name="txtFileBasedPersisterPath" Margin="98,34,0,0" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}" Height="23" VerticalAlignment="Top"/>
-                <Label x:Name="lblRedisServer" Content="Redis Server" HorizontalAlignment="Left" Target="{Binding ElementName=txtRedisServer, Mode=OneWay}" Margin="0,60,0,0" Height="26" VerticalAlignment="Top"/>
-                <TextBox x:Name="txtRedisServer" Margin="98,62,0,0" Height="23" VerticalAlignment="Top" Text="{Binding RedisServer}" ToolTip="Set a redis server to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblRedisServer, Mode=OneWay}"/>
-                <CheckBox x:Name="chkUsingJsonSettings" Content="{x:Static local:OptionsPage.chkUsingJsonSettingsCaption}" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
-                <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="cmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,0,0"/>
-                <Label x:Name="lblSlackToken" Content="Slack Token" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackToken, Mode=OneWay}" Margin="0,88,0,0" Height="26" VerticalAlignment="Top"/>
-                <TextBox x:Name="txtSlackToken" Margin="98,90,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackToken}" ToolTip="Set a Slack token (a bot token, starting 'xoxb-') to use to share your coding sessions." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackToken, Mode=OneWay}"/>
-                <Label x:Name="lblSlackChannel" Content="Slack Channel" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackChannel, Mode=OneWay}" Margin="0,116,0,0" Height="26" VerticalAlignment="Top"/>
-                <TextBox x:Name="txtSlackChannel" Margin="98,118,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackChannel}" ToolTip="Set a Slack channel to use to share your coding sessions. Sync messages will be posted here (disable notifications!)." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackChannel, Mode=OneWay}"/>
-                <Label x:Name="lblSqlServerConnectionString" Content="Sql Server Conn." HorizontalAlignment="Left" Target="{Binding ElementName=txtSqlServerConnectionString, Mode=OneWay}" Margin="0,144,0,0" Height="26" VerticalAlignment="Top"/>
-                <TextBox x:Name="txtSqlServerConnectionString" Margin="98,146,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SqlServerConnectionString}" ToolTip="Set a connection to SQL Server to share your coding sessions. Uses a table called [dbo].[TeamCodingSync] and requires the database to have ENABLE_BROKER set." AutomationProperties.LabeledBy="{Binding ElementName=lblSqlServerConnectionString, Mode=OneWay}"/>
-            </Grid>
-        </GroupBox>
-        <StatusBar VerticalAlignment="Bottom">
-            <StatusBarItem Name="sbiTitle" FontSize="12" FontWeight="Bold"></StatusBarItem>
-            <StatusBarItem Name="sbiDescription" FontSize="12">
-                <TextBlock Name="sbitxtDescription" TextWrapping="Wrap"></TextBlock>
-            </StatusBarItem>
-        </StatusBar>
-    </Grid>
+             d:DesignHeight="350" d:DesignWidth="400">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+            <GroupBox Header="User Settings" Height="99" VerticalAlignment="Top">
+                <Grid>
+                    <TextBox x:Name="txtUsername" Margin="68,10,0,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
+                    <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtUsername, Mode=OneWay}" Margin="0,10,0,0"/>
+                    <TextBox x:Name="txtUserImageUrl" Margin="68,44,0,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}" ToolTip="Set a custom image url. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUserImageUrl, Mode=OneWay}"/>
+                    <Label x:Name="lblUserImageUrl" Content="User Url" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,41,0,0" Target="{Binding ElementName=txtUserImageUrl, Mode=OneWay}"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,104,0,0" Height="193" VerticalAlignment="Top">
+                <Grid>
+                    <Label x:Name="lblFileBasedPersisterPath" Content="File Share Folder" HorizontalAlignment="Left" Target="{Binding ElementName=txtFileBasedPersisterPath, Mode=OneWay}" Margin="0,34,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtFileBasedPersisterPath" Margin="98,34,0,0" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}" Height="23" VerticalAlignment="Top"/>
+                    <Label x:Name="lblRedisServer" Content="Redis Server" HorizontalAlignment="Left" Target="{Binding ElementName=txtRedisServer, Mode=OneWay}" Margin="0,60,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtRedisServer" Margin="98,62,0,0" Height="23" VerticalAlignment="Top" Text="{Binding RedisServer}" ToolTip="Set a redis server to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblRedisServer, Mode=OneWay}"/>
+                    <CheckBox x:Name="chkUsingJsonSettings" Content="{x:Static local:OptionsPage.chkUsingJsonSettingsCaption}" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
+                    <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="cmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,0,0"/>
+                    <Label x:Name="lblSlackToken" Content="Slack Token" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackToken, Mode=OneWay}" Margin="0,88,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSlackToken" Margin="98,90,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackToken}" ToolTip="Set a Slack token (a bot token, starting 'xoxb-') to use to share your coding sessions." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackToken, Mode=OneWay}"/>
+                    <Label x:Name="lblSlackChannel" Content="Slack Channel" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackChannel, Mode=OneWay}" Margin="0,116,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSlackChannel" Margin="98,118,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackChannel}" ToolTip="Set a Slack channel to use to share your coding sessions. Sync messages will be posted here (disable notifications!)." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackChannel, Mode=OneWay}"/>
+                    <Label x:Name="lblSqlServerConnectionString" Content="Sql Server Conn." HorizontalAlignment="Left" Target="{Binding ElementName=txtSqlServerConnectionString, Mode=OneWay}" Margin="0,144,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSqlServerConnectionString" Margin="98,146,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SqlServerConnectionString}" ToolTip="Set a connection to SQL Server to share your coding sessions. Uses a table called [dbo].[TeamCodingSync] and requires the database to have ENABLE_BROKER set." AutomationProperties.LabeledBy="{Binding ElementName=lblSqlServerConnectionString, Mode=OneWay}"/>
+                </Grid>
+            </GroupBox>
+            <StatusBar VerticalAlignment="Bottom">
+                <StatusBarItem Name="sbiTitle" FontSize="12" FontWeight="Bold"></StatusBarItem>
+                <StatusBarItem Name="sbiDescription" FontSize="12">
+                    <TextBlock Name="sbitxtDescription" TextWrapping="Wrap"></TextBlock>
+                </StatusBarItem>
+            </StatusBar>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
