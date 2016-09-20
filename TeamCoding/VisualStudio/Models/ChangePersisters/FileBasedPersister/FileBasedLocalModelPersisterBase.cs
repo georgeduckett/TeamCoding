@@ -28,14 +28,12 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         public FileBasedLocalModelPersisterBase(LocalIDEModel model)
         {
             TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanging += SharedSettings_FileBasedPersisterPathChanging;
-            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += Settings_FileBasedPersisterPathChanged;
+            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += IdeModel_ModelChanged;
 
             FileHeartBeatCancelSource = new CancellationTokenSource();
             FileHeartBeatCancelToken = FileHeartBeatCancelSource.Token;
             IdeModel = model;
-            IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
-            IdeModel.TextContentChanged += IdeModel_TextContentChanged;
-            IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
+            IdeModel.ModelChanged += IdeModel_ModelChanged;
 
             FileHeartBeatThread = new Thread(() =>
             {
@@ -77,20 +75,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         {
             SendEmpty();
         }
-        private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)
-        {
-            SendChanges();
-        }
-        private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
-        {
-            SendChanges();
-        }
-        private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
-        {
-            // TODO: Handle IdeModel_TextContentChanged to sync changes between instances (if enabled in some setting somehow?), maybe also to allow quick notifications of editing a document
-            // SendChanges();
-        }
-        private void IdeModel_OpenViewsChanged(object sender, EventArgs e)
+        private void IdeModel_ModelChanged(object sender, EventArgs e)
         {
             SendChanges();
         }

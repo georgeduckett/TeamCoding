@@ -46,9 +46,17 @@ namespace TeamCoding.Logging
         }
         private void LogText(string text, string filePath, string methodName)
         {
-            EnsureOutputPane();
+            try
+            {
+                EnsureOutputPane();
+            }
+            catch { }
             ActivityLog.TryLogInformation(OutputWindowCategory, $"{Path.GetFileNameWithoutExtension(filePath)}.{methodName}:{text}");
-            TeamCodingPane.OutputStringThreadSafe($"{DateTime.Now} {Path.GetFileNameWithoutExtension(filePath)}.{methodName}:{text}{Environment.NewLine}");
+            try
+            {
+                TeamCodingPane.OutputStringThreadSafe($"{DateTime.Now} {Path.GetFileNameWithoutExtension(filePath)}.{methodName}:{text}{Environment.NewLine}");
+            }
+            catch { }
         }
         public void WriteError(string error, Exception ex = null, [CallerFilePath] string filePath = null, [CallerMemberName] string memberName = null)
         {

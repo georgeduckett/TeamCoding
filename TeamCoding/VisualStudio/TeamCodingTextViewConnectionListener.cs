@@ -20,7 +20,7 @@ namespace TeamCoding.VisualStudio
     {
         private readonly ITextDocumentFactoryService TextDocFactory;
         private readonly IClassifierAggregatorService TextClassifierService;
-        private readonly DelayedEvent<CaretPositionChangedEventArgs> DelayedCaretPositionChanged = new DelayedEvent<CaretPositionChangedEventArgs>(500);
+        private event EventHandler<CaretPositionChangedEventArgs> DelayedCaretPositionChanged;
 
         [ImportingConstructor]
         public TeamCodingTextViewConnectionListener(ITextDocumentFactoryService textDocumentFactoryService, IClassifierAggregatorService textClassifierService)
@@ -28,11 +28,6 @@ namespace TeamCoding.VisualStudio
             TextDocFactory = textDocumentFactoryService;
             TextClassifierService = textClassifierService;
             TextDocFactory.TextDocumentDisposed += TextDocFactory_TextDocumentDisposed;
-            DelayedCaretPositionChanged.Event += DelayedCaretPositionChanged_Event;
-        }
-        private async void DelayedCaretPositionChanged_Event(object sender, CaretPositionChangedEventArgs e)
-        {
-            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
         }
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
@@ -50,10 +45,16 @@ namespace TeamCoding.VisualStudio
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
-                    textView.Caret.PositionChanged += DelayedCaretPositionChanged.EventHandler;
+                    textView.Caret.PositionChanged += Caret_PositionChanged;
                 }
             }
         }
+
+        private async void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
+        }
+
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)
         {
             TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentDisposed(e.TextDocument, e);
@@ -86,7 +87,7 @@ namespace TeamCoding.VisualStudio
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;
-                    textView.Caret.PositionChanged -= DelayedCaretPositionChanged.EventHandler;
+                    textView.Caret.PositionChanged -= Caret_PositionChanged;
                 }
             }
         }

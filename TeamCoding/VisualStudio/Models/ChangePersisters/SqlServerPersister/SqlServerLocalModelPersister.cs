@@ -17,27 +17,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         {
             ConnectionWrapper = connectionWrapper;
             IdeModel = model;
-            IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
-            IdeModel.TextContentChanged += IdeModel_TextContentChanged;
-            IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
+            IdeModel.ModelChanged += IdeModel_ModelChanged;
         }
-        private void SharedSettings_FileBasedPersisterPathChanging(object sender, EventArgs e)
-        {
-            SendEmpty();
-        }
-        private void Settings_FileBasedPersisterPathChanged(object sender, EventArgs e)
-        {
-            SendChanges();
-        }
-        private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
-        {
-            SendChanges();
-        }
-        private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
-        {
-            // SendChanges();
-        }
-        private void IdeModel_OpenViewsChanged(object sender, EventArgs e)
+        private void IdeModel_ModelChanged(object sender, EventArgs e)
         {
             SendChanges();
         }

@@ -16,32 +16,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         public SlackLocalModelPersister(LocalIDEModel model)
         {
             IdeModel = model;
-            IdeModel.OpenViewsChanged += IdeModel_OpenViewsChanged;
-            IdeModel.TextContentChanged += IdeModel_TextContentChanged;
-            IdeModel.TextDocumentSaved += IdeModel_TextDocumentSaved;
+            IdeModel.ModelChanged += IdeModel_ModelChanged;
+            TeamCodingPackage.Current.Settings.SharedSettings.SlackTokenChanged += IdeModel_ModelChanged;
             TeamCodingPackage.Current.Settings.SharedSettings.SlackTokenChanging += SharedSettings_SlackServerChanging;
-            TeamCodingPackage.Current.Settings.SharedSettings.SlackTokenChanged += SharedSettings_SlackServerChanged;
         }
-
-        private void SharedSettings_SlackServerChanged(object sender, EventArgs e)
-        {
-            SendChanges();
-        }
-
         private void SharedSettings_SlackServerChanging(object sender, EventArgs e)
         {
             SendModel(new RemoteIDEModel(new LocalIDEModel()));
         }
-
-        private void IdeModel_TextDocumentSaved(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs e)
-        {
-            SendChanges();
-        }
-        private void IdeModel_TextContentChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
-        {
-            // SendChanges();
-        }
-        private void IdeModel_OpenViewsChanged(object sender, EventArgs e)
+        private void IdeModel_ModelChanged(object sender, EventArgs e)
         {
             SendChanges();
         }

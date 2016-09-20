@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Shell;
 using System.Collections.Generic;
+using TeamCoding.Events;
 
 namespace TeamCoding.VisualStudio.Models
 {
@@ -49,15 +50,30 @@ namespace TeamCoding.VisualStudio.Models
         private object OpenFilesLock = new object();
         private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
 
-        public event EventHandler OpenViewsChanged;
-        public event EventHandler<CaretPositionChangedEventArgs> CaretPositionChanged;
-        public event EventHandler<TextContentChangedEventArgs> TextContentChanged;
-        public event EventHandler<TextDocumentFileActionEventArgs> TextDocumentSaved;
+        private DelayedEvent OpenViewsChangedInternal = new DelayedEvent(500);
+        public event EventHandler OpenViewsChanged { add { OpenViewsChangedInternal.Event += value; } remove { OpenViewsChangedInternal.Event -= value; } }
 
+        private DelayedEvent<CaretPositionChangedEventArgs> CaretPositionChangedInternal = new DelayedEvent<CaretPositionChangedEventArgs>(500);
+        public event EventHandler<CaretPositionChangedEventArgs> CaretPositionChanged { add { CaretPositionChangedInternal.Event += value; } remove { CaretPositionChangedInternal.Event -= value; } }
+        
+        private DelayedEvent<TextContentChangedEventArgs> TextContentChangedInternal = new DelayedEvent<TextContentChangedEventArgs>(500);
+        public event EventHandler<TextContentChangedEventArgs> TextContentChanged { add { TextContentChangedInternal.Event += value; } remove { TextContentChangedInternal.Event -= value; } }
+        
+        private DelayedEvent<TextDocumentFileActionEventArgs> TextDocumentSavedInternal = new DelayedEvent<TextDocumentFileActionEventArgs>(500);
+        public event EventHandler<TextDocumentFileActionEventArgs> TextDocumentSaved { add { TextDocumentSavedInternal.Event += value; } remove { TextDocumentSavedInternal.Event -= value; } }
+
+        private DelayedEvent ModelChangedInternal = new DelayedEvent(500);
+        public event EventHandler ModelChanged { add { ModelChangedInternal.Event += value; } remove { ModelChangedInternal.Event -= value; } }
         public LocalIDEModel()
         {
             TeamCodingPackage.Current.Settings.UserSettings.UsernameChanged += (s, e) => OnUserIdentityChanged();
             TeamCodingPackage.Current.Settings.UserSettings.UserImageUrlChanged += (s, e) => OnUserIdentityChanged();
+
+            // Hook up to the internal event as the model changed event is rate-limited anyway
+            OpenViewsChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
+            CaretPositionChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
+            TextContentChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
+            TextDocumentSavedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
         }
         public async System.Threading.Tasks.Task OnCaretPositionChanged(CaretPositionChangedEventArgs e)
         {
@@ -71,9 +87,9 @@ namespace TeamCoding.VisualStudio.Models
                     OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, d) => sourceControlInfo);
                 }
                 
-                OpenViewsChanged?.Invoke(this, EventArgs.Empty);
+                OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
             }
-            CaretPositionChanged?.Invoke(this, e);
+            CaretPositionChangedInternal?.Invoke(this, e);
         }
         public async System.Threading.Tasks.Task OnOpenedTextView(IWpfTextView view)
         {
@@ -91,13 +107,13 @@ namespace TeamCoding.VisualStudio.Models
                         OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => sourceControlInfo);
                     }
                 }
-                OpenViewsChanged?.Invoke(this, EventArgs.Empty);
+                OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
             }
         }
 
         internal void OnUserIdentityChanged()
         {
-            OpenViewsChanged?.Invoke(this, EventArgs.Empty);
+            OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
@@ -107,7 +123,7 @@ namespace TeamCoding.VisualStudio.Models
             {
                 OpenFiles.TryRemove(textDocument.FilePath, out tmp);
             }
-            OpenViewsChanged?.Invoke(this, EventArgs.Empty);
+            OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
@@ -121,7 +137,7 @@ namespace TeamCoding.VisualStudio.Models
                     OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
                 }
 
-                TextDocumentSaved?.Invoke(textDocument, e);
+                TextDocumentSavedInternal?.Invoke(textDocument, e);
             }
         }
 
@@ -151,7 +167,7 @@ namespace TeamCoding.VisualStudio.Models
                 }
             }
             
-            TextContentChanged?.Invoke(textBuffer, e);
+            TextContentChangedInternal?.Invoke(textBuffer, e);
         }
 
         internal void OnFileGotFocus(string filePath)
@@ -164,7 +180,7 @@ namespace TeamCoding.VisualStudio.Models
                 {
                     OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
                 }
-                OpenViewsChanged?.Invoke(this, new EventArgs());
+                OpenViewsChangedInternal?.Invoke(this, new EventArgs());
             }
         }
 
