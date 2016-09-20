@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio
     {
         private static readonly Dictionary<int, SolidColorBrush> UserToBrush = new Dictionary<int, SolidColorBrush>();
         private static readonly Dictionary<int, Pen> UserToPen = new Dictionary<int, Pen>();
-        public static Color GetUserColour(UserIdentity user)
+        public static Color GetUserColour(IUserIdentity user)
         {
             return VisuallyDistinctColours.GetColourFromSeed(user.Id.GetHashCode());
         }

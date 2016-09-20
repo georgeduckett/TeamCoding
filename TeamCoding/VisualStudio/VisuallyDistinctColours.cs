@@ -44,5 +44,33 @@ namespace TeamCoding.VisualStudio
         {
             return Colours[seed % Colours.Count];
         }
+
+        public static Brush GetTextBrushFromBackgroundColour(Color backgroundColour)
+        {
+            var r = f(backgroundColour.R / 255.0);
+            var g = f(backgroundColour.G / 255.0);
+            var b = f(backgroundColour.B / 255.0);
+
+            var l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+            if (l > 0.179)
+                return Brushes.Black;
+            else
+                return Brushes.White;
+        }
+
+        private static double f(double c)
+        {
+            if (c <= 0.03928)
+            {
+                c = c / 12.92;
+            }
+            else
+            {
+                c = Math.Pow((c + 0.055) / 1.055, 2.4f);
+            }
+
+            return c;
+        }
     }
 }

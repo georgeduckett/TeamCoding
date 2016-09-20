@@ -122,7 +122,7 @@ namespace TeamCoding.VisualStudio
                 var firstLetter = (userIdentity.Id)[0];
                 textBlockControl.Text = firstLetter.ToString();
 
-                textBlockControl.Foreground = Brushes.White; // TODO: Figure out if black or white is more readable for text, given the background
+                textBlockControl.Foreground = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));
                 var textBlockFormattedText = textBlockControl.GetBoundingRect();
                 if (textBlockFormattedText.Top >= 5)
                 { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
