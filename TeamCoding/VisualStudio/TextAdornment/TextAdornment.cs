@@ -144,6 +144,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
                     userControl.Height = caretGeometry.Bounds.Height / 1.25f;
                     Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
                 }
+                userControl.ToolTip = userIdentity.DisplayName ?? userIdentity.Id;
                 Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - userControl.Width / 2);
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, null);
             }

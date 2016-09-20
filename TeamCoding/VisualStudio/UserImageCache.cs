@@ -82,8 +82,7 @@ namespace TeamCoding.VisualStudio
         internal void SetUserControlProperties(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
             SetTextAndColour(parentControl, matchedRemoteDoc.IdeUserIdentity, displaySetting);
-
-            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+            SetTooltip(parentControl, matchedRemoteDoc);
 
             if (matchedRemoteDoc.HasFocus)
             {
@@ -107,6 +106,12 @@ namespace TeamCoding.VisualStudio
                 SetImageSource(parentControl, matchedRemoteDoc);
             }
         }
+
+        private static void SetTooltip(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
+        {
+            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+        }
+
         public static void SetTextAndColour(Panel parentControl, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
             parentControl.Background = UserColours.GetUserBrush(userIdentity);
