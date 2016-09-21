@@ -427,9 +427,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TeamCoding.Interfaces\TeamCoding.Interfaces.csproj">
+    <ProjectReference Include="..\TeamCoding.Shared\TeamCoding.Shared.csproj">
       <Project>{a72eb923-18eb-42a9-938e-533cfc5b15ef}</Project>
-      <Name>TeamCoding.Interfaces</Name>
+      <Name>TeamCoding.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\TeamCoding.v14\TeamCoding.v14.csproj">
       <Project>{1bc98758-87ae-488e-9b2f-4e06acc83646}</Project>
