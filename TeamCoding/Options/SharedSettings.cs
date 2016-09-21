@@ -33,6 +33,11 @@ namespace TeamCoding.Options
         public event EventHandler SqlServerConnectionStringChanging { add { SqlServerConnectionStringProperty.Changing += value; } remove { SqlServerConnectionStringProperty.Changing -= value; } }
         public readonly Property<string> SqlServerConnectionStringProperty;
         public const string DefaultSqlServerConnectionString = null;
+        public string WinServiceIPAddress { get { return WinServiceIPAddressProperty.Value; } set { WinServiceIPAddressProperty.Value = value; } }
+        public event EventHandler WinServiceIPAddressChanged { add { WinServiceIPAddressProperty.Changed += value; } remove { WinServiceIPAddressProperty.Changed -= value; } }
+        public event EventHandler WinServiceIPAddressChanging { add { WinServiceIPAddressProperty.Changing += value; } remove { WinServiceIPAddressProperty.Changing -= value; } }
+        public readonly Property<string> WinServiceIPAddressProperty; // TODO: Use IPAddress rather than string
+        public const string DefaultWinServiceIPAddress = null;
         public SharedSettings()
         {
             FileBasedPersisterPathProperty = new Property<string>(this);
@@ -49,6 +54,9 @@ namespace TeamCoding.Options
 
             SqlServerConnectionStringProperty = new Property<string>(this);
             SqlServerConnectionStringProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SqlServerConnectionString)}: {SqlServerConnectionString}");
+
+            WinServiceIPAddressProperty = new Property<string>(this);
+            WinServiceIPAddressProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(WinServiceIPAddress)}: {WinServiceIPAddress}");
         }
     }
 }

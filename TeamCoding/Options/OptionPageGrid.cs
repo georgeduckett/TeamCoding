@@ -23,6 +23,7 @@ namespace TeamCoding.Options
         public string SlackToken { get; set; } = SharedSettings.DefaultSlackToken;
         public string SlackChannel { get; set; } = SharedSettings.DefaultSlackChannel;
         public string SqlServerConnectionString { get; set; } = SharedSettings.DefaultSqlServerConnectionString;
+        public string WinServiceIPAddress { get; set; } = SharedSettings.DefaultWinServiceIPAddress;
         private OptionsPage OptionsPage;
         protected override UIElement Child { get { return OptionsPage ?? (OptionsPage = new OptionsPage(this)); } }
         public IEnumerable<UserSettings.UserDisplaySetting> UserDisplaySettings =>

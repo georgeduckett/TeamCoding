@@ -133,6 +133,9 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlServerLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlServerRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\SqlServerPersister\SqlWatcher.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceClient.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceLocalModelPersister.cs" />
+    <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\SolutionEventsHandler.cs" />
     <Compile Include="VisualStudio\TextAdornment\TextAdornment.cs" />
     <Compile Include="VisualStudio\TextAdornment\TextAdornmentTextViewCreationListener.cs" />
@@ -214,6 +217,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AwesomeSockets, Version=1.4.19.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AwesomeSockets.1.4.19\lib\net40\AwesomeSockets.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.StrongName.1.50.2\lib\net451\Dapper.StrongName.dll</HintPath>
       <Private>True</Private>
