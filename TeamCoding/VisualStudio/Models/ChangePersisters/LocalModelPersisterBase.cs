@@ -26,7 +26,14 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         private void SettingProperty_Changing(object sender, EventArgs e)
         {
-            SendModel(new RemoteIDEModel(new LocalIDEModel()));
+            if (RequiredPropertiesAreSet())
+            {
+                SendModel(new RemoteIDEModel(new LocalIDEModel()));
+            }
+        }
+        protected virtual bool RequiredPropertiesAreSet()
+        {
+            return SettingProperties.All(p => !string.IsNullOrEmpty(p.Value));
         }
         private void IdeModel_ModelChanged(object sender, EventArgs e)
         {
@@ -36,7 +43,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         {
             SendChanges();
         }
-        private void SendChanges() => SendModel(new RemoteIDEModel(IdeModel));
+        private void SendChanges()
+        {
+            if (RequiredPropertiesAreSet())
+            {
+                SendModel(new RemoteIDEModel(IdeModel));
+            }
+        }
         protected abstract void SendModel(RemoteIDEModel remoteModel);
         public virtual void Dispose()
         {
