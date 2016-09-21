@@ -20,7 +20,6 @@ namespace TeamCoding.VisualStudio
     {
         private readonly ITextDocumentFactoryService TextDocFactory;
         private readonly IClassifierAggregatorService TextClassifierService;
-        private event EventHandler<CaretPositionChangedEventArgs> DelayedCaretPositionChanged;
 
         [ImportingConstructor]
         public TeamCodingTextViewConnectionListener(ITextDocumentFactoryService textDocumentFactoryService, IClassifierAggregatorService textClassifierService)

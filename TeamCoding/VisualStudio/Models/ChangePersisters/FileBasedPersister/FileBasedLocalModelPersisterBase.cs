@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
     /// Handles sending local IDE model changes to other clients.
     /// Used for debugging. Writes the local model to the current directory, using protobuf.
     /// </summary>
-    public abstract class FileBasedLocalModelPersisterBase : ILocalModelPerisister
+    public abstract class FileBasedLocalModelPersisterBase : LocalModelPersisterBase
     {
         private static readonly string SessionId = Guid.NewGuid().ToString("N");
         protected readonly string PersistenceFileSearchFormat = $"OpenDocs{SessionId}_*.bin";
@@ -26,15 +26,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private CancellationTokenSource FileHeartBeatCancelSource;
         private CancellationToken FileHeartBeatCancelToken;
         public FileBasedLocalModelPersisterBase(LocalIDEModel model)
+            :base(model, TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathProperty)
         {
-            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanging += SharedSettings_FileBasedPersisterPathChanging;
-            TeamCodingPackage.Current.Settings.SharedSettings.FileBasedPersisterPathChanged += IdeModel_ModelChanged;
-
             FileHeartBeatCancelSource = new CancellationTokenSource();
             FileHeartBeatCancelToken = FileHeartBeatCancelSource.Token;
-            IdeModel = model;
-            IdeModel.ModelChanged += IdeModel_ModelChanged;
-
             FileHeartBeatThread = new Thread(() =>
             {
                 while (!FileHeartBeatCancelToken.IsCancellationRequested)
@@ -67,28 +62,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
                     }
                 }
             });
-
             FileHeartBeatThread.Start();
         }
-
-        private void SharedSettings_FileBasedPersisterPathChanging(object sender, EventArgs e)
-        {
-            SendEmpty();
-        }
-        private void IdeModel_ModelChanged(object sender, EventArgs e)
-        {
-            SendChanges();
-        }
-        protected virtual void SendEmpty()
-        {
-            SendIdeModel(new RemoteIDEModel(new LocalIDEModel()));
-        }
-        protected virtual void SendChanges()
-        {
-            SendIdeModel(new RemoteIDEModel(IdeModel));
-        }
-
-        private void SendIdeModel(RemoteIDEModel remoteModel)
+        protected override void SendModel(RemoteIDEModel remoteModel)
         {
             if (!string.IsNullOrEmpty(PersistenceFolderPath))
             {
@@ -108,7 +84,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             FileHeartBeatCancelSource.Cancel();
             FileHeartBeatThread.Join();

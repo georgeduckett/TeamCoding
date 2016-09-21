@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.Options
 {
-    internal class Property<TProperty>
+    public class Property<TProperty>
     {
         private readonly object Owner;
         public Property(object owner) { Owner = owner; }

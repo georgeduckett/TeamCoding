@@ -6,35 +6,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
 using Dapper;
+using TeamCoding.VisualStudio.Models.ChangePersisters;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
 {
-    public class SqlServerLocalModelPersister : ILocalModelPerisister
+    public class SqlServerLocalModelPersister : LocalModelPersisterBase
     {
-        private readonly LocalIDEModel IdeModel;
         private readonly SqlConnectionWrapper ConnectionWrapper;
         public SqlServerLocalModelPersister(SqlConnectionWrapper connectionWrapper, LocalIDEModel model)
+            :base(model, TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionStringProperty)
         {
             ConnectionWrapper = connectionWrapper;
-            IdeModel = model;
-            IdeModel.ModelChanged += IdeModel_ModelChanged;
         }
-        private void IdeModel_ModelChanged(object sender, EventArgs e)
-        {
-            SendChanges();
-        }
-        protected virtual void SendEmpty()
-        {
-            SendIdeModel(new RemoteIDEModel(new LocalIDEModel()));
-        }
-        protected virtual void SendChanges()
-        {
-            SendIdeModel(new RemoteIDEModel(IdeModel));
-        }
-        private void SendIdeModel(RemoteIDEModel remoteModel)
-        {
-            ConnectionWrapper.UpdateModel(remoteModel);
-        }
-        public void Dispose() { }
+        protected override void SendModel(RemoteIDEModel remoteModel) => ConnectionWrapper.UpdateModel(remoteModel);
     }
 }

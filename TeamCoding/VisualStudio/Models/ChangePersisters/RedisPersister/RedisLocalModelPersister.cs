@@ -10,40 +10,20 @@ using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
-    public class RedisLocalModelPersister : ILocalModelPerisister
+    public class RedisLocalModelPersister : LocalModelPersisterBase
     {
-        private readonly LocalIDEModel IdeModel;
         public RedisLocalModelPersister(LocalIDEModel model)
+            :base(model, TeamCodingPackage.Current.Settings.SharedSettings.RedisServerProperty)
         {
-            IdeModel = model;
-            IdeModel.ModelChanged += IdeModel_ModelChanged;
-            TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanged += IdeModel_ModelChanged;
-            TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanging += SharedSettings_RedisServerChanging;
+
         }
-        private void SharedSettings_RedisServerChanging(object sender, EventArgs e)
-        {
-            SendModel(new RemoteIDEModel(new LocalIDEModel()));
-        }
-        private void IdeModel_ModelChanged(object sender, EventArgs e)
-        {
-            SendChanges();
-        }
-        protected virtual void SendChanges()
-        {
-            SendModel(new RemoteIDEModel(IdeModel));
-        }
-        private void SendModel(RemoteIDEModel remoteModel)
+        protected override void SendModel(RemoteIDEModel remoteModel)
         {
             using (var ms = new MemoryStream())
             {
                 ProtoBuf.Serializer.Serialize(ms, remoteModel);
-                TeamCodingPackage.Current.Logger.WriteInformation("Publishing Model");
                 TeamCodingPackage.Current.Redis.Publish(RedisRemoteModelPersister.ModelPersisterChannel, ms.ToArray()).HandleException();
             }
-        }
-        public void Dispose()
-        {
-
         }
     }
 }

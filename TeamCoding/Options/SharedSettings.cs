@@ -11,27 +11,27 @@ namespace TeamCoding.Options
         public string FileBasedPersisterPath { get { return FileBasedPersisterPathProperty.Value; } set { FileBasedPersisterPathProperty.Value = value; } }
         public event EventHandler FileBasedPersisterPathChanged { add { FileBasedPersisterPathProperty.Changed += value; } remove { FileBasedPersisterPathProperty.Changed -= value; } }
         public event EventHandler FileBasedPersisterPathChanging { add { FileBasedPersisterPathProperty.Changing += value; } remove { FileBasedPersisterPathProperty.Changing -= value; } }
-        private readonly Property<string> FileBasedPersisterPathProperty;
+        public readonly Property<string> FileBasedPersisterPathProperty;
         public const string DefaultFileBasedPersisterPath = null;
         public string RedisServer { get { return RedisServerProperty.Value; } set { RedisServerProperty.Value = value; } }
         public event EventHandler RedisServerChanged { add { RedisServerProperty.Changed += value; } remove { RedisServerProperty.Changed -= value; } }
         public event EventHandler RedisServerChanging { add { RedisServerProperty.Changing += value; } remove { RedisServerProperty.Changing -= value; } }
-        private readonly Property<string> RedisServerProperty;
+        public readonly Property<string> RedisServerProperty;
         public const string DefaultRedisServer = null;
         public string SlackToken { get { return SlackTokenProperty.Value; } set { SlackTokenProperty.Value = value; } }
         public event EventHandler SlackTokenChanged { add { SlackTokenProperty.Changed += value; } remove { SlackTokenProperty.Changed -= value; } }
         public event EventHandler SlackTokenChanging { add { SlackTokenProperty.Changing += value; } remove { SlackTokenProperty.Changing -= value; } }
-        private readonly Property<string> SlackTokenProperty;
+        public readonly Property<string> SlackTokenProperty;
         public const string DefaultSlackToken = null;
         public string SlackChannel { get { return SlackChannelProperty.Value; } set { SlackChannelProperty.Value = value; } }
         public event EventHandler SlackChannelChanged { add { SlackChannelProperty.Changed += value; } remove { SlackChannelProperty.Changed -= value; } }
         public event EventHandler SlackChannelChanging { add { SlackChannelProperty.Changing += value; } remove { SlackChannelProperty.Changing -= value; } }
-        private readonly Property<string> SlackChannelProperty;
+        public readonly Property<string> SlackChannelProperty;
         public const string DefaultSlackChannel = null;
         public string SqlServerConnectionString { get { return SqlServerConnectionStringProperty.Value; } set { SqlServerConnectionStringProperty.Value = value; } }
         public event EventHandler SqlServerConnectionStringChanged { add { SqlServerConnectionStringProperty.Changed += value; } remove { SqlServerConnectionStringProperty.Changed -= value; } }
         public event EventHandler SqlServerConnectionStringChanging { add { SqlServerConnectionStringProperty.Changing += value; } remove { SqlServerConnectionStringProperty.Changing -= value; } }
-        private readonly Property<string> SqlServerConnectionStringProperty;
+        public readonly Property<string> SqlServerConnectionStringProperty;
         public const string DefaultSqlServerConnectionString = null;
         public SharedSettings()
         {

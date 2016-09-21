@@ -13,7 +13,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
         protected override string PersistenceFolderPath => Directory.GetCurrentDirectory();
 
         public DebugLocalModelPersister(LocalIDEModel model) : base(model) { }
-        protected override void SendChanges()
+        protected override void SendModel(RemoteIDEModel model)
         {
             if (PersistenceFolderPath != null && Directory.Exists(PersistenceFolderPath))
             {
@@ -26,7 +26,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.DebugPersister
                     }
                 }
             }
-            base.SendChanges();
+            base.SendModel(model);
         }
     }
 }
