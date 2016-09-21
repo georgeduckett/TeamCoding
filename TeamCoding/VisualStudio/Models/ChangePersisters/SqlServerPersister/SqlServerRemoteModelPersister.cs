@@ -27,5 +27,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 }
             }
         }
+        public override void Dispose()
+        {
+            ConnectionWrapper.DataChanged -= ConnectionWrapper_DataChanged;
+            base.Dispose();
+        }
     }
 }
