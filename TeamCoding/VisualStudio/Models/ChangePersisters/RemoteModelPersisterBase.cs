@@ -27,28 +27,31 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         public void OnRemoteModelReceived(RemoteIDEModel remoteModel)
         {
-            if(remoteModel == null)
+            TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
             {
-                ClearRemoteModels();
-                RemoteModelReceived?.Invoke(this, EventArgs.Empty);
-            }
-            else if(remoteModel.Id == LocalIDEModel.Id.Value && !System.Diagnostics.Debugger.IsAttached)
-            {
-                // If the remote model is the same as the local model, then don't process it
-            }
-            else if (remoteModel.OpenFiles.Count == 0)
-            {
-                if (RemoteModels.ContainsKey(remoteModel.Id))
+                if (remoteModel == null)
                 {
-                    RemoteModels.Remove(remoteModel.Id);
+                    ClearRemoteModels();
                     RemoteModelReceived?.Invoke(this, EventArgs.Empty);
                 }
-            }
-            else
-            {
-                RemoteModels[remoteModel.Id] = remoteModel;
-                RemoteModelReceived?.Invoke(this, EventArgs.Empty);
-            }
+                else if (remoteModel.Id == LocalIDEModel.Id.Value && !System.Diagnostics.Debugger.IsAttached)
+                {
+                    // If the remote model is the same as the local model, then don't process it
+                }
+                else if (remoteModel.OpenFiles.Count == 0)
+                {
+                    if (RemoteModels.ContainsKey(remoteModel.Id))
+                    {
+                        RemoteModels.Remove(remoteModel.Id);
+                        RemoteModelReceived?.Invoke(this, EventArgs.Empty);
+                    }
+                }
+                else
+                {
+                    RemoteModels[remoteModel.Id] = remoteModel;
+                    RemoteModelReceived?.Invoke(this, EventArgs.Empty);
+                }
+            });
         }
         public virtual void Dispose() { }
 

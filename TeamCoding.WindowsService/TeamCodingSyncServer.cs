@@ -12,7 +12,7 @@ namespace TeamCoding.WindowsService
 {
     public partial class TeamCodingSyncServer : ServiceBase
     {
-        private const int DefaultPort = 1234;
+        private const int DefaultPort = 8080;
         private Multicaster Multicaster;
         private int Port;
         public TeamCodingSyncServer()

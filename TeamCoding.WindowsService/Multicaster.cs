@@ -20,6 +20,7 @@ namespace TeamCoding.WindowsService
         private readonly Task ServerTask;
         private readonly ConcurrentDictionary<ISocket, byte> ClientSockets = new ConcurrentDictionary<ISocket, byte>();
         private readonly List<Task> ListenTasks = new List<Task>();
+        private ISocket ListenSocket;
         public Multicaster(int listenPort)
         {
             ListenPort = listenPort;
@@ -32,22 +33,41 @@ namespace TeamCoding.WindowsService
         public void ListenForConnections()
         {
             var taskFactory = new TaskFactory();
-            var socket = AweSock.TcpListen(ListenPort);
+            ListenSocket = AweSock.TcpListen(ListenPort);
             while (!CancelToken.IsCancellationRequested)
             {
-                var clientSocket = AweSock.TcpAccept(socket); // TODO: Convert this to non-blocking!
-                ClientSockets.TryAdd(clientSocket, 0);
-                var listenTask = new Task(() => ListenForMessages(clientSocket), TaskCreationOptions.LongRunning);
-                listenTask.ContinueWith(t =>
+                try
                 {
+                    var clientSocket = AweSock.TcpAccept(ListenSocket);
+                    ClientSockets.TryAdd(clientSocket, 0);
+                    var listenTask = new Task(() => ListenForMessages(clientSocket), TaskCreationOptions.LongRunning);
+                    listenTask.ContinueWith(t =>
+                    {
+                        lock (ListenTasks)
+                        {
+                            ListenTasks.Remove(t);
+                        }
+                    }).ConfigureAwait(false);
                     lock (ListenTasks)
                     {
-                        ListenTasks.Remove(t);
+                        ListenTasks.Add(listenTask);
                     }
-                }).ConfigureAwait(false);
-                lock (ListenTasks)
+                }
+                catch (SocketException)
                 {
-                    ListenTasks.Add(listenTask);
+                    if (!CancelToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            // Try and re-connect.
+                            Thread.Sleep(1000);
+                            ListenSocket = AweSock.TcpListen(ListenPort);
+                        }
+                        catch (SocketException)
+                        {
+
+                        }
+                    }
                 }
             }
         }
@@ -60,7 +80,7 @@ namespace TeamCoding.WindowsService
                 Tuple<int, EndPoint> result = null;
                 try
                 {
-                    result = AweSock.ReceiveMessage(socket, receiveBuffer); // TODO: Convert this to non-blocking!
+                    result = AweSock.ReceiveMessage(socket, receiveBuffer);
                 }
                 catch(SocketException)
                 {
@@ -78,7 +98,7 @@ namespace TeamCoding.WindowsService
                     {
                         try
                         {
-                            client.SendMessage(sendBuffer); // TODO: Convert this to non-blocking!
+                            client.SendMessage(sendBuffer);
                         }
                         catch(SocketException)
                         {
@@ -91,6 +111,13 @@ namespace TeamCoding.WindowsService
         public void Dispose()
         {
             CancelTokenSource.Cancel();
+
+            ListenSocket.Close();
+            foreach (var client in ClientSockets.Keys)
+            {
+                client.Close();
+            }
+
             Task.WaitAll(ListenTasks.ToArray());
             ServerTask.Wait();
         }
