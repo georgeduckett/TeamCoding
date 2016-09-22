@@ -72,9 +72,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
                 ASBuffer.ClearBuffer(receiveBuffer);
                 Tuple<int, EndPoint> result = null;
                 result = AweSock.ReceiveMessage(socket, receiveBuffer);
+                ASBuffer.FinalizeBuffer(receiveBuffer);
                 if (result.Item1 == 0) return;
-                
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs() { Message = ASBuffer.Get<byte[]>(receiveBuffer) });
+
+                var length = ASBuffer.Get<short>(receiveBuffer);
+                var bytes = new byte[length];
+                ASBuffer.BlockCopy(ASBuffer.GetBuffer(receiveBuffer), sizeof(short), bytes, 0, length);
+                MessageReceived?.Invoke(this, new MessageReceivedEventArgs() { Message = bytes });
             }
         }
         public void SendModel(RemoteIDEModel model)
@@ -85,9 +89,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
                 {
                     ProtoBuf.Serializer.Serialize(ms, model);
 
-                    var buffer = ASBuffer.New((int)ms.Length);
+                    var buffer = ASBuffer.New((int)ms.Length + sizeof(short));
                     ASBuffer.ClearBuffer(buffer);
-                    ASBuffer.Add(buffer, ms.ToArray());
+                    // TODO: Remove AwesomeSocket and roll my own or find another because of crap like this
+                    ASBuffer.Add(buffer, BitConverter.GetBytes((short)ms.Length).Concat(ms.ToArray()).ToArray());
                     ASBuffer.FinalizeBuffer(buffer);
                     try
                     {

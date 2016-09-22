@@ -40,30 +40,37 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
             SqlHeartBeatCancelSource = new CancellationTokenSource();
             SqlHeartBeatCancelToken = SqlHeartBeatCancelSource.Token;
             RowHeartBeatThread = new Thread(() =>
-            {
+            { // TODO: Make this thread part of the create row watcher
                 while (!SqlHeartBeatCancelToken.IsCancellationRequested)
                 {
-                    try
+                    if (string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
                     {
-                        var UTCNow = DateTime.UtcNow;
-                        var Difference = (UTCNow - LastSqlWriteTime).TotalSeconds;
-                        if (Difference > 60)
-                        { // If there have been no changes in the last minute, update the row again (prevent it being tidied up by others)
-                            using (var connection = GetConnection)
-                            {
-                                connection.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
-                            }
-                            LastSqlWriteTime = UTCNow;
-                            SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
-                        }
-                        else
-                        {
-                            SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * (60 - (int)Difference + 1));
-                        }
+                        Thread.Sleep(1000);
                     }
-                    catch (SqlException)
+                    else
                     {
-                        SqlHeartBeatCancelToken.WaitHandle.WaitOne(10000);
+                        try
+                        {
+                            var UTCNow = DateTime.UtcNow;
+                            var Difference = (UTCNow - LastSqlWriteTime).TotalSeconds;
+                            if (Difference > 60)
+                            { // If there have been no changes in the last minute, update the row again (prevent it being tidied up by others)
+                                using (var connection = GetConnection)
+                                {
+                                    connection.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
+                                }
+                                LastSqlWriteTime = UTCNow;
+                                SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
+                            }
+                            else
+                            {
+                                SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * (60 - (int)Difference + 1));
+                            }
+                        }
+                        catch (SqlException)
+                        {
+                            SqlHeartBeatCancelToken.WaitHandle.WaitOne(10000);
+                        }
                     }
                 }
             });
@@ -95,7 +102,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         public IEnumerable<QueryData> GetData()
         {
             using (var connection = GetConnection)
-            {
+            { // TODO: Handle an invalid / bad connection
                 TableWatcher.DataChanged -= TableWatcher_DataChanged;
 
                 // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
@@ -150,11 +157,13 @@ WHEN NOT MATCHED THEN
             {
                 TableWatcher.DataChanged -= TableWatcher_DataChanged;
             }
-            using(var connection = GetConnection)
+            if (!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
             {
-                connection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
-                // Delete any old sqldependency endpoints to prevent memory leaks
-                connection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
+                using (var connection = GetConnection)
+                {
+                    connection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
+                    // Delete any old sqldependency endpoints to prevent memory leaks
+                    connection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
 DECLARE Conv CURSOR FOR
 SELECT CEP.conversation_handle FROM sys.conversation_endpoints CEP
 WHERE CEP.state = 'DI' or CEP.state = 'CD'
@@ -166,8 +175,10 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 END
 CLOSE Conv;
 DEALLOCATE Conv;");
-                TableWatcher?.Stop();
+                }
             }
+
+            TableWatcher?.Stop();
         }
     }
 }

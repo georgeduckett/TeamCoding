@@ -12,7 +12,7 @@ namespace TeamCoding.WindowsService
 {
     public partial class TeamCodingSyncServer : ServiceBase
     {
-        private const int DefaultPort = 8080;
+        private const int DefaultPort = 23023;
         private Multicaster Multicaster;
         private int Port;
         public TeamCodingSyncServer()
@@ -24,7 +24,7 @@ namespace TeamCoding.WindowsService
         {
             CanPauseAndContinue = CanShutdown = CanHandlePowerEvent = CanStop = true;
 
-            if (args.Length != 0 && !int.TryParse(args?[0], out Port))
+            if (args.Length == 0 || !int.TryParse(args[0], out Port))
             {
                 // TODO: Also read from a config file
                 Port = DefaultPort;

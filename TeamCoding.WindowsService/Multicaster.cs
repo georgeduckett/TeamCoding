@@ -52,6 +52,7 @@ namespace TeamCoding.WindowsService
                     {
                         ListenTasks.Add(listenTask);
                     }
+                    listenTask.Start();
                 }
                 catch (SocketException)
                 {
@@ -91,6 +92,7 @@ namespace TeamCoding.WindowsService
                 }
                 if (result.Item1 == 0) return;
                 var sendBuffer  = ASBuffer.Duplicate(receiveBuffer);
+                ASBuffer.FinalizeBuffer(sendBuffer);
                 
                 foreach (var client in ClientSockets.Keys)
                 {
