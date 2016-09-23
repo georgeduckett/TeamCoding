@@ -23,6 +23,12 @@ namespace TeamCoding.WindowsService
         private ISocket ListenSocket;
         public Multicaster(int listenPort)
         {
+            if (Environment.UserInteractive)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Listening on port {listenPort}.");
+            }
+
             ListenPort = listenPort;
 
             CancelTokenSource = new CancellationTokenSource();
@@ -96,7 +102,9 @@ namespace TeamCoding.WindowsService
                 
                 foreach (var client in ClientSockets.Keys)
                 {
-                    if (client != socket || System.Diagnostics.Debugger.IsAttached)
+#if DEBUG
+                    if (client != socket)
+#endif
                     {
                         try
                         {

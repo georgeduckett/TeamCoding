@@ -21,7 +21,6 @@ namespace TeamCoding.WindowsService
             ServiceName = SyncServerServiceName;
             InitializeComponent();
         }
-        
         protected override void OnStart(string[] args)
         {
             CanPauseAndContinue = CanShutdown = CanHandlePowerEvent = CanStop = true;
@@ -45,7 +44,6 @@ namespace TeamCoding.WindowsService
                 case PowerBroadcastStatus.ResumeCritical:
                 case PowerBroadcastStatus.ResumeSuspend: CreateMulticaster();break;
             }
-
             return true;
         }
         protected override void OnShutdown()

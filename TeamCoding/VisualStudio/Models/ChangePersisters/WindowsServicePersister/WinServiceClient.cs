@@ -66,19 +66,42 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         }
         private void ListenForMessages(ISocket socket)
         {
+            var callbackFired = new ManualResetEventSlim(false);
             var receiveBuffer = ASBuffer.New();
             while (!CancelToken.IsCancellationRequested)
             {
                 ASBuffer.ClearBuffer(receiveBuffer);
                 Tuple<int, EndPoint> result = null;
-                result = AweSock.ReceiveMessage(socket, receiveBuffer);
-                ASBuffer.FinalizeBuffer(receiveBuffer);
-                if (result.Item1 == 0) return;
+                try
+                {
+                    AweSock.ReceiveMessage(socket, receiveBuffer, AwesomeSockets.Domain.SocketCommunicationTypes.NonBlocking, (b, endPoint) =>
+                    {
+                        result = new Tuple<int, EndPoint>(b, endPoint); callbackFired.Set();
+                    });
+                }
+                catch (ArgumentOutOfRangeException)
+                { // Swallow the exception caused by AweSock's construction of an invalid endpoint
 
-                var length = ASBuffer.Get<short>(receiveBuffer);
-                var bytes = new byte[length];
-                ASBuffer.BlockCopy(ASBuffer.GetBuffer(receiveBuffer), sizeof(short), bytes, 0, length);
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs() { Message = bytes });
+                }
+                try
+                {
+                    callbackFired.Wait(CancelToken);
+                }
+                catch (OperationCanceledException)
+                {
+
+                }
+                if (!CancelToken.IsCancellationRequested)
+                {
+                    callbackFired.Reset();
+                    ASBuffer.FinalizeBuffer(receiveBuffer);
+                    if (result.Item1 == 0) return;
+
+                    var length = ASBuffer.Get<short>(receiveBuffer);
+                    var bytes = new byte[length];
+                    ASBuffer.BlockCopy(ASBuffer.GetBuffer(receiveBuffer), sizeof(short), bytes, 0, length);
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs() { Message = bytes });
+                }
             }
         }
         public void SendModel(RemoteIDEModel model)
@@ -98,7 +121,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
                     {
                         Socket.SendMessage(buffer);
                     }
-                    catch (SocketException ex)
+                    catch (Exception ex)
                     {
                         TeamCodingPackage.Current.Logger.WriteError(ex);
                     }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration.Install;
 using System.Linq;
 using System.Reflection;
+using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -14,17 +16,65 @@ namespace TeamCoding.WindowsService
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        static void Main(string[] args)
         {
             if (Environment.UserInteractive)
             {
                 // http://stackoverflow.com/a/9021540
                 // http://stackoverflow.com/questions/4144019/self-install-windows-service-in-net-c-sharp
-                RunInteractive(new[] { new TeamCodingSyncServer() });
+
+                string parameter = string.Concat(args);
+                switch (parameter)
+                {
+                    case "\\i":
+                        if (IsUserAdministrator())
+                        {
+                            ManagedInstallerClass.InstallHelper(new string[] { Assembly.GetExecutingAssembly().Location });
+                        }
+                        else
+                        {
+                            Console.WriteLine("You must run this as an administrator to install the service.");
+                            Console.ReadKey();
+                        }
+                        break;
+                    case "\\u":
+                        if (IsUserAdministrator())
+                        {
+                            ManagedInstallerClass.InstallHelper(new string[] { "/u", Assembly.GetExecutingAssembly().Location });
+                        }
+                        else
+                        {
+                            Console.WriteLine("You must run this as an administrator to uninstall the service.");
+                            Console.ReadKey();
+                        }
+                        break;
+                    case "\\h":
+                    case "\\help":
+                        Console.WriteLine("Use \\i to install as a service, \\u to uninstall as a service, \\h or \\help for this message.");
+                        Console.WriteLine("To install or uninstall as a service you must run as an administrator.");
+                        Console.ReadKey();
+                        break;
+                    default:
+                        Console.WriteLine("No flag or unrecognised argument, running as console application. Use \\h for help.");
+                        RunInteractive(new[] { new TeamCodingSyncServer() });
+                        break;
+                }
+
             }
             else
             { // Ran as a service
                 ServiceBase.Run(new[] { new TeamCodingSyncServer() });
+            }
+        }
+        static bool IsUserAdministrator()
+        {
+            try
+            {
+                return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
             }
         }
         static void RunInteractive(ServiceBase[] servicesToRun)
