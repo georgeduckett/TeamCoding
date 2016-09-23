@@ -18,12 +18,13 @@ namespace TeamCoding.WindowsService
         /// </summary>
         static void Main(string[] args)
         {
-            if (Environment.UserInteractive)
+            string parameter = string.Concat(args).Trim();
+            
+            if (Environment.UserInteractive || parameter == "\\c")
             {
                 // http://stackoverflow.com/a/9021540
                 // http://stackoverflow.com/questions/4144019/self-install-windows-service-in-net-c-sharp
 
-                string parameter = string.Concat(args);
                 switch (parameter)
                 {
                     case "\\i":
@@ -50,12 +51,16 @@ namespace TeamCoding.WindowsService
                         break;
                     case "\\h":
                     case "\\help":
-                        Console.WriteLine("Use \\i to install as a service, \\u to uninstall as a service, \\h or \\help for this message.");
+                        Console.WriteLine("Use \\i to install as a service, \\u to uninstall as a service,");
+                        Console.WriteLine("\\h or \\help for this message.");
+                        Console.WriteLine("If running as a console application using Task Scheduler");
+                        Console.WriteLine("pass \\c to force console mode.");
                         Console.WriteLine("To install or uninstall as a service you must run as an administrator.");
                         Console.ReadKey();
                         break;
                     default:
-                        Console.WriteLine("No flag or unrecognised argument, running as console application. Use \\h for help.");
+                        Console.WriteLine("No flag or unrecognised argument, running as console application.");
+                        Console.WriteLine("Use \\h for help.");
                         RunInteractive(new[] { new TeamCodingSyncServer() });
                         break;
                 }
