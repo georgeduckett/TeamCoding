@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
 {
@@ -27,11 +28,43 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         private const string SelectCommand = "SELECT [Id], [Model], [LastUpdated] FROM [dbo].[TeamCodingSync]";
         public event EventHandler DataChanged;
         private DateTime LastSqlWriteTime = DateTime.UtcNow;
-        private readonly Thread RowHeartBeatThread;
+        private readonly Task RowHeartBeatTask;
         private CancellationTokenSource SqlHeartBeatCancelSource;
         private CancellationToken SqlHeartBeatCancelToken;
         private SqlWatcher TableWatcher;
-        private SqlConnection GetConnection => new SqlConnection(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
+        private SqlConnection GetConnection
+        {
+            get
+            {
+                try
+                {
+                    var con = new SqlConnection(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
+
+                    con.Open();
+                    return con;
+                }
+                catch(Exception ex)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError(ex);
+                    return null;
+                }
+            }
+        }
+        private bool ConnectionStringWorking(string connectionString)
+        {
+            try
+            {
+                using (var con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
         public SqlConnectionWrapper()
         {
             CreateRowWatcher();
@@ -39,7 +72,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
 
             SqlHeartBeatCancelSource = new CancellationTokenSource();
             SqlHeartBeatCancelToken = SqlHeartBeatCancelSource.Token;
-            RowHeartBeatThread = new Thread(() =>
+            RowHeartBeatTask = new Task(() =>
             { // TODO: Make this thread part of the create row watcher
                 while (!SqlHeartBeatCancelToken.IsCancellationRequested)
                 {
@@ -57,7 +90,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                             { // If there have been no changes in the last minute, update the row again (prevent it being tidied up by others)
                                 using (var connection = GetConnection)
                                 {
-                                    connection.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
+                                    connection?.Execute("UPDATE [dbo].[TeamCodingSync] SET LastUpdated = @LastUpdated WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value, LastUpdated = UTCNow });
                                 }
                                 LastSqlWriteTime = UTCNow;
                                 SqlHeartBeatCancelToken.WaitHandle.WaitOne(1000 * 60);
@@ -73,16 +106,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                         }
                     }
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
 
-            RowHeartBeatThread.Start();
+            RowHeartBeatTask.Start();
         }
         private void CreateRowWatcher()
         {
             var sqlServerConnectionString = TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString;
-            if (!string.IsNullOrEmpty(sqlServerConnectionString))
+            if (ConnectionStringWorking(sqlServerConnectionString))
             {
-                SqlDependency.Start(sqlServerConnectionString);
                 TableWatcher = new SqlWatcher(sqlServerConnectionString, SelectCommand);
                 TableWatcher.DataChanged += TableWatcher_DataChanged;
                 TableWatcher.Start();
@@ -106,7 +138,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 TableWatcher.DataChanged -= TableWatcher_DataChanged;
 
                 // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
-                connection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+                connection?.ExecuteWithLogging("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
 
                 TableWatcher.DataChanged += TableWatcher_DataChanged;
 
@@ -116,17 +148,14 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         }
         public void UpdateModel(RemoteIDEModel remoteModel)
         {
-            if (string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString)) return;
-
             using (var ms = new MemoryStream())
             {
                 ProtoBuf.Serializer.Serialize(ms, remoteModel);
                 LastSqlWriteTime = DateTime.UtcNow;
-                try
+                
+                using(var connection = GetConnection)
                 {
-                    using(var connection = GetConnection)
-                    {
-                        connection.Execute(@"MERGE [dbo].[TeamCodingSync] AS target
+                    connection?.ExecuteWithLogging(@"MERGE [dbo].[TeamCodingSync] AS target
 USING (VALUES (@Model, @LastUpdated))
     AS source (Model, LastUpdated)
     ON target.Id = @Id
@@ -137,33 +166,21 @@ WHEN MATCHED THEN
 WHEN NOT MATCHED THEN
     INSERT ( Id, model, LastUpdated)
     VALUES ( @Id,  @Model, @LastUpdated);", new QueryData() { Id = remoteModel.Id, Model = ms.ToArray(), LastUpdated = LastSqlWriteTime });
-                    }
-                }
-                catch (SqlException ex)
-                {
-                    TeamCodingPackage.Current.Logger.WriteError("Failed to create sql row.", ex);
                 }
             }
         }
         public void Dispose()
         {
-            if (!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
+            SqlHeartBeatCancelSource.Cancel();
+            if (ConnectionStringWorking(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
             {
                 SqlDependency.Stop(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
             }
-            SqlHeartBeatCancelSource.Cancel();
-            RowHeartBeatThread.Join();
-            if (TableWatcher != null)
+            using (var connection = GetConnection)
             {
-                TableWatcher.DataChanged -= TableWatcher_DataChanged;
-            }
-            if (!string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
-            {
-                using (var connection = GetConnection)
-                {
-                    connection?.Execute("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
-                    // Delete any old sqldependency endpoints to prevent memory leaks
-                    connection?.Execute(@"DECLARE @ConvHandle uniqueidentifier
+                connection?.ExecuteWithLogging("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
+                // Delete any old sqldependency endpoints to prevent memory leaks
+                connection?.ExecuteWithLogging(@"DECLARE @ConvHandle uniqueidentifier
 DECLARE Conv CURSOR FOR
 SELECT CEP.conversation_handle FROM sys.conversation_endpoints CEP
 WHERE CEP.state = 'DI' or CEP.state = 'CD'
@@ -175,9 +192,12 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 END
 CLOSE Conv;
 DEALLOCATE Conv;");
-                }
             }
-
+            RowHeartBeatTask.Wait();
+            if (TableWatcher != null)
+            {
+                TableWatcher.DataChanged -= TableWatcher_DataChanged;
+            }
             TableWatcher?.Stop();
         }
     }

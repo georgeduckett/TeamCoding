@@ -20,11 +20,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
 
         private ISocket Socket;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
-        private readonly Property<string> IPAddressSetting;
+        private readonly SettingProperty<string> IPAddressSetting;
         private CancellationTokenSource CancelTokenSource;
         private CancellationToken CancelToken;
         private Task ListenTask;
-        public WinServiceClient(Property<string> ipAddressSetting)
+        public WinServiceClient(SettingProperty<string> ipAddressSetting)
         {
             IPAddressSetting = ipAddressSetting;
             IPAddressSetting.Changed += IpAddressSetting_Changed;
@@ -49,7 +49,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         {
             try
             {
-                if (IPAddressSetting.Value?.Contains(':') ?? false)
+                if (IPAddressSetting.IsValid)
                 {
                     Socket = AweSock.TcpConnect(IPAddressSetting.Value.Split(':')[0], int.Parse(IPAddressSetting.Value.Split(':')[1]));
                     ListenForMessages(Socket);

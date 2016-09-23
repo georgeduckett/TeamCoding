@@ -11,8 +11,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     public abstract class LocalModelPersisterBase : ILocalModelPerisister
     {
         private readonly LocalIDEModel IdeModel;
-        private readonly Property<string>[] SettingProperties;
-        public LocalModelPersisterBase(LocalIDEModel model, params Property<string>[] settingProperties)
+        private readonly SettingProperty<string>[] SettingProperties;
+        public LocalModelPersisterBase(LocalIDEModel model, params SettingProperty<string>[] settingProperties)
         {
             SettingProperties = settingProperties;
             IdeModel = model;
@@ -33,7 +33,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         protected virtual bool RequiredPropertiesAreSet()
         {
-            return SettingProperties.All(p => !string.IsNullOrEmpty(p.Value));
+            return SettingProperties.All(p => !string.IsNullOrEmpty(p.Value) && p.IsValid);
         }
         private void IdeModel_ModelChanged(object sender, EventArgs e)
         {

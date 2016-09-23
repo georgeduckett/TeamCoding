@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.Options
 {
-    public class Property<TProperty>
+    public class SettingProperty<TProperty>
     {
         private readonly object Owner;
-        public Property(object owner) { Owner = owner; }
+        private readonly Func<TProperty, bool> IsValidFunc;
+        public SettingProperty(object owner, Func<TProperty, bool> isValidFunc = null) { Owner = owner; IsValidFunc = isValidFunc; }
         private TProperty _Value;
         public TProperty Value
         {
@@ -24,6 +25,7 @@ namespace TeamCoding.Options
                 }
             }
         }
+        public bool IsValid => IsValidFunc == null || IsValidFunc(Value);
         public event EventHandler Changing;
         public event EventHandler Changed;
     }
