@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TeamCoding.Options"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="400">
+             d:DesignHeight="440" d:DesignWidth="400">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <Grid>
+        <Grid Height="440">
             <GroupBox Header="User Settings" Height="152" VerticalAlignment="Top">
                 <Grid>
                     <TextBox x:Name="txtUsername" Margin="111,10,0,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
@@ -38,6 +38,7 @@
                     <TextBox x:Name="txtWinServiceIPAddress" Margin="98,174,0,0" Height="23" VerticalAlignment="Top" Text="{Binding WinServiceIPAddress}" ToolTip="Specify the IP address of the PC running the companion windows service." AutomationProperties.LabeledBy="{Binding ElementName=lblWinServiceIPAddress, Mode=OneWay}"/>
                 </Grid>
             </GroupBox>
+
             <StatusBar VerticalAlignment="Bottom">
                 <StatusBarItem Name="sbiTitle" FontSize="12" FontWeight="Bold"></StatusBarItem>
                 <StatusBarItem Name="sbiDescription" FontSize="12">
