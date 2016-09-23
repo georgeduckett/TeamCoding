@@ -31,22 +31,22 @@ namespace TeamCoding.WindowsService
                         if (IsUserAdministrator())
                         {
                             ManagedInstallerClass.InstallHelper(new string[] { Assembly.GetExecutingAssembly().Location });
+                            return;
                         }
                         else
                         {
                             Console.WriteLine("You must run this as an administrator to install the service.");
-                            Console.ReadKey();
                         }
                         break;
                     case "\\u":
                         if (IsUserAdministrator())
                         {
                             ManagedInstallerClass.InstallHelper(new string[] { "/u", Assembly.GetExecutingAssembly().Location });
+                            return;
                         }
                         else
                         {
                             Console.WriteLine("You must run this as an administrator to uninstall the service.");
-                            Console.ReadKey();
                         }
                         break;
                     case "\\h":
@@ -60,7 +60,6 @@ namespace TeamCoding.WindowsService
                         Console.WriteLine("If running as a console application using Task Scheduler");
                         Console.WriteLine("pass \\c to force console mode.");
                         Console.WriteLine("To install or uninstall as a service you must run as an administrator.");
-                        Console.ReadKey();
                         break;
                     default:
                         Console.WriteLine("No flag or unrecognised argument, running as console application.");
@@ -69,9 +68,13 @@ namespace TeamCoding.WindowsService
                         break;
                 }
 
+                Console.WriteLine();
+                Console.WriteLine("Press any key to exit");
+                Console.ReadKey();
             }
             else
             { // Ran as a service
+                Console.WriteLine("Running services");
                 ServiceBase.Run(new[] { new TeamCodingSyncServer() });
             }
         }
