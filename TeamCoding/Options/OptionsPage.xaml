@@ -35,7 +35,7 @@
                     <Label x:Name="lblSqlServerConnectionString" Content="Sql Server Conn." HorizontalAlignment="Left" Target="{Binding ElementName=txtSqlServerConnectionString, Mode=OneWay}" Margin="0,144,0,0" Height="26" VerticalAlignment="Top"/>
                     <TextBox x:Name="txtSqlServerConnectionString" Margin="98,146,0,0" Height="23" VerticalAlignment="Top" Text="{Binding SqlServerConnectionString}" ToolTip="Set a connection to SQL Server to share your coding sessions. Uses a table called [dbo].[TeamCodingSync] and requires the database to have ENABLE_BROKER set." AutomationProperties.LabeledBy="{Binding ElementName=lblSqlServerConnectionString, Mode=OneWay}"/>
                     <Label x:Name="lblWinServiceIPAddress" Content="Win. Service IP" HorizontalAlignment="Left" Target="{Binding ElementName=txtWinServiceIPAddress, Mode=OneWay}" Margin="0,172,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtWinServiceIPAddress" Margin="98,174,0,0" Height="23" VerticalAlignment="Top" Text="{Binding WinServiceIPAddress}" ToolTip="Specify the IP address of the PC running the companion windows service." AutomationProperties.LabeledBy="{Binding ElementName=lblWinServiceIPAddress, Mode=OneWay}"/>
+                    <TextBox x:Name="txtWinServiceIPAddress" Margin="98,174,0,0" Height="23" VerticalAlignment="Top" Text="{Binding WinServiceIPAddress}" ToolTip="Specify the IP address and port (123.456.789.123:23023) of the PC running the companion windows service. The default port is 23023" AutomationProperties.LabeledBy="{Binding ElementName=lblWinServiceIPAddress, Mode=OneWay}"/>
                 </Grid>
             </GroupBox>
 
