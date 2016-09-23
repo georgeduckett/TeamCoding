@@ -51,8 +51,12 @@ namespace TeamCoding.WindowsService
                         break;
                     case "\\h":
                     case "\\help":
+                    case "-help":
+                    case "-h":
+                    case "--h":
+                    case "--help":
                         Console.WriteLine("Use \\i to install as a service, \\u to uninstall as a service,");
-                        Console.WriteLine("\\h or \\help for this message.");
+                        Console.WriteLine("\\h for this message.");
                         Console.WriteLine("If running as a console application using Task Scheduler");
                         Console.WriteLine("pass \\c to force console mode.");
                         Console.WriteLine("To install or uninstall as a service you must run as an administrator.");
