@@ -18,6 +18,8 @@ namespace TeamCoding.WindowsService
         {
             if (Environment.UserInteractive)
             {
+                // http://stackoverflow.com/a/9021540
+                // http://stackoverflow.com/questions/4144019/self-install-windows-service-in-net-c-sharp
                 RunInteractive(new[] { new TeamCodingSyncServer() });
             }
             else

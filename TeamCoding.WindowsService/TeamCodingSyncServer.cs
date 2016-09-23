@@ -12,11 +12,13 @@ namespace TeamCoding.WindowsService
 {
     public partial class TeamCodingSyncServer : ServiceBase
     {
+        public const string SyncServerServiceName = "TeamCoding Sync";
         private const int DefaultPort = 23023;
         private Multicaster Multicaster;
         private int Port;
         public TeamCodingSyncServer()
         {
+            ServiceName = SyncServerServiceName;
             InitializeComponent();
         }
         
