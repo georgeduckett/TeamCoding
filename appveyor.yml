@@ -12,13 +12,16 @@ before_build:
 build_script:
   - nuget restore -Verbosity quiet
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
-
+  
 after_test:
+  - 7z a TeamCoding.WindowsService.zip %APPVEYOR_BUILD_FOLDER%\\TeamCoding.WindowsService\\bin\\Release\\*.*
+  - ps: Get-ChildItem .\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   - ps: Vsix-PushArtifacts
 # | Vsix-PublishToGallery
 
 #on_finish:
 #  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 
 deploy:
   - provider: Environment

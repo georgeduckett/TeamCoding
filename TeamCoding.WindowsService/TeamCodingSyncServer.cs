@@ -19,12 +19,11 @@ namespace TeamCoding.WindowsService
         public TeamCodingSyncServer()
         {
             ServiceName = SyncServerServiceName;
+            CanPauseAndContinue = CanShutdown = CanHandlePowerEvent = CanStop = true;
             InitializeComponent();
         }
         protected override void OnStart(string[] args)
         {
-            CanPauseAndContinue = CanShutdown = CanHandlePowerEvent = CanStop = true;
-
             if (args.Length == 0 || !int.TryParse(args[0], out Port))
             {
                 // TODO: Also read from a config file

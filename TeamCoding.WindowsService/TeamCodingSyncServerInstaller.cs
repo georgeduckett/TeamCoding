@@ -16,6 +16,7 @@ namespace TeamCoding.WindowsService
         {
             var processInstaller = new ServiceProcessInstaller();
             var serviceInstaller = new ServiceInstaller();
+            serviceInstaller.AfterInstall += ServiceInstaller_AfterInstall;
             
             processInstaller.Account = ServiceAccount.NetworkService;
 
@@ -26,6 +27,14 @@ namespace TeamCoding.WindowsService
             serviceInstaller.ServiceName = TeamCodingSyncServer.SyncServerServiceName;
             Installers.Add(processInstaller);
             Installers.Add(serviceInstaller);
+        }
+
+        private void ServiceInstaller_AfterInstall(object sender, InstallEventArgs e)
+        {
+            using (ServiceController sc = new ServiceController((sender as ServiceInstaller).ServiceName))
+            {
+                sc.Start();
+            }
         }
     }
 }

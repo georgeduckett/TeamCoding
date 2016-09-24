@@ -102,7 +102,7 @@ namespace TeamCoding.WindowsService
                 
                 foreach (var client in ClientSockets.Keys)
                 {
-#if DEBUG
+#if RELEASE
                     if (client != socket)
 #endif
                     {
