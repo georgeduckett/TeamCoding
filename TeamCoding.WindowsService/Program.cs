@@ -27,6 +27,9 @@ namespace TeamCoding.WindowsService
 
                 switch (parameter)
                 {
+                    case "\\c":
+                        Console.WriteLine("\\c passed, running as console application.");
+                        break;
                     case "\\i":
                         if (IsUserAdministrator())
                         {

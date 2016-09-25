@@ -1,0 +1,1 @@
+﻿start TeamCoding.WindowsService "\c"

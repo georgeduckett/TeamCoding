@@ -22,6 +22,12 @@ Define the slack bot token and channel. Messages will be posted to the channel s
   - Create a Slack channel. Click the + next to Channels when in your team's mesage screen. Name the channel and invite the bot created earlier. The channel name (including leading hash) will be what you enter in the Team Coding configuration. You will want to turn off notifications for the channel.
 - **SQL Server**
 Define an SQL Server connection string. This should connect to a database with a [dbo].[TeamCodingSync] table as defined in [SqlServerPersisterCreateScript.sql](https://github.com/georgeduckett/TeamCoding/blob/master/TeamCoding/Resources/SqlServerPersisterCreateScript.sql). Note, the service broker must be enabled for the database.
+- **Windows Service / Console Application**
+Specify the IP address and Port that the service/console app is running on, e.g. 192.168.0.123:23023 The listening port is currently fixed at 23023.
+You can download the service/console app at https://github.com/georgeduckett/TeamCoding/releases, look for the TeamCoding.WindowsService.zip file and extract that on the machine you want to use.
+To run it as a console application you can just run the exe, however if you run it from Windows Task Scheduler you must pass \c as an argument, the RunAsConsole.bat file provided will do that.
+To install or uninstall it as a windows service use the Install.ps1 and Uninstall.ps1 scripts. These will create or clean up a TeamCoding Sync folder in Program Files, and register/deregister the exe as a service.
+To manually register or deregister the service launch the program as an administrator passing \i or \u.
 
 ## User Settings
 
