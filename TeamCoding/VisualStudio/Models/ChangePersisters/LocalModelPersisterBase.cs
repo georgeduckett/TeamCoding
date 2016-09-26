@@ -24,28 +24,34 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 property.Changed += SettingProperty_Changed;
             }
         }
-        private void SettingProperty_Changing(object sender, EventArgs e)
+        private async void SettingProperty_Changing(object sender, EventArgs e)
         {
-            if (RequiredPropertiesAreSet())
+            if (await RequiredPropertiesAreSet())
             {
                 SendModel(new RemoteIDEModel(new LocalIDEModel()));
             }
         }
-        protected virtual bool RequiredPropertiesAreSet()
+        protected virtual async Task<bool> RequiredPropertiesAreSet()
         {
-            return SettingProperties.All(p => !string.IsNullOrEmpty(p.Value) && p.IsValid);
+            if (SettingProperties.Any(p => string.IsNullOrEmpty(p.Value))) return false;
+
+            var propertyTasks = SettingProperties.Select(p => p.IsValidAsync).ToArray();
+
+            await Task.WhenAll(propertyTasks);
+
+            return propertyTasks.Any(pt => !pt.Result);
         }
-        private void IdeModel_ModelChanged(object sender, EventArgs e)
+        private async void IdeModel_ModelChanged(object sender, EventArgs e)
         {
-            SendChanges();
+            await SendChanges();
         }
-        private void SettingProperty_Changed(object sender, EventArgs e)
+        private async void SettingProperty_Changed(object sender, EventArgs e)
         {
-            SendChanges();
+            await SendChanges();
         }
-        private void SendChanges()
+        private async Task SendChanges()
         {
-            if (RequiredPropertiesAreSet())
+            if (await RequiredPropertiesAreSet())
             {
                 SendModel(new RemoteIDEModel(IdeModel));
             }

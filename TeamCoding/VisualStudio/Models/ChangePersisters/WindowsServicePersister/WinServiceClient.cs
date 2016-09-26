@@ -39,17 +39,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         {
             CancelTokenSource = new CancellationTokenSource();
             CancelToken = CancelTokenSource.Token;
-
-            var listenTask = new Task(Listen, TaskCreationOptions.LongRunning);
-            listenTask.Start();
+            var listenTask = Listen();
 
             return listenTask;
         }
-        private void Listen()
+        private async Task Listen()
         {
             try
             {
-                if (IPAddressSetting.IsValid)
+                if (await IPAddressSetting.IsValidAsync)
                 {
                     Socket = AweSock.TcpConnect(IPAddressSetting.Value.Split(':')[0], int.Parse(IPAddressSetting.Value.Split(':')[1]));
                     ListenForMessages(Socket);
@@ -57,7 +55,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
             }
             catch(SocketException)
             {
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
                 if (!CancelToken.IsCancellationRequested)
                 {
                     // TODO: Handle socket exception (try and re-connect after a while?)
@@ -128,6 +126,30 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
                 }
             }
         }
+        public static Task<string> GetIPSettingErrorText(string ipSetting)
+        {
+            IPAddress tmpIP;
+            int tmpInt;
+            var split = ipSetting.Split(':');
+
+            if (split.Length != 2)
+            {
+                return Task.FromResult("Port missing, use the format IPAddress:Port");
+            }
+            else if (!IPAddress.TryParse(split[0], out tmpIP))
+            {
+                return Task.FromResult("IP address could not be parsed");
+            }
+            else if (!int.TryParse(split[1], out tmpInt))
+            {
+                return Task.FromResult("Port could not be parsed");
+            }
+            else
+            {
+                // TODO: Actually do a test send/receive for testing the win service setting
+                return Task.FromResult<string>(null);
+            }
+        }
         private void Disconnect()
         {
             Socket?.Close();
@@ -137,7 +159,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         public void Dispose()
         {
             Disconnect();
-            // TODO: Close the connection
             IPAddressSetting.Changed -= IpAddressSetting_Changed;
         }
     }

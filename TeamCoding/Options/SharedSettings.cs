@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister;
+using TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersister;
 
 namespace TeamCoding.Options
 {
@@ -40,31 +45,23 @@ namespace TeamCoding.Options
         public const string DefaultWinServiceIPAddress = null;
         public SharedSettings()
         {
-            FileBasedPersisterPathProperty = new SettingProperty<string>(this, (v) => System.IO.Directory.Exists(v));
+            FileBasedPersisterPathProperty = new SettingProperty<string>(this, SharedFolderLocalModelPersister.FolderPathIsValid);
             FileBasedPersisterPathProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(FileBasedPersisterPath)}: {FileBasedPersisterPath}");
 
-            RedisServerProperty = new SettingProperty<string>(this);
+            RedisServerProperty = new SettingProperty<string>(this, RedisWrapper.GetServerStringErrorText);
             RedisServerProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(RedisServer)}: {RedisServer}");
 
-            SlackTokenProperty = new SettingProperty<string>(this);
+            SlackTokenProperty = new SettingProperty<string>(this, SlackWrapper.SlackTokenIsValid);
             SlackTokenProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackToken)}: {SlackToken}");
 
-            SlackChannelProperty = new SettingProperty<string>(this, (v) => v.StartsWith("#"));
+            SlackChannelProperty = new SettingProperty<string>(this, SlackWrapper.SlackChannelIsValid);
             SlackChannelProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackChannel)}: {SlackChannel}");
 
-            SqlServerConnectionStringProperty = new SettingProperty<string>(this);
+            SqlServerConnectionStringProperty = new SettingProperty<string>(this, SqlConnectionWrapper.GetConnectionStringErrorText);
             SqlServerConnectionStringProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SqlServerConnectionString)}: {SqlServerConnectionString}");
 
-            WinServiceIPAddressProperty = new SettingProperty<string>(this, ValidateIPString);
+            WinServiceIPAddressProperty = new SettingProperty<string>(this, WinServiceClient.GetIPSettingErrorText);
             WinServiceIPAddressProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(WinServiceIPAddress)}: {WinServiceIPAddress}");
-        }
-        private bool ValidateIPString(string value)
-        {
-            System.Net.IPAddress tmpIP;
-            int tmpInt;
-            var split = value.Split(':');
-
-            return split.Length == 2 && System.Net.IPAddress.TryParse(split[0], out tmpIP) && int.TryParse(split[1], out tmpInt);
         }
     }
 }

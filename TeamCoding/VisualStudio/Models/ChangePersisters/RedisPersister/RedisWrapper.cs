@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TeamCoding.Extensions;
 
@@ -28,6 +29,49 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
         {
             ConnectTask = ChangeRedisServer();
+        }
+        public static async Task<string> GetServerStringErrorText(string serverString)
+        {
+            if (string.IsNullOrWhiteSpace(serverString))
+            {
+                return "Server cannot be purely whitespace";
+            }
+            using(var redisClient = await ConnectionMultiplexer.ConnectAsync(serverString))
+            {
+                if (!redisClient.IsConnected)
+                {
+                    return "Could not connect to redis server";
+                }
+
+                var subscribeTriggerEvent = new ManualResetEventSlim();
+                const string testChannel = "TeamCoding.RedisWrapper.Test";
+                var testValue = "test" + DateTime.UtcNow.ToString();
+                string receivedValue = null;
+                await redisClient.GetSubscriber().SubscribeAsync(testChannel, (c, v) =>
+                {
+                    if(v.ToString() != testValue)
+                    {
+                        receivedValue = v.ToString();
+                    }
+                    subscribeTriggerEvent.Set();
+                });
+
+                await redisClient.GetSubscriber().PublishAsync(testChannel, testValue);
+
+                if (subscribeTriggerEvent.Wait(5000))
+                {
+                    if(receivedValue != null)
+                    {
+                        return $"Value recieved did not match value sent.{Environment.NewLine}Sent: {testValue}{Environment.NewLine}Received {receivedValue}";
+                    }
+                }
+                else
+                {
+                    return "Could not send and receive test message after 5 seconds";
+                }
+            }
+
+            return null;
         }
         private async Task ConnectRedis()
         {

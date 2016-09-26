@@ -26,6 +26,18 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
         }
 
         private const string SelectCommand = "SELECT [Id], [Model], [LastUpdated] FROM [dbo].[TeamCodingSync]";
+        private const string MergeQuery = @"MERGE [dbo].[TeamCodingSync] AS target
+USING (VALUES (@Model, @LastUpdated))
+    AS source (Model, LastUpdated)
+    ON target.Id = @Id
+WHEN MATCHED THEN
+    UPDATE
+    set Model = source.Model,
+        LastUpdated = source.LastUpdated
+WHEN NOT MATCHED THEN
+    INSERT ( Id, model, LastUpdated)
+    VALUES ( @Id,  @Model, @LastUpdated);";
+
         public event EventHandler DataChanged;
         private DateTime LastSqlWriteTime = DateTime.UtcNow;
         private readonly Task RowHeartBeatTask;
@@ -64,6 +76,58 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 return false;
             }
             return true;
+        }
+        public static async Task<string> GetConnectionStringErrorText(string connectionString)
+        {
+            try
+            {
+                using (var con = new SqlConnection(connectionString))
+                {
+                    await con.OpenAsync();
+
+                    var id = "TEST_" + DateTime.UtcNow.ToString();
+
+                    try
+                    {
+                        if(con.Execute(MergeQuery, new { Id = id, Model = (byte[])null, DateTime.UtcNow }) != 1)
+                        {
+                            return "Failed to create an entry in the table; execute command didn't add a single row";
+                        }
+                        
+                    }
+                    catch(Exception ex)
+                    {
+                        return "Failed to create an entry in the table." + Environment.NewLine + Environment.NewLine + ex.ToString();
+                    }
+
+                    try
+                    {
+                        var result = con.Query<QueryData>("SELECT [Id], [Model], [LastUpdated] FROM[dbo].[TeamCodingSync] WHERE [Id] = @Id", new { Id = id }).ToArray();
+
+                        if(result.Length == 0)
+                        {
+                            return "Failed to read the test row in the table; query returned no rows.";
+                        }
+                        else if(result.Length != 1)
+                        {
+                            return "Failed to read the test row in the table; query returned multiple rows.";
+                        }
+                        else if(result.Single().Id != id)
+                        {
+                            return "Failed to read the test row in the table; Read id did not match.";
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        return "Failed to read the test row in the table." + Environment.NewLine + Environment.NewLine + ex.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Could not connect using the connection string" + Environment.NewLine + Environment.NewLine + ex.ToString();
+            }
+            return null;
         }
         public SqlConnectionWrapper()
         {
@@ -155,17 +219,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
                 
                 using(var connection = GetConnection)
                 {
-                    connection?.ExecuteWithLogging(@"MERGE [dbo].[TeamCodingSync] AS target
-USING (VALUES (@Model, @LastUpdated))
-    AS source (Model, LastUpdated)
-    ON target.Id = @Id
-WHEN MATCHED THEN
-    UPDATE
-    set Model = source.Model,
-        LastUpdated = source.LastUpdated
-WHEN NOT MATCHED THEN
-    INSERT ( Id, model, LastUpdated)
-    VALUES ( @Id,  @Model, @LastUpdated);", new QueryData() { Id = remoteModel.Id, Model = ms.ToArray(), LastUpdated = LastSqlWriteTime });
+                    connection?.ExecuteWithLogging(MergeQuery, new QueryData() { Id = remoteModel.Id, Model = ms.ToArray(), LastUpdated = LastSqlWriteTime });
                 }
             }
         }

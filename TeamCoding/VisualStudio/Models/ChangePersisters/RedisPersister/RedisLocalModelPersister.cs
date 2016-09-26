@@ -12,11 +12,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
     public class RedisLocalModelPersister : LocalModelPersisterBase
     {
-        public RedisLocalModelPersister(LocalIDEModel model)
-            :base(model, TeamCodingPackage.Current.Settings.SharedSettings.RedisServerProperty)
-        {
-
-        }
+        public RedisLocalModelPersister(LocalIDEModel model) : base(model, TeamCodingPackage.Current.Settings.SharedSettings.RedisServerProperty) { }
         protected override void SendModel(RemoteIDEModel remoteModel)
         {
             using (var ms = new MemoryStream())

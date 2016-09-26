@@ -123,6 +123,21 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
             }
             return Task.CompletedTask;
         }
+        public static Task<string> SlackTokenIsValid(string slackToken)
+        {
+            // TODO: Check the token is in the correct format
+            // TODO: Actually do a send/receive (with updated properties)
+            return Task.FromResult<string>(null);
+        }
+        public static Task<string> SlackChannelIsValid(string slackChannel)
+        {
+            if (!slackChannel.StartsWith("#"))
+            {
+                return Task.FromResult("Channel must start with a #");
+            }
+
+            return Task.FromResult<string>(null);
+        }
         private void ResetSlack()
         {
             if (SlackClient != null)

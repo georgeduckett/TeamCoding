@@ -122,13 +122,16 @@ namespace TeamCoding.WindowsService
         {
             CancelTokenSource.Cancel();
 
-            ListenSocket.Close();
+            ListenSocket?.Close();
             foreach (var client in ClientSockets.Keys)
             {
                 client.Close();
             }
 
-            Task.WaitAll(ListenTasks.ToArray());
+            if (ListenTasks.Count != 0)
+            {
+                Task.WaitAll(ListenTasks.ToArray());
+            }
             ServerTask.Wait();
         }
     }

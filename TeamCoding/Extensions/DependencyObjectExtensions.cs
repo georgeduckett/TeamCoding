@@ -98,7 +98,7 @@ namespace TeamCoding.Extensions
         }
 
         public static IEnumerable<T> FindChildren<T>(this DependencyObject parent) where T : DependencyObject => FindChildren(parent, p => p is T).Cast<T>();
-        public static T FindChild<T>(this DependencyObject parent) where T : DependencyObject => (T)FindChild(parent, p => p is T);
+        public static T FindChild<T>(this DependencyObject parent, Func<T, bool> predicate = null) where T : DependencyObject => (T)FindChild(parent, p => p is T && (predicate == null || predicate(p as T)));
         public static DependencyObject FindChild(this DependencyObject parent, Func<DependencyObject, bool> predicate) => FindChildren(parent, predicate).FirstOrDefault();
     }
 }

@@ -9,8 +9,8 @@ namespace TeamCoding.Options
     public class SettingProperty<TProperty>
     {
         private readonly object Owner;
-        private readonly Func<TProperty, bool> IsValidFunc;
-        public SettingProperty(object owner, Func<TProperty, bool> isValidFunc = null) { Owner = owner; IsValidFunc = isValidFunc; }
+        private readonly Func<TProperty, Task<string>> InvalidReasonFunc;
+        public SettingProperty(object owner, Func<TProperty, Task<string>> invalidReasonFunc = null) { Owner = owner; InvalidReasonFunc = invalidReasonFunc; }
         private TProperty _Value;
         public TProperty Value
         {
@@ -25,7 +25,8 @@ namespace TeamCoding.Options
                 }
             }
         }
-        public bool IsValid => IsValidFunc == null || IsValidFunc(Value);
+        public Task<bool> IsValidAsync => GetNewValueInvalidReasonAsync(Value).ContinueWith(t => t.Result == null);
+        public Task<string> GetNewValueInvalidReasonAsync(TProperty newValue) => InvalidReasonFunc == null ? Task.FromResult<string>(null) : InvalidReasonFunc(newValue);
         public event EventHandler Changing;
         public event EventHandler Changed;
     }

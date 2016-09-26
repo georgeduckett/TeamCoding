@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -25,6 +26,8 @@ namespace TeamCoding.Options
         public const string chkUsingJsonSettingsCaption = "Using " + Settings.TeamCodingConfigFileName;
         public const string cmdShowJsonExampleCaption = "Show example " + Settings.TeamCodingConfigFileName;
 
+        private readonly Dictionary<TextBox, CancellationTokenSource> TextBoxIsValidTaskCancelSources = new Dictionary<TextBox, CancellationTokenSource>();
+
         public OptionsPage(OptionPageGrid optionPageGrid)
         {
             InitializeComponent();
@@ -41,8 +44,79 @@ namespace TeamCoding.Options
                 comboBox.LostKeyboardFocus += ComboBox_LostKeyboardFocus;
             }
 
+            foreach(var textBox in grpPersistence.FindChildren<TextBox>())
+            {
+                var bindingPath = (textBox).GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+                
+                if(bindingPath != null)
+                {
+                    TextBoxIsValidTaskCancelSources.Add(textBox, new CancellationTokenSource());
+                    textBox.LostKeyboardFocus += PersistencePropertyBoundTextBox_KeyboardLostFocus;
+                    textBox.TextChanged += PersistencePropertyBoundTextBox_KeyboardLostFocus_TextChanged;
+                }
+            }
+
             Loaded += OptionsPage_Loaded;
         }
+
+        private void PersistencePropertyBoundTextBox_KeyboardLostFocus_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            var bindingPath = textBox.GetBindingExpression(TextBox.TextProperty).ParentBinding.Path.Path;
+            
+            var textBlock = (TextBlock)FindName("tb" + bindingPath);
+            textBlock.Text = null;
+            textBlock.ToolTip = null;
+        }
+
+        private void PersistencePropertyBoundTextBox_KeyboardLostFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+
+            // Cancel any existing tasks to see if the new setting property is valid (since we're changing it anyway)
+            TextBoxIsValidTaskCancelSources[textBox].Cancel();
+
+            var bindingPath = textBox.GetBindingExpression(TextBox.TextProperty).ParentBinding.Path.Path;
+
+            var textBlock = (TextBlock)FindName("tb" + bindingPath);
+            if (string.IsNullOrEmpty(textBox.Text))
+            {
+                textBlock.Text = null;
+                textBlock.ToolTip = null;
+            }
+            else
+            {
+                textBlock.Foreground = Brushes.Black;
+                textBlock.Text = "⏳";
+                textBlock.ToolTip = "Checking configuration value...";
+                var settingProperty = (SettingProperty<string>)typeof(SharedSettings).GetField(bindingPath + "Property").GetValue(TeamCodingPackage.Current.Settings.SharedSettings);
+
+                // Add a new token to the dictionary to use with this task we're about to create
+                TextBoxIsValidTaskCancelSources[textBox] = new CancellationTokenSource();
+                var isValidNewValueTask = settingProperty.GetNewValueInvalidReasonAsync(textBox.Text).ContinueWith((t) =>
+                {
+                    if (t.Exception != null)
+                    {
+                        textBlock.Foreground = Brushes.Red;
+                        textBlock.Text = "❌";
+                        textBlock.ToolTip = "An exception occurred checking the setting" + Environment.NewLine + Environment.NewLine + t.Exception.InnerException.ToString();
+                    }
+                    else if (t.Result == null)
+                    {
+                        textBlock.Foreground = Brushes.Green;
+                        textBlock.Text = "✓";
+                        textBlock.ToolTip = null;
+                    }
+                    else
+                    {
+                        textBlock.Foreground = Brushes.Red;
+                        textBlock.Text = "❌";
+                        textBlock.ToolTip = t.Result;
+                    }
+                }, TextBoxIsValidTaskCancelSources[textBox].Token, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
+            }
+        }
+
         private void OptionsPage_Loaded(object sender, RoutedEventArgs e)
         {
             var loadedFromFile = TeamCodingPackage.Current?.Settings?.LoadFromJsonFile() ?? false;
