@@ -52,14 +52,13 @@ namespace TeamCoding.Options
                 {
                     TextBoxIsValidTaskCancelSources.Add(textBox, new CancellationTokenSource());
                     textBox.LostKeyboardFocus += PersistencePropertyBoundTextBox_KeyboardLostFocus;
-                    textBox.TextChanged += PersistencePropertyBoundTextBox_KeyboardLostFocus_TextChanged;
+                    textBox.TextChanged += PersistencePropertyBoundTextBox_TextChanged;
                 }
             }
 
             Loaded += OptionsPage_Loaded;
         }
-
-        private void PersistencePropertyBoundTextBox_KeyboardLostFocus_TextChanged(object sender, TextChangedEventArgs e)
+        private void PersistencePropertyBoundTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
             var bindingPath = textBox.GetBindingExpression(TextBox.TextProperty).ParentBinding.Path.Path;
@@ -68,11 +67,14 @@ namespace TeamCoding.Options
             textBlock.Text = null;
             textBlock.ToolTip = null;
         }
-
         private void PersistencePropertyBoundTextBox_KeyboardLostFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
+            ReEvaluateTextboxSetting(textBox);
+        }
 
+        private void ReEvaluateTextboxSetting(TextBox textBox)
+        {
             // Cancel any existing tasks to see if the new setting property is valid (since we're changing it anyway)
             TextBoxIsValidTaskCancelSources[textBox].Cancel();
 
@@ -127,6 +129,16 @@ namespace TeamCoding.Options
             }
 
             chkUsingJsonSettings.IsChecked = loadedFromFile;
+
+            foreach (var textBox in grpPersistence.FindChildren<TextBox>())
+            {
+                var bindingPath = (textBox).GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+
+                if (bindingPath != null)
+                {
+                    ReEvaluateTextboxSetting(textBox);
+                }
+            }
         }
         private void Control_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
