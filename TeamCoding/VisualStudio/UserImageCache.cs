@@ -62,7 +62,7 @@ namespace TeamCoding.VisualStudio
             SetTextAndColour(grid, userIdentity, displaySetting);
             if (userIdentity.ImageUrl != null && displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
-                ThreadHelper.JoinableTaskFactory.Run(async () =>
+                ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     try
                     {
