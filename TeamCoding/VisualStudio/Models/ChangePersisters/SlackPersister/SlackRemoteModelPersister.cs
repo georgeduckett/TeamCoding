@@ -19,27 +19,33 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         }
         private void Slack_RemoteModelReceived(SlackMessage message)
         {
-            // TODO: Handle an invalid message being received
-            var receivedMessage = Newtonsoft.Json.JsonConvert.DeserializeObject<BotMessage>(message.RawData);
-
-            var receivedModel = TeamCodingPackage.Current.ObjectSlackMessageConverter.ToIdeModel(receivedMessage);
-
-            receivedModel.IDEUserIdentity.ImageUrl = receivedModel.IDEUserIdentity.ImageUrl.TrimStart('<').TrimEnd('>');
-            if (receivedModel.IDEUserIdentity.DisplayName.Contains("|"))
+            try
             {
-                receivedModel.IDEUserIdentity.DisplayName = receivedModel.IDEUserIdentity.DisplayName.Substring(receivedModel.IDEUserIdentity.DisplayName.IndexOf('|') + 1).TrimEnd('>');
-            }
-            if (receivedModel.IDEUserIdentity.Id.Contains("|"))
-            {
-                receivedModel.IDEUserIdentity.Id = receivedModel.IDEUserIdentity.Id.Substring(receivedModel.IDEUserIdentity.Id.IndexOf('|') + 1).TrimEnd('>');
-            }
+                var receivedMessage = Newtonsoft.Json.JsonConvert.DeserializeObject<BotMessage>(message.RawData);
 
-            foreach (var openFile in receivedModel.OpenFiles)
-            {
-                openFile.RepoUrl = openFile.RepoUrl.TrimStart('<').TrimEnd('>');
-            }
+                var receivedModel = TeamCodingPackage.Current.ObjectSlackMessageConverter.ToIdeModel(receivedMessage);
 
-            OnRemoteModelReceived(receivedModel);
+                receivedModel.IDEUserIdentity.ImageUrl = receivedModel.IDEUserIdentity.ImageUrl.TrimStart('<').TrimEnd('>');
+                if (receivedModel.IDEUserIdentity.DisplayName.Contains("|"))
+                {
+                    receivedModel.IDEUserIdentity.DisplayName = receivedModel.IDEUserIdentity.DisplayName.Substring(receivedModel.IDEUserIdentity.DisplayName.IndexOf('|') + 1).TrimEnd('>');
+                }
+                if (receivedModel.IDEUserIdentity.Id.Contains("|"))
+                {
+                    receivedModel.IDEUserIdentity.Id = receivedModel.IDEUserIdentity.Id.Substring(receivedModel.IDEUserIdentity.Id.IndexOf('|') + 1).TrimEnd('>');
+                }
+
+                foreach (var openFile in receivedModel.OpenFiles)
+                {
+                    openFile.RepoUrl = openFile.RepoUrl.TrimStart('<').TrimEnd('>');
+                }
+
+                OnRemoteModelReceived(receivedModel);
+            }
+            catch(Exception ex)
+            {
+                TeamCodingPackage.Current.Logger.WriteError("Error parsing Slack Message", ex);
+            }
         }
         
 

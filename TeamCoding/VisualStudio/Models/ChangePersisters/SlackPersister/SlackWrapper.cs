@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TeamCoding.Extensions;
 
@@ -125,7 +126,12 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         }
         public static Task<string> SlackTokenIsValid(string slackToken)
         {
-            // TODO: Check the token is in the correct format
+            const string tokenRegex = "$xoxb-\\d{11}-[a-zA-Z\\d]{24}^";
+            if (!Regex.IsMatch(slackToken, tokenRegex))
+            {
+                Task.FromResult<string>("Token is not in the correct format, expected to conform to RegEx: " + tokenRegex);
+            }
+            
             // TODO: Actually do a send/receive (with updated properties)
             return Task.FromResult<string>(null);
         }

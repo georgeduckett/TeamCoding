@@ -33,7 +33,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
                 TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
                 return null;
             }
-
+            
             var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
             return new DocumentRepoMetaData()
             { // TODO: Populate the branch property
