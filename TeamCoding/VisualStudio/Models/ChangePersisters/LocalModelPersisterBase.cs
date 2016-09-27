@@ -51,7 +51,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         private async Task SendChanges()
         {
-            if (await RequiredPropertiesAreSet())
+            if (!await RequiredPropertiesAreSet())
             {
                 SendModel(new RemoteIDEModel(IdeModel));
             }
