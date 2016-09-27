@@ -39,7 +39,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
 
             await Task.WhenAll(propertyTasks);
 
-            return propertyTasks.Any(pt => !pt.Result);
+            return propertyTasks.All(pt => pt.Result);
         }
         private async void IdeModel_ModelChanged(object sender, EventArgs e)
         {
@@ -51,7 +51,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         private async Task SendChanges()
         {
-            if (!await RequiredPropertiesAreSet())
+            if (await RequiredPropertiesAreSet())
             {
                 SendModel(new RemoteIDEModel(IdeModel));
             }
