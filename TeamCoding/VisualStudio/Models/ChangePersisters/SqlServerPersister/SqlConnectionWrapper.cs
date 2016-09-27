@@ -244,12 +244,11 @@ WHEN NOT MATCHED THEN
             if (ConnectionStringWorking(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
             {
                 SqlDependency.Stop(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
-            }
-            using (var connection = GetConnection)
-            {
-                connection?.ExecuteWithLogging("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
-                // Delete any old sqldependency endpoints to prevent memory leaks
-                connection?.ExecuteWithLogging(@"DECLARE @ConvHandle uniqueidentifier
+                using (var connection = GetConnection)
+                {
+                    connection?.ExecuteWithLogging("DELETE FROM [dbo].[TeamCodingSync] WHERE Id = @Id", new { Id = LocalIDEModel.Id.Value });
+                    // Delete any old sqldependency endpoints to prevent memory leaks
+                    connection?.ExecuteWithLogging(@"DECLARE @ConvHandle uniqueidentifier
 DECLARE Conv CURSOR FOR
 SELECT CEP.conversation_handle FROM sys.conversation_endpoints CEP
 WHERE CEP.state = 'DI' or CEP.state = 'CD'
@@ -261,6 +260,7 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 END
 CLOSE Conv;
 DEALLOCATE Conv;");
+                }
             }
             RowHeartBeatTask.Wait();
             if (TableWatcher != null)
