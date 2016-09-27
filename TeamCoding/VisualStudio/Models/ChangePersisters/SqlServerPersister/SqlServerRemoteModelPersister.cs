@@ -17,7 +17,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister
             ConnectionWrapper.DataChanged += ConnectionWrapper_DataChanged;
         }
         private void ConnectionWrapper_DataChanged(object sender, EventArgs e)
-        { // TODO: Handle clearing connection string
+        {
             ClearRemoteModels();
             foreach(var queryData in ConnectionWrapper.GetData())
             {

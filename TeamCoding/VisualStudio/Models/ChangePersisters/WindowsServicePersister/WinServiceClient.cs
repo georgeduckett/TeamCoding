@@ -129,7 +129,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         public static Task<string> GetIPSettingErrorText(string ipSetting)
         {
             IPAddress tmpIP;
-            int tmpInt;
+            int port;
             var split = ipSetting.Split(':');
 
             if (split.Length != 2)
@@ -140,9 +140,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
             {
                 return Task.FromResult("IP address could not be parsed");
             }
-            else if (!int.TryParse(split[1], out tmpInt))
+            else if (!int.TryParse(split[1], out port))
             {
                 return Task.FromResult("Port could not be parsed");
+            }
+            else if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
+            {
+                return Task.FromResult($"Port out of expected range ({IPEndPoint.MinPort} - {IPEndPoint.MaxPort})");
             }
             else
             {

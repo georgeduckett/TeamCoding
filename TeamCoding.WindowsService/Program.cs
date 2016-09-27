@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace TeamCoding.WindowsService
 {
-    static class Program // TODO: Generate the install file for the service (as well as exe?) Add that to deployable assets in appveyor
+    static class Program
     {
         /// <summary>
         /// The main entry point for the application.

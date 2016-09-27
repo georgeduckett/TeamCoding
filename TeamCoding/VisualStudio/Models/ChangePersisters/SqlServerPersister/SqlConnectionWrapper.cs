@@ -199,15 +199,30 @@ WHEN NOT MATCHED THEN
         {
             using (var connection = GetConnection)
             { // TODO: Handle an invalid / bad connection
-                TableWatcher.DataChanged -= TableWatcher_DataChanged;
+                if (connection == null)
+                {
+                    return Enumerable.Empty<QueryData>();
+                }
+                else
+                {
+                    try
+                    {
+                        TableWatcher.DataChanged -= TableWatcher_DataChanged;
 
-                // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
-                connection?.ExecuteWithLogging("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
+                        // Delete rows older than 90 seconds to clean up orphaned rows (VS crashes etc)
+                        connection?.ExecuteWithLogging("DELETE FROM [dbo].[TeamCodingSync] WHERE DATEDIFF(SECOND, [LastUpdated], GETUTCDATE()) > 90");
 
-                TableWatcher.DataChanged += TableWatcher_DataChanged;
+                        TableWatcher.DataChanged += TableWatcher_DataChanged;
 
-                // Get the data
-                return connection.Query<QueryData>(SelectCommand, new { Id = LocalIDEModel.Id.Value });
+                        // Get the data
+                        return connection.Query<QueryData>(SelectCommand, new { Id = LocalIDEModel.Id.Value });
+                    }
+                    catch(Exception ex)
+                    {
+                        TeamCodingPackage.Current.Logger.WriteError("Unable to get data", ex);
+                        return Enumerable.Empty<QueryData>();
+                    }
+                }
             }
         }
         public void UpdateModel(RemoteIDEModel remoteModel)
