@@ -20,7 +20,7 @@ For more details regarding the different user and shared options, see [Settings.
 This will be made public to your team. It uses Gravatar to get a user image from the email address.
 
 **Roadmap:** Still very much alpha, please report bugs as [GitHub issues](https://github.com/georgeduckett/TeamCoding/issues).
-Currently sharing options are a shared folder, Redis, Slack, an SQL Server table or via a server application as a windows service or console application. If you want others (along with any other feature requests) please raise them as issues. Supports Git repos and Team Foundation Services / Visual Studio Online for determining what to share. In the pipeline a shared-coding experience (multiple users editing the same document(s)).
+Currently sharing options are a shared folder, Redis, Slack, an SQL Server table or via a server application as a windows service or console application. If you want others (along with any other feature requests) please raise them as issues. Supports Git repos and Team Foundation Services / Visual Studio Online for determining what to share as well as a fall-back to sharing purely based on matching solution filenames. In the pipeline a shared-coding experience (multiple users editing the same document(s)).
 
 **Reporting Bugs**: When reporting bugs ([here](https://github.com/georgeduckett/TeamCoding/issues)) please include information from the `Team Coding` tab in the output window (if relevent). If there were any exceptions they should be visible there, which can help track down the cause.
 
