@@ -37,6 +37,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
             var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
             return new DocumentRepoMetaData()
             { // TODO: Populate the branch property
+                RepoProvider = nameof(TeamFoundationServiceRepository),
                 RelativePath = serverItem,
                 LastActioned = DateTime.UtcNow,
                 RepoUrl = workspaceInfo.ServerUri.ToString(),

@@ -9,6 +9,8 @@ namespace TeamCoding.Documents
     [ProtoBuf.ProtoContract]
     public class DocumentRepoMetaData
     {
+        [ProtoBuf.ProtoIgnore]
+        public string RepoProvider { get; set; }
         [ProtoBuf.ProtoContract]
         public class CaretInfo
         {

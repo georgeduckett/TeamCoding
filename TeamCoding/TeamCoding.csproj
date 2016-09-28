@@ -73,6 +73,7 @@
     <Compile Include="CredentialManagement\NativeMethods.cs" />
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
     <Compile Include="Documents\SourceControlRepositories\CachedSourceControlRepository.cs" />
+    <Compile Include="Documents\SourceControlRepositories\SolutionNameBasedRepository.cs" />
     <Compile Include="Events\CombinedEvent.cs" />
     <Compile Include="Events\DelayedEvent.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />

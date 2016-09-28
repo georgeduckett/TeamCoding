@@ -26,7 +26,7 @@ namespace TeamCoding.VisualStudio
         private readonly EnvDTE.WindowEvents WindowEvents;
         private readonly Visual WpfMainWindow;
         private readonly EnvDTE.DTE DTE;
-
+        public string SolutionFilePath => DTE?.Solution?.FullName;
         public IDEWrapper(EnvDTE.DTE dte)
         {
             DTE = dte;

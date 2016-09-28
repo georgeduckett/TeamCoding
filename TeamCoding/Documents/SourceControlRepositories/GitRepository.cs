@@ -42,6 +42,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
 
             return new DocumentRepoMetaData()
             {
+                RepoProvider = nameof(GitRepository),
                 RepoUrl = repo.Head.TrackedBranch.Remote.Url,
                 RepoBranch = repo.Head.TrackedBranch.CanonicalName,
                 RelativePath = relativePath,
