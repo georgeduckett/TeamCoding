@@ -31,11 +31,7 @@ namespace TeamCoding.VisualStudio.Models
                     uuid = mo.Properties["UUID"].Value.ToString();
                     break;
                 }
-                return uuid
-#if DEBUG
-                + System.Diagnostics.Process.GetCurrentProcess().Id.ToString()
-#endif
-                ;
+                return uuid + System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
             }
         }, false);
 
