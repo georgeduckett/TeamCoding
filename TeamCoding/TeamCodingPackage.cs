@@ -34,6 +34,8 @@ namespace TeamCoding
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideOptionPage(typeof(OptionPageGrid), OptionPageGrid.OptionsName, "General", 0, 0, true)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideToolWindow(typeof(TeamCoding.VisualStudio.Overview))]
     public sealed class TeamCodingPackage : Package
     {
         public static TeamCodingPackage Current { get; private set; }
@@ -136,6 +138,7 @@ namespace TeamCoding
             {
                 Logger.WriteError(ex);
             }
+            TeamCoding.VisualStudio.OverviewCommand.Initialize(this);
         }
         private T GetVersionedType<T>(Assembly versionedAssembly, string typeName)
         {

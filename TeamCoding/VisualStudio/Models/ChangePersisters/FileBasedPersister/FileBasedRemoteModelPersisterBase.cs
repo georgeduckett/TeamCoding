@@ -62,6 +62,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             {
                 while (!IsFileReady(e.FullPath)) { System.Threading.Thread.Sleep(100); }
             }
+            
             FileWatcher.EnableRaisingEvents = true;
             SyncChanges();
         }
@@ -99,7 +100,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         public override void Dispose()
         {
             base.Dispose();
-            FileWatcher?.Dispose();
+            if (FileWatcher != null)
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                FileWatcher.Created -= FileWatcher_Changed;
+                FileWatcher.Deleted -= FileWatcher_Changed;
+                FileWatcher.Changed -= FileWatcher_Changed;
+                FileWatcher.Renamed -= FileWatcher_Changed;
+                FileWatcher.Dispose();
+            }
         }
         private bool IsFileReady(string sFilename)
         {

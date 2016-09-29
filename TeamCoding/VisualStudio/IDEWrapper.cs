@@ -24,14 +24,14 @@ namespace TeamCoding.VisualStudio
         }
         private readonly UserImageCache UserImages;
         private readonly EnvDTE.WindowEvents WindowEvents;
-        private readonly Visual WpfMainWindow;
+        private Visual WpfMainWindow;
         private readonly EnvDTE.DTE DTE;
         public string SolutionFilePath => DTE?.Solution?.FullName;
+        private readonly List<Action> WpfCreatedCallbacks = new List<Action>();
         public IDEWrapper(EnvDTE.DTE dte)
         {
             DTE = dte;
             UserImages = TeamCodingPackage.Current.UserImages;
-            WpfMainWindow = GetWpfMainWindow(dte);
             WindowEvents = dte.Events.WindowEvents;
             WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             WindowEvents.WindowCreated += WindowEvents_WindowCreated;
@@ -76,9 +76,29 @@ namespace TeamCoding.VisualStudio
                 TeamCodingPackage.Current.LocalIdeModel.OnFileLostFocus(oldFilePath);
             }
         }
-        public DispatcherOperation InvokeAsync(Action callback)
+        public void InvokeAsync(Action callback)
         {
-            return WpfMainWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+            if (WpfMainWindow != null)
+            {
+                WpfMainWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+            }
+            else
+            {
+                WpfCreatedCallbacks.Add(callback);
+                try
+                {
+                    WpfMainWindow = GetWpfMainWindow(DTE);
+                }
+                catch (NullReferenceException) { }
+
+                if(WpfMainWindow != null)
+                {
+                    foreach(var action in WpfCreatedCallbacks)
+                    {
+                        WpfMainWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+                    }
+                }
+            }
         }
         private Visual GetWpfMainWindow(EnvDTE.DTE dte)
         {
