@@ -1,16 +1,10 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="OverviewCommand.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.ComponentModel.Design;
 using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace TeamCoding.VisualStudio.ToolWindows.Overview
+namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
 {
     /// <summary>
     /// Command handler
@@ -25,7 +19,7 @@ namespace TeamCoding.VisualStudio.ToolWindows.Overview
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("9b9f663e-923d-4a9d-a27d-169af18377c1");
+        public static readonly Guid CommandSet = new Guid("76d6d986-dfad-4322-a2d8-5bec8525339f");
 
         /// <summary>
         /// VS Package that provides this command, not null.

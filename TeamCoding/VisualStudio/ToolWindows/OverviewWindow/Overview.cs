@@ -1,14 +1,8 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="Overview.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-namespace TeamCoding.VisualStudio
+﻿using System;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Shell;
+namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using Microsoft.VisualStudio.Shell;
 
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.

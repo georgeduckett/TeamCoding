@@ -35,7 +35,7 @@ namespace TeamCoding
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideOptionPage(typeof(OptionPageGrid), OptionPageGrid.OptionsName, "General", 0, 0, true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideToolWindow(typeof(TeamCoding.VisualStudio.Overview))]
+    [ProvideToolWindow(typeof(TeamCoding.VisualStudio.ToolWindows.OverviewWindow.Overview))]
     public sealed class TeamCodingPackage : Package
     {
         public static TeamCodingPackage Current { get; private set; }
@@ -133,12 +133,12 @@ namespace TeamCoding
                                                                           new SqlServerLocalModelPersister(ConnectionWrapper, LocalIdeModel),
                                                                           new WinServiceLocalModelPersister(WindowsServiceClient, LocalIdeModel));
                 RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+                TeamCoding.VisualStudio.ToolWindows.OverviewWindow.OverviewCommand.Initialize(this);
             }
             catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
             {
                 Logger.WriteError(ex);
             }
-            TeamCoding.VisualStudio.OverviewCommand.Initialize(this);
         }
         private T GetVersionedType<T>(Assembly versionedAssembly, string typeName)
         {

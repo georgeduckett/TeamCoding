@@ -139,9 +139,9 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceClient.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceRemoteModelPersister.cs" />
-    <Compile Include="VisualStudio\Overview.cs" />
-    <Compile Include="VisualStudio\OverviewCommand.cs" />
-    <Compile Include="VisualStudio\OverviewControl.xaml.cs">
+    <Compile Include="VisualStudio\ToolWindows\OverviewWindow\Overview.cs" />
+    <Compile Include="VisualStudio\ToolWindows\OverviewWindow\OverviewCommand.cs" />
+    <Compile Include="VisualStudio\ToolWindows\OverviewWindow\OverviewControl.xaml.cs">
       <DependentUpon>OverviewControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualStudio\SolutionEventsHandler.cs" />
@@ -213,8 +213,8 @@
     <Content Include="source.extension.ico">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Content>
-    <Content Include="VisualStudio\Resources\OverviewCommand.png" />
-    <VSCTCompile Include="VisualStudio\TeamCodingPackage.vsct">
+    <Content Include="Resources\OverviewCommand.png" />
+    <VSCTCompile Include="TeamCodingPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
     <Resource Include="Resources\UnknownUserImage.png" />
@@ -462,7 +462,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VisualStudio\OverviewControl.xaml">
+    <Page Include="VisualStudio\ToolWindows\OverviewWindow\OverviewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

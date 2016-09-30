@@ -1,18 +1,13 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="OverviewControl.xaml.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using TeamCoding.Extensions;
 
-namespace TeamCoding.VisualStudio
+namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using System.Windows;
-    using System.Windows.Controls;
-    using TeamCoding.Extensions;
 
     /// <summary>
     /// Interaction logic for OverviewControl.
