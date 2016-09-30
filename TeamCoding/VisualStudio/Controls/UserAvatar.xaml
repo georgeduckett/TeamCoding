@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="TeamCoding.VisualStudio.Controls.UserAvatar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TeamCoding.VisualStudio.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance {x:Type local:UserAvatarModel}, IsDesignTimeCreatable=True}"
+             Background="{Binding BackgroundBrush}">
+    <Grid>
+        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Top" Stretch="Uniform" StretchDirection="DownOnly">
+            <TextBlock LineStackingStrategy="MaxHeight" TextAlignment="Center" TextTrimming="None" VerticalAlignment="Top" HorizontalAlignment="Center" Text="{Binding Letter}" Foreground="{Binding LetterBrush}" Margin="{Binding LetterMargin}" />
+        </Viewbox>
+        <Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding AvatarImageSource}" />
+        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="{Binding BorderBrush}" Visibility="{Binding BorderVisibility}" />
+    </Grid>
+</UserControl>

@@ -109,6 +109,10 @@
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
     <Compile Include="TeamCodingPackageProvider.cs" />
+    <Compile Include="VisualStudio\Controls\UserAvatar.xaml.cs">
+      <DependentUpon>UserAvatar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VisualStudio\Controls\UserAvatarModel.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\CombinedPersister\CombinedRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\DebugPersister\DebugLocalModelPersister.cs" />
@@ -460,6 +464,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Options\TeamCodingExample.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="VisualStudio\Controls\UserAvatar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

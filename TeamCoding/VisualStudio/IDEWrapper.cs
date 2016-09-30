@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using TeamCoding.Documents;
 using TeamCoding.Extensions;
+using TeamCoding.VisualStudio.Controls;
 
 namespace TeamCoding.VisualStudio
 {
@@ -165,7 +166,7 @@ namespace TeamCoding.VisualStudio
 
         private void UpdateOrRemoveImages(DockPanel tabPanel, List<IRemotelyAccessedDocumentData> remoteDocuments, bool forceUpdate)
         {
-            foreach (var userImageControl in tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).ToArray())
+            foreach (var userImageControl in tabPanel.Children.OfType<UserAvatar>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).ToArray())
             {
                 var imageDocData = (IRemotelyAccessedDocumentData)userImageControl.Tag;
 
@@ -215,7 +216,7 @@ namespace TeamCoding.VisualStudio
         {
             foreach (var remoteTabItem in remoteDocuments)
             {
-                if (!tabPanel.Children.OfType<Panel>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).Any(i => (i.Tag as IRemotelyAccessedDocumentData).Equals(remoteTabItem)))
+                if (!tabPanel.Children.OfType<UserAvatar>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).Any(i => (i.Tag as IRemotelyAccessedDocumentData).Equals(remoteTabItem)))
                 {
                     var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
 

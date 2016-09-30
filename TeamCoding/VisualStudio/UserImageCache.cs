@@ -11,6 +11,7 @@ using TeamCoding.IdentityManagement;
 using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Shell;
 using TeamCoding.Options;
+using TeamCoding.VisualStudio.Controls;
 
 namespace TeamCoding.VisualStudio
 {
@@ -22,44 +23,14 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public Panel CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
+        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
         {
+            var Context = new UserAvatarModel();
+
             var firstLetter = userIdentity.Id[0];
-            var grid = new Grid();
-            Image imageControl;
-            grid.Children.Add(new Viewbox()
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top,
-                Stretch = Stretch.Uniform,
-                StretchDirection = StretchDirection.DownOnly,
-                Child = new TextBlock()
-                {
-                    LineStackingStrategy = LineStackingStrategy.MaxHeight,
-                    TextAlignment = TextAlignment.Center,
-                    TextTrimming = TextTrimming.None,
-                    VerticalAlignment = VerticalAlignment.Top,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                }
-            });
-            grid.Children.Add(imageControl = new Image()
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch
-            });
-            var border = new Border()
-            {
-                BorderThickness = new Thickness(1),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch
-            };
-            if (withBorder)
-            { // TODO: Get a way of having the bottom border the user's colour if the code setting is a colour and the user setting is an avatar
-                border.BorderThickness = new Thickness(1);
-                border.BorderBrush = UserColours.GetUserBrush(userIdentity);
-            }
-            grid.Children.Add(border);
-            SetTextAndColour(grid, userIdentity, displaySetting);
+            var userAvatar = new UserAvatar() { DataContext = Context };
+            
+            SetTextAndColour(userAvatar, Context, userIdentity, displaySetting);
             if (userIdentity.ImageUrl != null && displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
                 ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -69,7 +40,7 @@ namespace TeamCoding.VisualStudio
                         var request = await TeamCodingPackage.Current.HttpClient.GetAsync(userIdentity.ImageUrl);
                         if (!request.IsSuccessStatusCode) return;
                         var imageStream = await request.Content.ReadAsStreamAsync();
-                        imageControl.Source = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                        Context.AvatarImageSource = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                     }
                     catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                     {
@@ -77,65 +48,63 @@ namespace TeamCoding.VisualStudio
                     }
                 });
             }
-            return grid;
+            return userAvatar;
         }
-        internal void SetUserControlProperties(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
+        internal void SetUserControlProperties(UserAvatar parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
-            SetTextAndColour(parentControl, matchedRemoteDoc.IdeUserIdentity, displaySetting);
-            SetTooltip(parentControl, matchedRemoteDoc);
+            var context = (UserAvatarModel)parentControl.DataContext;
+            SetTextAndColour(parentControl, context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
+            SetTooltip(context, matchedRemoteDoc);
 
             if (matchedRemoteDoc.HasFocus)
             {
-                var border = parentControl.FindChild<Border>();
-                border.Visibility = Visibility.Visible;
-                border.BorderBrush = DocSelectedBorderBrush;
+                context.BorderVisibility = Visibility.Visible;
+                context.BorderBrush = DocSelectedBorderBrush;
             }
             else if (matchedRemoteDoc.BeingEdited)
             {
-                var border = parentControl.FindChild<Border>();
-                border.Visibility = Visibility.Visible;
-                border.BorderBrush = DocEditedBorderBrush;
+                context.BorderVisibility = Visibility.Visible;
+                context.BorderBrush = DocEditedBorderBrush;
             }
             else
             {
-                parentControl.Children.OfType<Border>().Single().Visibility = Visibility.Hidden;
+                context.BorderVisibility = Visibility.Hidden;
             }
 
             if (displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
-                SetImageSource(parentControl, matchedRemoteDoc);
+                SetImageSource(context, matchedRemoteDoc);
             }
         }
 
-        private static void SetTooltip(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
+        private static void SetTooltip(UserAvatarModel context, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
-            parentControl.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+            context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
         }
 
-        public static void SetTextAndColour(Panel parentControl, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        public static void SetTextAndColour(UserAvatar parentControl, UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
-            parentControl.Background = UserColours.GetUserBrush(userIdentity);
+            context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
 
             if (displaySetting != UserSettings.UserDisplaySetting.Colour)
             {
-                var textBlockControl = parentControl.FindChild<TextBlock>();
                 var firstLetter = (userIdentity.Id)[0];
-                textBlockControl.Text = firstLetter.ToString();
+                context.Letter = firstLetter;
 
-                textBlockControl.Foreground = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));
-                var textBlockFormattedText = textBlockControl.GetBoundingRect();
+                context.LetterBrush = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));
+                var textBlockFormattedText = parentControl.FindChild<TextBlock>().GetBoundingRect();
                 if (textBlockFormattedText.Top >= 5)
                 { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
-                    textBlockControl.Margin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
+                    context.LetterMargin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
                 }
                 else
                 {
-                    textBlockControl.Margin = new Thickness(0);
+                    context.LetterMargin = new Thickness(0);
                 }
             }
         }
 
-        private void SetImageSource(Panel parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc)
+        private void SetImageSource(UserAvatarModel context, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
             ImageSource imageSource = null;
             if (matchedRemoteDoc.IdeUserIdentity.ImageBytes != null)
@@ -158,7 +127,7 @@ namespace TeamCoding.VisualStudio
                 }
             }
 
-            parentControl.FindChild<Image>().Source = imageSource;
+            context.AvatarImageSource = imageSource;
         }
 
         /// <summary>
