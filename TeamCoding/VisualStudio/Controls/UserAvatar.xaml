@@ -8,9 +8,19 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance {x:Type local:UserAvatarModel}, IsDesignTimeCreatable=True}"
              Background="{Binding BackgroundBrush}">
+    <UserControl.Resources>
+        <local:TextBlockToLetterMarginConverter x:Key="TextBlockToLetterMarginConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Top" Stretch="Uniform" StretchDirection="DownOnly">
-            <TextBlock LineStackingStrategy="MaxHeight" TextAlignment="Center" TextTrimming="None" VerticalAlignment="Top" HorizontalAlignment="Center" Text="{Binding Letter}" Foreground="{Binding LetterBrush}" Margin="{Binding LetterMargin}" />
+            <TextBlock LineStackingStrategy="MaxHeight" TextAlignment="Center" TextTrimming="None" VerticalAlignment="Top" HorizontalAlignment="Center" Text="{Binding Letter}" Foreground="{Binding LetterBrush}" >
+                <TextBlock.Margin>
+                    <MultiBinding Converter="{StaticResource TextBlockToLetterMarginConverter}">
+                        <Binding RelativeSource="{RelativeSource Self}" />
+                        <Binding Path="Letter" />
+                    </MultiBinding>
+                </TextBlock.Margin>
+            </TextBlock>
         </Viewbox>
         <Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding AvatarImageSource}" />
         <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="{Binding BorderBrush}" Visibility="{Binding BorderVisibility}" />

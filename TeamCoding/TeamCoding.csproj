@@ -109,6 +109,7 @@
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
     <Compile Include="TeamCodingPackageProvider.cs" />
+    <Compile Include="VisualStudio\Controls\TextBlockToLetterMarginConverter.cs" />
     <Compile Include="VisualStudio\Controls\UserAvatar.xaml.cs">
       <DependentUpon>UserAvatar.xaml</DependentUpon>
     </Compile>

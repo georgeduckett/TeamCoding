@@ -27,6 +27,7 @@ namespace TeamCoding.VisualStudio
         {
             var context = new UserAvatarModel();
             context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
+            SetText(context, userIdentity, displaySetting);
 
             if (userIdentity.ImageUrl != null && displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
@@ -51,17 +52,12 @@ namespace TeamCoding.VisualStudio
         public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
         {
             var context = CreateUserAvatarModel(userIdentity, displaySetting, withBorder);
-            var userAvatar = new UserAvatar() { DataContext = context };
-
-            SetText(userAvatar, context, userIdentity, displaySetting);
-            SetTextMargin(userAvatar, context);
-            return userAvatar;
+            return new UserAvatar() { DataContext = context };
         }
         internal void SetUserControlProperties(UserAvatar parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
             var context = (UserAvatarModel)parentControl.DataContext;
-            SetText(parentControl, context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
-            SetTextMargin(parentControl, context);
+            SetText(context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
             SetTooltip(context, matchedRemoteDoc);
 
             if (matchedRemoteDoc.HasFocus)
@@ -90,7 +86,7 @@ namespace TeamCoding.VisualStudio
             context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
         }
 
-        public static void SetText(UserAvatar parentControl, UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        public static void SetText(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
             if (displaySetting != UserSettings.UserDisplaySetting.Colour)
             {
@@ -100,20 +96,6 @@ namespace TeamCoding.VisualStudio
                 context.LetterBrush = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));
             }
         }
-
-        private static void SetTextMargin(UserAvatar parentControl, UserAvatarModel context)
-        {
-            var textBlockFormattedText = parentControl.FindChild<TextBlock>().GetBoundingRect();
-            if (textBlockFormattedText.Top >= 5)
-            { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
-                context.LetterMargin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
-            }
-            else
-            {
-                context.LetterMargin = new Thickness(0);
-            }
-        }
-
         private void SetImageSource(UserAvatarModel context, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
             ImageSource imageSource = null;
