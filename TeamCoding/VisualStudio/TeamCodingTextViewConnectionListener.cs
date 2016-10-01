@@ -19,7 +19,6 @@ namespace TeamCoding.VisualStudio
     {
         private readonly ITextDocumentFactoryService TextDocFactory;
         private readonly IClassifierAggregatorService TextClassifierService;
-
         [ImportingConstructor]
         public TeamCodingTextViewConnectionListener(ITextDocumentFactoryService textDocumentFactoryService, IClassifierAggregatorService textClassifierService)
         {
@@ -47,12 +46,10 @@ namespace TeamCoding.VisualStudio
                 }
             }
         }
-
         private async void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
             await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
         }
-
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)
         {
             TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentDisposed(e.TextDocument, e);
