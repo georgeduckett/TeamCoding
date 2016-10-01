@@ -29,7 +29,12 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         {
             tvUserDocs.DataContext = (from of in TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                       group of by of.IdeUserIdentity into ofg
-                                      select new { Identity = ofg.Key, Documents = ofg.ToArray() }).ToArray();
+                                      select new
+                                      {
+                                          Identity = ofg.Key,
+                                          UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay),
+                                          Documents = ofg.ToArray()
+                                      }).ToArray();
 
             var treeItems = tvUserDocs.FindChildren<TreeViewItem>();
 

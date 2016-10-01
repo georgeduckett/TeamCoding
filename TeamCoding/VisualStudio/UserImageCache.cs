@@ -23,14 +23,11 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
+        public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
         {
-            var Context = new UserAvatarModel();
+            var context = new UserAvatarModel();
+            context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
 
-            var firstLetter = userIdentity.Id[0];
-            var userAvatar = new UserAvatar() { DataContext = Context };
-            
-            SetTextAndColour(userAvatar, Context, userIdentity, displaySetting);
             if (userIdentity.ImageUrl != null && displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
                 ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -40,7 +37,7 @@ namespace TeamCoding.VisualStudio
                         var request = await TeamCodingPackage.Current.HttpClient.GetAsync(userIdentity.ImageUrl);
                         if (!request.IsSuccessStatusCode) return;
                         var imageStream = await request.Content.ReadAsStreamAsync();
-                        Context.AvatarImageSource = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                        context.AvatarImageSource = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                     }
                     catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                     {
@@ -48,12 +45,23 @@ namespace TeamCoding.VisualStudio
                     }
                 });
             }
+
+            return context;
+        }
+        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
+        {
+            var context = CreateUserAvatarModel(userIdentity, displaySetting, withBorder);
+            var userAvatar = new UserAvatar() { DataContext = context };
+
+            SetText(userAvatar, context, userIdentity, displaySetting);
+            SetTextMargin(userAvatar, context);
             return userAvatar;
         }
         internal void SetUserControlProperties(UserAvatar parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
             var context = (UserAvatarModel)parentControl.DataContext;
-            SetTextAndColour(parentControl, context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
+            SetText(parentControl, context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
+            SetTextMargin(parentControl, context);
             SetTooltip(context, matchedRemoteDoc);
 
             if (matchedRemoteDoc.HasFocus)
@@ -82,25 +90,27 @@ namespace TeamCoding.VisualStudio
             context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
         }
 
-        public static void SetTextAndColour(UserAvatar parentControl, UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        public static void SetText(UserAvatar parentControl, UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
-            context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
-
             if (displaySetting != UserSettings.UserDisplaySetting.Colour)
             {
                 var firstLetter = (userIdentity.Id)[0];
                 context.Letter = firstLetter;
 
                 context.LetterBrush = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));
-                var textBlockFormattedText = parentControl.FindChild<TextBlock>().GetBoundingRect();
-                if (textBlockFormattedText.Top >= 5)
-                { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
-                    context.LetterMargin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
-                }
-                else
-                {
-                    context.LetterMargin = new Thickness(0);
-                }
+            }
+        }
+
+        private static void SetTextMargin(UserAvatar parentControl, UserAvatarModel context)
+        {
+            var textBlockFormattedText = parentControl.FindChild<TextBlock>().GetBoundingRect();
+            if (textBlockFormattedText.Top >= 5)
+            { // If we have a lot of blank space at the top of the up-most pixel of the rendered character (for lower case letters for example), move the text up
+                context.LetterMargin = new Thickness(0, (-textBlockFormattedText.Top) / 2, 0, 0);
+            }
+            else
+            {
+                context.LetterMargin = new Thickness(0);
             }
         }
 

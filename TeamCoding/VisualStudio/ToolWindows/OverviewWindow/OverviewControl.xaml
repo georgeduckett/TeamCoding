@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ua="clr-namespace:TeamCoding.VisualStudio.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
@@ -14,7 +15,7 @@
                         <TreeViewItem.HeaderTemplate>
                             <ItemContainerTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Name="img" Width="20" Height="20" Stretch="Fill" />
+                                    <ua:UserAvatar Width="16" Height="16" DataContext="{Binding DataContext.UserAvatarModel, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
                                     <TextBlock Text="{Binding DataContext.Identity.DisplayName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Margin="5,0" Foreground="{DynamicResource VsBrush.WindowText}" />
                                 </StackPanel>
                             </ItemContainerTemplate>
