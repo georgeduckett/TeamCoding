@@ -23,36 +23,44 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
+        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        {
+            var context = CreateUserAvatarModel(userIdentity, displaySetting);
+            return new UserAvatar() { DataContext = context };
+        }
         public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
             var context = new UserAvatarModel();
             context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
             SetText(context, userIdentity, displaySetting);
-
+            // TODO: Cache the avatar models
+            // TODO: When display settings change update the avatar models
             if (userIdentity.ImageUrl != null && displaySetting == UserSettings.UserDisplaySetting.Avatar)
             {
-                ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                if (UrlImages.ContainsKey(userIdentity.ImageUrl))
                 {
-                    try
+                    context.AvatarImageSource = UrlImages[userIdentity.ImageUrl];
+                }
+                else
+                {
+                    ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                     {
-                        var request = await TeamCodingPackage.Current.HttpClient.GetAsync(userIdentity.ImageUrl);
-                        if (!request.IsSuccessStatusCode) return;
-                        var imageStream = await request.Content.ReadAsStreamAsync();
-                        context.AvatarImageSource = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                    }
-                    catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
-                    {
-                        TeamCodingPackage.Current.Logger.WriteError(ex);
-                    }
-                });
+                        try
+                        {
+                            var request = await TeamCodingPackage.Current.HttpClient.GetAsync(userIdentity.ImageUrl);
+                            if (!request.IsSuccessStatusCode) return;
+                            var imageStream = await request.Content.ReadAsStreamAsync();
+                            context.AvatarImageSource = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                        }
+                        catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+                        {
+                            TeamCodingPackage.Current.Logger.WriteError(ex);
+                        }
+                    });
+                }
             }
 
             return context;
-        }
-        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
-        {
-            var context = CreateUserAvatarModel(userIdentity, displaySetting);
-            return new UserAvatar() { DataContext = context };
         }
         internal void SetUserControlProperties(UserAvatar parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
@@ -80,7 +88,7 @@ namespace TeamCoding.VisualStudio
                 SetImageSource(context, matchedRemoteDoc);
             }
         }
-        public static void SetText(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        private void SetText(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
             if (displaySetting != UserSettings.UserDisplaySetting.Colour)
             {
