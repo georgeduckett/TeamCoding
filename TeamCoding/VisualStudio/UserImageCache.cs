@@ -58,7 +58,7 @@ namespace TeamCoding.VisualStudio
         {
             var context = (UserAvatarModel)parentControl.DataContext;
             SetText(context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
-            SetTooltip(context, matchedRemoteDoc);
+            context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
 
             if (matchedRemoteDoc.HasFocus)
             {
@@ -80,12 +80,6 @@ namespace TeamCoding.VisualStudio
                 SetImageSource(context, matchedRemoteDoc);
             }
         }
-
-        private static void SetTooltip(UserAvatarModel context, IRemotelyAccessedDocumentData matchedRemoteDoc)
-        {
-            context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
-        }
-
         public static void SetText(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
             if (displaySetting != UserSettings.UserDisplaySetting.Colour)
@@ -120,21 +114,6 @@ namespace TeamCoding.VisualStudio
             }
 
             context.AvatarImageSource = imageSource;
-        }
-
-        /// <summary>
-        /// Load a resource WPF-BitmapImage (png, bmp, ...) from embedded resource defined as 'Resource' not as 'Embedded resource'.
-        /// </summary>
-        /// <param name="pathInApplication">Path without starting slash</param>
-        /// <param name="assembly">Usually 'Assembly.GetExecutingAssembly()'. If not mentionned, I will use the calling assembly</param>
-        /// <returns></returns>
-        private static BitmapImage LoadBitmapFromResource(string pathInApplication)
-        { // http://stackoverflow.com/a/9737958
-            if (pathInApplication[0] == '/')
-            {
-                pathInApplication = pathInApplication.Substring(1);
-            }
-            return new BitmapImage(new Uri(@"pack://application:,,,/" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name + ";component/" + pathInApplication, UriKind.Absolute));
         }
     }
 }
