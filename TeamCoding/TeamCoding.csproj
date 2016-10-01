@@ -223,7 +223,6 @@
     <VSCTCompile Include="TeamCodingPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
-    <Resource Include="Resources\UnknownUserImage.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="source.extension.resx">

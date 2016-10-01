@@ -139,7 +139,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 }
                 else
                 {
-                    userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity, TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay, true);
+                    userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity, TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay);
                     userControl.Width = caretGeometry.Bounds.Height / 1.25f;
                     userControl.Height = caretGeometry.Bounds.Height / 1.25f;
                     Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);

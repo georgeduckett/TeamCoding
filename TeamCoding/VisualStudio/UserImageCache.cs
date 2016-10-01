@@ -23,7 +23,7 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
+        public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
             var context = new UserAvatarModel();
             context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
@@ -49,9 +49,9 @@ namespace TeamCoding.VisualStudio
 
             return context;
         }
-        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool withBorder = false)
+        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
         {
-            var context = CreateUserAvatarModel(userIdentity, displaySetting, withBorder);
+            var context = CreateUserAvatarModel(userIdentity, displaySetting);
             return new UserAvatar() { DataContext = context };
         }
         internal void SetUserControlProperties(UserAvatar parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
