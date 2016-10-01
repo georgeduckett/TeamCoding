@@ -19,6 +19,8 @@ For more details regarding the different user and shared options, see [Settings.
 **User Identity:** It tries to get your email address as a user identity from various sources (saved Windows Credentials for GitHub, your logged in identity from Visual Studio, your machine name).
 This will be made public to your team. It uses Gravatar to get a user image from the email address.
 
+**Overview window** There is a tool window that allows you to see every user and what documents they've got open in a treeview. To access it use the View->Other Windows->TeamCoding Overview command.
+
 **Roadmap:** Still very much alpha, please report bugs as [GitHub issues](https://github.com/georgeduckett/TeamCoding/issues).
 Currently sharing options are a shared folder, Redis, Slack, an SQL Server table or via a server application as a windows service or console application. If you want others (along with any other feature requests) please raise them as issues. Supports Git repos and Team Foundation Services / Visual Studio Online for determining what to share as well as a fall-back to sharing purely based on matching solution filenames. In the pipeline a shared-coding experience (multiple users editing the same document(s)).
 
