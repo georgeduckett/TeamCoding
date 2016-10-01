@@ -14,7 +14,6 @@ using TeamCoding.Extensions;
 namespace TeamCoding.VisualStudio
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
-    [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
     {
