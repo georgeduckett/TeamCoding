@@ -15,6 +15,7 @@ namespace TeamCoding.VisualStudio
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
+    [ContentType("any")]
     internal sealed class TeamCodingTextViewConnectionListener : IWpfTextViewConnectionListener
     {
         private readonly ITextDocumentFactoryService TextDocFactory;
