@@ -207,7 +207,7 @@ namespace TeamCoding.VisualStudio
 
                     if (PropertiesUpdated || forceUpdate)
                     {
-                        UserImages.SetUserControlProperties(userImageControl, matchedRemoteDoc, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
+                        UserImages.SetUserControlProperties(userImageControl.Model, matchedRemoteDoc, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
                     }
                 }
             }
@@ -225,7 +225,7 @@ namespace TeamCoding.VisualStudio
                         imgUser.Width = (tabPanel.Children[0] as GlyphButton).Width;
                         imgUser.Height = (tabPanel.Children[0] as GlyphButton).Height;
                         imgUser.Margin = (tabPanel.Children[0] as GlyphButton).Margin;
-                        UserImages.SetUserControlProperties(imgUser, remoteTabItem, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
+                        UserImages.SetUserControlProperties(imgUser.Model, remoteTabItem, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
                         imgUser.Tag = remoteTabItem;
 
                         tabPanel.Children.Insert(tabPanel.Children.Count, imgUser);

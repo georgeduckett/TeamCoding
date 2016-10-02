@@ -20,6 +20,7 @@ namespace TeamCoding.VisualStudio.Controls
     /// </summary>
     public partial class UserAvatar : UserControl
     {
+        public UserAvatarModel Model => (UserAvatarModel)DataContext;
         public UserAvatar()
         {
             InitializeComponent();

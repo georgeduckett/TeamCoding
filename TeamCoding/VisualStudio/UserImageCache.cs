@@ -62,9 +62,8 @@ namespace TeamCoding.VisualStudio
 
             return context;
         }
-        internal void SetUserControlProperties(UserAvatar parentControl, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
+        internal void SetUserControlProperties(UserAvatarModel context, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
         {
-            var context = (UserAvatarModel)parentControl.DataContext;
             SetText(context, matchedRemoteDoc.IdeUserIdentity, displaySetting);
             context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
 
