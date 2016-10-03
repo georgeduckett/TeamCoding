@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using TeamCoding.Documents;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
@@ -55,15 +56,19 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
             }
         }
 
+        private readonly object FileWatcherChangedLock = new object();
         private void FileWatcher_Changed(object sender, FileSystemEventArgs e)
         {
-            FileWatcher.EnableRaisingEvents = false;
-            if (e.ChangeType != WatcherChangeTypes.Deleted)
+            lock (FileWatcherChangedLock)
             {
-                while (!IsFileReady(e.FullPath)) { System.Threading.Thread.Sleep(100); }
+                FileWatcher.EnableRaisingEvents = false;
+                if (e.ChangeType != WatcherChangeTypes.Deleted)
+                {
+                    while (!IsFileReady(e.FullPath)) { System.Threading.Thread.Sleep(100); }
+                }
+
+                FileWatcher.EnableRaisingEvents = true;
             }
-            
-            FileWatcher.EnableRaisingEvents = true;
             SyncChanges();
         }
         private void SyncChanges()
@@ -107,7 +112,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
                 FileWatcher.Deleted -= FileWatcher_Changed;
                 FileWatcher.Changed -= FileWatcher_Changed;
                 FileWatcher.Renamed -= FileWatcher_Changed;
-                FileWatcher.Dispose();
+
+                lock (FileWatcherChangedLock)
+                {
+                    FileWatcher.Dispose();
+                }
             }
         }
         private bool IsFileReady(string sFilename)
