@@ -37,7 +37,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
             View = view;
             RepoDocument = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
 
-            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RemoteModelChangeManager_RemoteModelReceived;
+            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RefreshAdornments;
+            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged += RefreshAdornments;
             View.LayoutChanged += OnLayoutChanged;
 
             var penBrush = new SolidColorBrush(Colors.Red);
@@ -46,7 +47,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             CaretPen.Freeze();
         }
 
-        private async void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
+        private async void RefreshAdornments(object sender, EventArgs e)
         {
             var CaretPositions = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                                           .Where(of => of.Repository == RepoDocument.RepoUrl && 
@@ -93,7 +94,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// <param name="e">The event arguments.</param>
         internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            RemoteModelChangeManager_RemoteModelReceived(sender, EventArgs.Empty);
+            RefreshAdornments(sender, EventArgs.Empty);
         }
 
         private void CreateVisual(CaretAdornmentData nodeData, int caretOffset, IUserIdentity userIdentity)
@@ -152,7 +153,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         public void Dispose()
         {
-            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RemoteModelChangeManager_RemoteModelReceived;
+            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RefreshAdornments;
         }
     }
 }
