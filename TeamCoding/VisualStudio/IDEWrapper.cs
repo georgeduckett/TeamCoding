@@ -218,7 +218,7 @@ namespace TeamCoding.VisualStudio
             {
                 if (!tabPanel.Children.OfType<UserAvatar>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).Any(i => (i.Tag as IRemotelyAccessedDocumentData).Equals(remoteTabItem)))
                 {
-                    var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity, true);
+                    var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity);
 
                     if (imgUser != null)
                     {

@@ -23,20 +23,28 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, bool forDocumentTab = false)
-        { // TODO: if we're calling this for a document tab break the borderbrush and tooltip text bindings and set the appropriately here
+        private readonly Dictionary<string, UserAvatarModel> UserModels = new Dictionary<string, UserAvatarModel>();
+        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity)
+        {
             var context = CreateUserAvatarModel(userIdentity);
             return new UserAvatar() { DataContext = context };
         }
         public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity)
         {
-            var context = new UserAvatarModel();
+            UserAvatarModel context;
+            if(UserModels.TryGetValue(userIdentity.Id, out context))
+            {
+                return context;
+            }
+
+            context = new UserAvatarModel();
             context.ToolTip = (userIdentity.DisplayName ?? userIdentity.Id);
             context.BorderBrush = context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
-
-            // TODO: Cache the avatar models
+            
             // TODO: When display settings change update the avatar models
             SetContextAccordingToDisplaySettings(context, userIdentity);
+
+            UserModels.Add(userIdentity.Id, context);
 
             return context;
         }
