@@ -25,8 +25,14 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private readonly Pen CaretPen;
 
         private readonly DocumentRepoMetaData RepoDocument;
+
+        private Func<IRemotelyAccessedDocumentData, bool> OpenFilesFilter;
         public TextAdornment(IWpfTextView view)
         {
+            OpenFilesFilter = of => of.Repository == RepoDocument.RepoUrl &&
+                                    of.RelativePath == RepoDocument.RelativePath &&
+                                    of.RepositoryBranch == RepoDocument.RepoBranch &&
+                                    of.CaretPositionInfo != null;
             if (view == null)
             {
                 throw new ArgumentNullException(nameof(view));
@@ -50,10 +56,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private async void RefreshAdornments(object sender, EventArgs e)
         {
             var CaretPositions = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
-                                                          .Where(of => of.Repository == RepoDocument.RepoUrl && 
-                                                                       of.RelativePath == RepoDocument.RelativePath &&
-                                                                       of.RepositoryBranch == RepoDocument.RepoBranch &&
-                                                                       of.CaretPositionInfo != null)
+                                                          .Where(OpenFilesFilter)
                                                           .Select(of => new
                                                           {
                                                               CaretMemberHashCodes = of.CaretPositionInfo.SyntaxNodeIds,
