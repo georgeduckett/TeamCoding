@@ -32,7 +32,7 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
                                       select new
                                       {
                                           Identity = ofg.Key,
-                                          UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay),
+                                          UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key),
                                           Documents = ofg.ToArray()
                                       }).ToArray();
 

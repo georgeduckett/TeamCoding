@@ -23,12 +23,12 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocSelectedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 1.0f, ScG = 1.0f, ScB = 1.0f });
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
-        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting, bool forDocumentTab = false)
+        public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity, bool forDocumentTab = false)
         { // TODO: if we're calling this for a document tab break the borderbrush and tooltip text bindings and set the appropriately here
-            var context = CreateUserAvatarModel(userIdentity, displaySetting);
-            return new UserAvatar(forDocumentTab) { DataContext = context };
+            var context = CreateUserAvatarModel(userIdentity);
+            return new UserAvatar() { DataContext = context };
         }
-        public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity)
         {
             var context = new UserAvatarModel();
             context.ToolTip = (userIdentity.DisplayName ?? userIdentity.Id);
@@ -36,18 +36,18 @@ namespace TeamCoding.VisualStudio
 
             // TODO: Cache the avatar models
             // TODO: When display settings change update the avatar models
-            SetContextAccordingToDisplaySettings(context, userIdentity, displaySetting);
+            SetContextAccordingToDisplaySettings(context, userIdentity);
 
             return context;
         }
-        private void SetContextAccordingToDisplaySettings(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        private void SetContextAccordingToDisplaySettings(UserAvatarModel context, IUserIdentity userIdentity)
         {
-            SetText(context, userIdentity, displaySetting);
-            SetImageSource(context, userIdentity, displaySetting);
+            SetText(context, userIdentity);
+            SetImageSource(context, userIdentity);
         }
-        private void SetText(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        private void SetText(UserAvatarModel context, IUserIdentity userIdentity)
         {
-            if (displaySetting != UserSettings.UserDisplaySetting.Colour)
+            if (TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay != UserSettings.UserDisplaySetting.Colour)
             {
                 var firstLetter = (userIdentity.Id)[0];
                 context.Letter = firstLetter;
@@ -55,9 +55,9 @@ namespace TeamCoding.VisualStudio
                 context.LetterBrush = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));
             }
         }
-        private void SetImageSource(UserAvatarModel context, IUserIdentity userIdentity, UserSettings.UserDisplaySetting displaySetting)
+        private void SetImageSource(UserAvatarModel context, IUserIdentity userIdentity)
         {
-            if (displaySetting == UserSettings.UserDisplaySetting.Avatar)
+            if (TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay == UserSettings.UserDisplaySetting.Avatar)
             {
                 if (userIdentity.ImageBytes != null)
                 {
@@ -103,23 +103,23 @@ namespace TeamCoding.VisualStudio
         /// <param name="context"></param>
         /// <param name="matchedRemoteDoc"></param>
         /// <param name="displaySetting"></param>
-        internal void SetDocumentTabUserControlProperties(UserAvatarModel context, IRemotelyAccessedDocumentData matchedRemoteDoc, UserSettings.UserDisplaySetting displaySetting)
+        internal void SetDocumentTabUserControlProperties(UserAvatar control, IRemotelyAccessedDocumentData matchedRemoteDoc)
         {
-            context.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
+            control.ToolTip = (matchedRemoteDoc.IdeUserIdentity.DisplayName ?? matchedRemoteDoc.IdeUserIdentity.Id) + (matchedRemoteDoc.BeingEdited ? " [edited]" : string.Empty);
 
             if (matchedRemoteDoc.HasFocus)
             {
-                context.BorderVisibility = Visibility.Visible;
-                context.BorderBrush = DocSelectedBorderBrush;
+                control.UserBorderVisibility = Visibility.Visible;
+                control.UserBorderBrush = DocSelectedBorderBrush;
             }
             else if (matchedRemoteDoc.BeingEdited)
             {
-                context.BorderVisibility = Visibility.Visible;
-                context.BorderBrush = DocEditedBorderBrush;
+                control.UserBorderVisibility = Visibility.Visible;
+                control.UserBorderBrush = DocEditedBorderBrush;
             }
             else
             {
-                context.BorderVisibility = Visibility.Hidden;
+                control.UserBorderVisibility = Visibility.Hidden;
             }
         }
     }
