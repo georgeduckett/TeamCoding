@@ -24,6 +24,24 @@ namespace TeamCoding.VisualStudio
         private static readonly Brush DocEditedBorderBrush = new SolidColorBrush(new Color() { ScA = 0.65f, ScR = 0.5f, ScG = 0.5f, ScB = 0.5f });
         private readonly Dictionary<string, ImageSource> UrlImages = new Dictionary<string, ImageSource>();
         private readonly Dictionary<string, UserAvatarModel> UserModels = new Dictionary<string, UserAvatarModel>();
+        public UserImageCache()
+        {
+            TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplayChanged += UserSettings_UserTabDisplayChanged;
+        }
+        private void UserSettings_UserTabDisplayChanged(object sender, EventArgs e)
+        {
+            var users = TeamCodingPackage.Current
+                                         .RemoteModelChangeManager
+                                         .GetOpenFiles()
+                                         .GroupBy(of => of.IdeUserIdentity)
+                                         .Select(g => g.Key).GroupBy(ui => ui.Id)
+                                         .ToDictionary(g=> g.Key, g => g.First());
+
+            foreach (var context in UserModels)
+            {
+                SetContextAccordingToDisplaySettings(context.Value, users[context.Key]);
+            }
+        }
         public UserAvatar CreateUserIdentityControl(IUserIdentity userIdentity)
         {
             var context = CreateUserAvatarModel(userIdentity);
@@ -55,7 +73,11 @@ namespace TeamCoding.VisualStudio
         }
         private void SetText(UserAvatarModel context, IUserIdentity userIdentity)
         {
-            if (TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay != UserSettings.UserDisplaySetting.Colour)
+            if (TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay == UserSettings.UserDisplaySetting.Colour)
+            {
+                context.Letter = null;
+            }
+            else
             {
                 var firstLetter = (userIdentity.Id)[0];
                 context.Letter = firstLetter;
@@ -65,7 +87,7 @@ namespace TeamCoding.VisualStudio
         }
         private void SetImageSource(UserAvatarModel context, IUserIdentity userIdentity)
         {
-            if (TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay == UserSettings.UserDisplaySetting.Avatar)
+            if (TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay == UserSettings.UserDisplaySetting.Avatar)
             {
                 if (userIdentity.ImageBytes != null)
                 {
@@ -103,6 +125,10 @@ namespace TeamCoding.VisualStudio
                         });
                     }
                 }
+            }
+            else
+            {
+                context.AvatarImageSource = null;
             }
         }
         /// <summary>

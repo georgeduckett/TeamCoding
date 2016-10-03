@@ -41,7 +41,7 @@ namespace TeamCoding
         public static TeamCodingPackage Current { get; private set; }
         [Export]
         public readonly Logger Logger = new Logger();
-        public readonly UserImageCache UserImages = new UserImageCache();
+        public UserImageCache UserImages;
         public readonly ObjectSlackMessageConverter ObjectSlackMessageConverter = new ObjectSlackMessageConverter();
         public SqlConnectionWrapper ConnectionWrapper;
         private WinServiceClient WindowsServiceClient;
@@ -103,6 +103,7 @@ namespace TeamCoding
                 var pSolution = (IVsSolution)GetService(typeof(SVsSolution));
                 var result = pSolution.AdviseSolutionEvents(new SolutionEventsHandler(), out SolutionEventsHandlerId);
                 Settings = new Settings();
+                UserImages = new UserImageCache();
                 Redis = new RedisWrapper();
                 Slack = new SlackWrapper();
                 LocalIdeModel = new LocalIDEModel();
