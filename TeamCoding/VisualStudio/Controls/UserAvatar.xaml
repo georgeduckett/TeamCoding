@@ -23,6 +23,6 @@
             </TextBlock>
         </Viewbox>
         <Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding AvatarImageSource}" />
-        <Border BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="{Binding BorderBrush}" Visibility="{Binding BorderVisibility}" />
+        <Border Name="bdrOuterBorder" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="{Binding BorderBrush}" Visibility="{Binding BorderVisibility}" />
     </Grid>
 </UserControl>

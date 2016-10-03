@@ -42,7 +42,7 @@ namespace TeamCoding.VisualStudio
         }
         public static Color GetColourFromSeed(int seed)
         {
-            return Colours[seed % Colours.Count];
+            return Colours[Math.Abs(seed % Colours.Count)];
         }
 
         public static Brush GetTextBrushFromBackgroundColour(Color backgroundColour)

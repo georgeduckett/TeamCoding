@@ -25,5 +25,15 @@ namespace TeamCoding.VisualStudio.Controls
         {
             InitializeComponent();
         }
+        public UserAvatar(bool forDocumentTab)
+            : this()
+        {
+            if (forDocumentTab)
+            {
+                // For a user document we don't bind the outer border as it's set according to whether the user is focusing on / editing the document or not
+                BindingOperations.ClearBinding(bdrOuterBorder, VisibilityProperty);
+                BindingOperations.ClearBinding(bdrOuterBorder, BorderBrushProperty);
+            }
+        }
     }
 }

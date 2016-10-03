@@ -207,7 +207,7 @@ namespace TeamCoding.VisualStudio
 
                     if (PropertiesUpdated || forceUpdate)
                     {
-                        UserImages.SetUserControlProperties(userImageControl.Model, matchedRemoteDoc, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
+                        UserImages.SetDocumentTabUserControlProperties(userImageControl.Model, matchedRemoteDoc, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
                     }
                 }
             }
@@ -218,14 +218,14 @@ namespace TeamCoding.VisualStudio
             {
                 if (!tabPanel.Children.OfType<UserAvatar>().Where(fe => fe.Tag is IRemotelyAccessedDocumentData).Any(i => (i.Tag as IRemotelyAccessedDocumentData).Equals(remoteTabItem)))
                 {
-                    var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
+                    var imgUser = UserImages.CreateUserIdentityControl(remoteTabItem.IdeUserIdentity, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay, true);
 
                     if (imgUser != null)
                     {
                         imgUser.Width = (tabPanel.Children[0] as GlyphButton).Width;
                         imgUser.Height = (tabPanel.Children[0] as GlyphButton).Height;
                         imgUser.Margin = (tabPanel.Children[0] as GlyphButton).Margin;
-                        UserImages.SetUserControlProperties(imgUser.Model, remoteTabItem, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
+                        UserImages.SetDocumentTabUserControlProperties(imgUser.Model, remoteTabItem, TeamCodingPackage.Current.Settings.UserSettings.UserTabDisplay);
                         imgUser.Tag = remoteTabItem;
 
                         tabPanel.Children.Insert(tabPanel.Children.Count, imgUser);
