@@ -59,7 +59,6 @@ namespace TeamCoding.VisualStudio
             context.ToolTip = (userIdentity.DisplayName ?? userIdentity.Id);
             context.BorderBrush = context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
             
-            // TODO: When display settings change update the avatar models
             SetContextAccordingToDisplaySettings(context, userIdentity);
 
             UserModels.Add(userIdentity.Id, context);
