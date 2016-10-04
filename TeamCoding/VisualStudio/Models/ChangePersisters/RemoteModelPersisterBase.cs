@@ -9,6 +9,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
 {
     public abstract class RemoteModelPersisterBase : IRemoteModelPersister
     {
+        // TODO: Cache all the different lookups we want to do
         public event EventHandler RemoteModelReceived;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
         public IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new RemotelyAccessedDocumentData()
