@@ -7,3 +7,4 @@ In the options menu (under <#= TeamCoding.Options.OptionPageGrid.OptionsName #>)
 by opening a repository with a `<#= TeamCoding.Options.Settings.TeamCodingConfigFileName #>` file in it (shared settings will be taken from there).
 An example of a valid `<#= TeamCoding.Options.Settings.TeamCodingConfigFileName #>` file can be found in the options menu.
 The borders around the user image at the top of open tabs are coloured white for the user's selected tab and grey for an edited document tab.
+You can test the extension on your own, or test that you've got a sharing method correctly set up by ticking the "<#= TeamCoding.Options.OptionsPage.chkShowSelfCaption #>" checkbox.

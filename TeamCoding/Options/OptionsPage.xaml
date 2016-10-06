@@ -54,7 +54,7 @@
                     <Viewbox Stretch="Uniform" Margin="0,214,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top" >
                         <TextBlock x:Name="tbWinServiceIPAddress" />
                     </Viewbox>
-                    <CheckBox x:Name="chkShowSelf" Content="Testing: Show Self" HorizontalAlignment="Left" Margin="5,42,0,0" ToolTip="Show yourself; useful for seeing how you appear, testing out features on your own." IsChecked="{Binding ShowSelf}" Height="15" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="chkShowSelf" Content="{x:Static local:OptionsPage.chkShowSelfCaption}" HorizontalAlignment="Left" Margin="5,42,0,0" ToolTip="Show yourself; useful for seeing how you appear, testing out features on your own." IsChecked="{Binding ShowSelf}" Height="15" VerticalAlignment="Top"/>
                 </Grid>
             </GroupBox>
 

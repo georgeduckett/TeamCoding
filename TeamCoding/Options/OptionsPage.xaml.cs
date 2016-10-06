@@ -24,6 +24,7 @@ namespace TeamCoding.Options
     public partial class OptionsPage : UserControl
     {
         public const string chkUsingJsonSettingsCaption = "Using " + Settings.TeamCodingConfigFileName;
+        public const string chkShowSelfCaption = "Show yourself";
         public const string cmdShowJsonExampleCaption = "Show example " + Settings.TeamCodingConfigFileName;
 
         private readonly Dictionary<TextBox, CancellationTokenSource> TextBoxIsValidTaskCancelSources = new Dictionary<TextBox, CancellationTokenSource>();
