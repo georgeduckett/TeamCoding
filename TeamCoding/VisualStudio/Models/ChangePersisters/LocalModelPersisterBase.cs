@@ -49,6 +49,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         {
             await SendChanges();
         }
+        public Task SendUpdate()
+        {
+            return SendChanges();
+        }
         private async Task SendChanges()
         {
             if (await RequiredPropertiesAreSet())

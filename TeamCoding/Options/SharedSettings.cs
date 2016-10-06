@@ -13,6 +13,11 @@ namespace TeamCoding.Options
 {
     public class SharedSettings
     {
+        public bool ShowSelf { get { return ShowSelfProperty.Value; } set { ShowSelfProperty.Value = value; } }
+        public event EventHandler ShowSelfChanged { add { ShowSelfProperty.Changed += value; } remove { ShowSelfProperty.Changed -= value; } }
+        public event EventHandler ShowSelfChanging { add { ShowSelfProperty.Changing += value; } remove { ShowSelfProperty.Changing -= value; } }
+        public readonly SettingProperty<bool> ShowSelfProperty;
+        public const bool DefaultShowSelf = false;
         public string FileBasedPersisterPath { get { return FileBasedPersisterPathProperty.Value; } set { FileBasedPersisterPathProperty.Value = value; } }
         public event EventHandler FileBasedPersisterPathChanged { add { FileBasedPersisterPathProperty.Changed += value; } remove { FileBasedPersisterPathProperty.Changed -= value; } }
         public event EventHandler FileBasedPersisterPathChanging { add { FileBasedPersisterPathProperty.Changing += value; } remove { FileBasedPersisterPathProperty.Changing -= value; } }
@@ -45,6 +50,9 @@ namespace TeamCoding.Options
         public const string DefaultWinServiceIPAddress = null;
         public SharedSettings()
         {
+            ShowSelfProperty = new SettingProperty<bool>(this, null);
+            ShowSelfProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(ShowSelf)}: {ShowSelf}");
+
             FileBasedPersisterPathProperty = new SettingProperty<string>(this, SharedFolderLocalModelPersister.FolderPathIsValid);
             FileBasedPersisterPathProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(FileBasedPersisterPath)}: {FileBasedPersisterPath}");
 

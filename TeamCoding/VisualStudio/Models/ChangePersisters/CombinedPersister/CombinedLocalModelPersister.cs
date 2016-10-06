@@ -13,6 +13,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
         {
             LocalModelPersisters = localModelPersisters;
         }
+        public async Task SendUpdate()
+        {
+            await Task.WhenAll(LocalModelPersisters.Select(lmp => lmp.SendUpdate()));
+        }
         public void Dispose()
         {
             foreach(var localModelPersister in LocalModelPersisters)

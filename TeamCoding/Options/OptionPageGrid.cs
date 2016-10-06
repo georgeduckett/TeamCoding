@@ -18,6 +18,7 @@ namespace TeamCoding.Options
         public string UserImageUrl { get; set; } = UserSettings.DefaultImageUrl;
         public UserSettings.UserDisplaySetting UserCodeDisplay { get; set; } = UserSettings.DefaultUserCodeDisplay;
         public UserSettings.UserDisplaySetting UserTabDisplay { get; set; } = UserSettings.DefaultUserTabDisplay;
+        public bool ShowSelf { get; set; } = SharedSettings.DefaultShowSelf;
         public string FileBasedPersisterPath { get; set; } = SharedSettings.DefaultFileBasedPersisterPath;
         public string RedisServer { get; set; } = SharedSettings.DefaultRedisServer;
         public string SlackToken { get; set; } = SharedSettings.DefaultSlackToken;
