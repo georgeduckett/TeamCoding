@@ -35,7 +35,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         {
             if (SettingProperties.Any(p => string.IsNullOrEmpty(p.Value))) return false;
 
-            var propertyTasks = SettingProperties.Select(p => p.IsValidAsync).ToArray();
+            var propertyTasks = SettingProperties.Select(p => p.IsValidAsync()).ToArray();
 
             await Task.WhenAll(propertyTasks);
 

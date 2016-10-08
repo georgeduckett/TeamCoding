@@ -47,7 +47,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         {
             try
             {
-                if (await IPAddressSetting.IsValidAsync)
+                if (await IPAddressSetting.IsValidAsync())
                 {
                     Socket = AweSock.TcpConnect(IPAddressSetting.Value.Split(':')[0], int.Parse(IPAddressSetting.Value.Split(':')[1]));
                     ListenForMessages(Socket);

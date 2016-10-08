@@ -10,6 +10,7 @@ namespace TeamCoding.Options
     {
         private readonly object Owner;
         private readonly Func<TProperty, Task<string>> InvalidReasonFunc;
+        private bool? IsValid = null;
         public SettingProperty(object owner, Func<TProperty, Task<string>> invalidReasonFunc = null) { Owner = owner; InvalidReasonFunc = invalidReasonFunc; }
         private TProperty _Value;
         public TProperty Value
@@ -19,13 +20,14 @@ namespace TeamCoding.Options
             {
                 if (!EqualityComparer<TProperty>.Default.Equals(_Value, value))
                 {
+                    IsValid = null;
                     Changing?.Invoke(Owner, EventArgs.Empty);
                     _Value = value;
                     Changed?.Invoke(Owner, EventArgs.Empty);
                 }
             }
         }
-        public Task<bool> IsValidAsync => GetNewValueInvalidReasonAsync(Value).ContinueWith(t => t.Result == null);
+        public async Task<bool> IsValidAsync() => IsValid ?? (bool)(IsValid = await GetNewValueInvalidReasonAsync(Value).ContinueWith(t => t.Result == null));
         public Task<string> GetNewValueInvalidReasonAsync(TProperty newValue) => InvalidReasonFunc == null ? Task.FromResult<string>(null) : InvalidReasonFunc(newValue);
         public event EventHandler Changing;
         public event EventHandler Changed;
