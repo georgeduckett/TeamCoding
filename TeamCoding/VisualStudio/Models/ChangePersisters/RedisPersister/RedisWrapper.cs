@@ -47,20 +47,21 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 const string testChannel = "TeamCoding.RedisWrapper.Test";
                 var testValue = "test" + DateTime.UtcNow.ToString();
                 string receivedValue = null;
-                await redisClient.GetSubscriber().SubscribeAsync(testChannel, (c, v) =>
-                {
-                    if(v.ToString() != testValue)
+                Action<RedisChannel, RedisValue> testHandler = (c, v) =>
                     {
-                        receivedValue = v.ToString();
-                    }
-                    subscribeTriggerEvent.Set();
-                });
-
+                        if (v.ToString() != testValue)
+                        {
+                            receivedValue = v.ToString();
+                        }
+                        subscribeTriggerEvent.Set();
+                    };
+                await redisClient.GetSubscriber().SubscribeAsync(testChannel, testHandler);
                 await redisClient.GetSubscriber().PublishAsync(testChannel, testValue);
 
                 if (subscribeTriggerEvent.Wait(5000))
                 {
-                    if(receivedValue != null)
+                    await redisClient.GetSubscriber().UnsubscribeAsync(testChannel, testHandler);
+                    if (receivedValue != null)
                     {
                         return $"Value recieved did not match value sent.{Environment.NewLine}Sent: {testValue}{Environment.NewLine}Received {receivedValue}";
                     }
