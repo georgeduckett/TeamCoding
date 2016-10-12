@@ -20,14 +20,14 @@ namespace TeamCoding.Options
             {
                 if (!EqualityComparer<TProperty>.Default.Equals(_Value, value))
                 {
-                    IsValid = null;
                     Changing?.Invoke(Owner, EventArgs.Empty);
+                    IsValid = null;
                     _Value = value;
                     Changed?.Invoke(Owner, EventArgs.Empty);
                 }
             }
         }
-        public async Task<bool> IsValidAsync() => IsValid ?? (bool)(IsValid = await GetNewValueInvalidReasonAsync(Value).ContinueWith(t => t.Result == null));
+        public async Task<bool> IsValidAsync() => IsValid ?? (bool)(IsValid = await GetNewValueInvalidReasonAsync(Value).ContinueWith(t => !t.IsFaulted && t.Result == null));
         public Task<string> GetNewValueInvalidReasonAsync(TProperty newValue) => InvalidReasonFunc == null ? Task.FromResult<string>(null) : InvalidReasonFunc(newValue);
         public event EventHandler Changing;
         public event EventHandler Changed;
