@@ -82,10 +82,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 TeamCodingPackage.Current.Logger.WriteInformation($"Connecting to Redis using config string: \"{redisServer}\"");
                 RedisClient = await ConnectionMultiplexer.ConnectAsync(redisServer)
                     .HandleException((ex) => TeamCodingPackage.Current.Logger.WriteError($"Failed to connect to redis server using config string: {redisServer}"));
-                TeamCodingPackage.Current.Logger.WriteInformation($"Connected to Redis using config string: \"{redisServer}\"");
 
                 if (RedisClient != null)
                 {
+                    TeamCodingPackage.Current.Logger.WriteInformation($"Connected to Redis using config string: \"{redisServer}\"");
                     IEnumerable<Task> tasks;
                     lock (SubscribedActions)
                     {
