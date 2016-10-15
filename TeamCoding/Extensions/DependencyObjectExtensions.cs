@@ -82,23 +82,38 @@ namespace TeamCoding.Extensions
             }
         }
         public static IEnumerable<DependencyObject> FindChildren(this DependencyObject parent, string name) => FindChildren(parent, (d => (d as FrameworkElement)?.Name == name));
-        public static IEnumerable<DependencyObject> FindChildren(this DependencyObject parent, Func<DependencyObject, bool> predicate)
+        public static IEnumerable<DependencyObject> FindChildren(this DependencyObject parent, Func<DependencyObject, bool> predicate, bool returnFirst = false)
         {
-            if (predicate(parent)) yield return parent;
+            var toProcess = new Stack<DependencyObject>();
+            var result = new List<DependencyObject>();
 
-            (parent as FrameworkElement)?.ApplyTemplate();
+            toProcess.Push(parent);
 
-            foreach (var child in parent.Children())
+            while (toProcess.Count != 0)
             {
-                foreach (var c in FindChildren(child, predicate))
+                var nextControl = toProcess.Pop();
+
+                if (predicate(nextControl))
                 {
-                    yield return c;
+                    result.Add(nextControl);
+                    if (returnFirst)
+                    {
+                        return result;
+                    }
+                }
+
+                (nextControl as FrameworkElement)?.ApplyTemplate();
+                int childrenCount = VisualTreeHelper.GetChildrenCount(nextControl);
+                for (int i = 0; i < childrenCount; i++)
+                {
+                    toProcess.Push(VisualTreeHelper.GetChild(nextControl, i));
                 }
             }
-        }
 
+            return result;
+        }
         public static IEnumerable<T> FindChildren<T>(this DependencyObject parent) where T : DependencyObject => FindChildren(parent, p => p is T).Cast<T>();
         public static T FindChild<T>(this DependencyObject parent, Func<T, bool> predicate = null) where T : DependencyObject => (T)FindChild(parent, p => p is T && (predicate == null || predicate(p as T)));
-        public static DependencyObject FindChild(this DependencyObject parent, Func<DependencyObject, bool> predicate) => FindChildren(parent, predicate).FirstOrDefault();
+        public static DependencyObject FindChild(this DependencyObject parent, Func<DependencyObject, bool> predicate) => FindChildren(parent, predicate, true).FirstOrDefault();
     }
 }
