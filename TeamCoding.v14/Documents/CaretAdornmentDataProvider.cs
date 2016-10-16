@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Text;
 using TeamCoding.Interfaces.Documents;
 using Microsoft.CodeAnalysis.Text;
 using TeamCoding.Extensions;
+using Microsoft.CodeAnalysis;
 
 namespace TeamCoding.Documents
 {
@@ -31,11 +32,22 @@ namespace TeamCoding.Documents
             {
                 return Enumerable.Empty<CaretAdornmentData>();
             }
-            var nodes = new[] { rootNode };
+            var nodes = new List<SyntaxNode>() { rootNode };
             var i = 1;
-            while (nodes.Length != 0 && i < caretMemberHashcodes.Length)
+            while (nodes.Count != 0 && i < caretMemberHashcodes.Length)
             {
-                nodes = nodes.SelectMany(node => node.ChildNodes().Where(c => c.GetValueBasedHashCode() == caretMemberHashcodes[i])).ToArray();
+                var oldNodesCount = nodes.Count;
+                for (int nodeIndex = 0; nodeIndex < oldNodesCount; nodeIndex++)
+                {
+                    foreach(var childNode in nodes[nodeIndex].ChildNodes())
+                    {
+                        if(childNode.GetValueBasedHashCode() == caretMemberHashcodes[i])
+                        {
+                            nodes.Add(childNode);
+                        }
+                    }
+                }
+                nodes.RemoveRange(0, oldNodesCount);
                 i++;
             }
             return nodes.Select(n => new CaretAdornmentData(n.SpanStart, n.Span.End));
