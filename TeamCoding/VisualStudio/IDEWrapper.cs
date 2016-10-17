@@ -231,6 +231,10 @@ namespace TeamCoding.VisualStudio
                         tabPanel.Children.Insert(tabPanel.Children.Count, imgUser);
                     }
                 }
+                else
+                {
+                    // TODO: Ensure we do hit this and aren't creating images when we don't need to
+                }
             }
         }
     }

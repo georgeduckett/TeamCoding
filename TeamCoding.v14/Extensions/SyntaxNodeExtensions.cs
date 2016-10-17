@@ -58,7 +58,7 @@ namespace TeamCoding.Extensions
 
             if (!(syntaxNode is ICompilationUnitSyntax) && (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0))
             {
-                return syntaxNode.ToString().GetHashCode();
+                return syntaxNode.ToString().GetHashCode(); // TODO: Cache the hashcode, ensuring we remove them when appropriate
             }
             else
             {

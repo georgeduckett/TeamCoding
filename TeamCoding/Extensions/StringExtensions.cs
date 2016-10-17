@@ -17,7 +17,7 @@ namespace TeamCoding.Extensions
 
             if (Directory.Exists(myParentFolder))
             {
-                //myParentFolder = GetLongPathName.Invoke(myFullName);
+                // TODO: Cache this, maybe handle folder re-names?
                 string myFileOrFolder = Directory.GetFileSystemEntries(myParentFolder, myChildName).FirstOrDefault();
                 if (!ReferenceEquals(myFileOrFolder, null))
                 {
