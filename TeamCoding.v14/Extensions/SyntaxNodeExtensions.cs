@@ -14,6 +14,9 @@ namespace TeamCoding.Extensions
 {
     public static class SyntaxNodeExtensions
     {
+        private static readonly Dictionary<SyntaxNode, int> _SyntaxNodeHashes = new Dictionary<SyntaxNode, int>();
+        private static readonly MultiValueDictionary<string, SyntaxNode> _SyntaxNodesFromFilePath = new MultiValueDictionary<string, SyntaxNode>();
+
         public static bool IsTrackedLeafNode(this SyntaxNode syntaxNode)
         {
             return syntaxNode is MemberDeclarationSyntax ||
@@ -25,6 +28,11 @@ namespace TeamCoding.Extensions
             if (syntaxNode == null)
             {
                 throw new ArgumentNullException(nameof(syntaxNode));
+            }
+
+            if (_SyntaxNodeHashes.ContainsKey(syntaxNode))
+            {
+                return _SyntaxNodeHashes[syntaxNode];
             }
 
             var identityHash = syntaxNode.GetCodeElementIdentityCommon()?.GetHashCode() ?? 0;
@@ -58,12 +66,28 @@ namespace TeamCoding.Extensions
 
             if (!(syntaxNode is ICompilationUnitSyntax) && (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0))
             {
-                return syntaxNode.ToString().GetHashCode(); // TODO: Cache the hashcode, ensuring we remove them when appropriate
+
+                identityHash = syntaxNode.ToString().GetHashCode();
             }
-            else
+
+            var filePath = syntaxNode.SyntaxTree?.FilePath;
+            if(syntaxNode is ICompilationUnitSyntax && filePath != null && _SyntaxNodesFromFilePath.ContainsKey(filePath))
             {
-                return identityHash;
+                // If we've got a new compilation unit syntax then any syntax nodes from the same file won't get used so remove them.
+                foreach(var node in _SyntaxNodesFromFilePath[filePath])
+                {
+                    _SyntaxNodeHashes.Remove(node);
+                }
+                _SyntaxNodesFromFilePath.Remove(filePath);
             }
+
+            if (filePath != null)
+            {
+                _SyntaxNodesFromFilePath.Add(filePath, syntaxNode);
+            }
+            _SyntaxNodeHashes.Add(syntaxNode, identityHash);
+
+            return identityHash;
         }
     }
 }
