@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System.IO;
+using TeamCoding.Documents;
 
 namespace TeamCoding.Extensions
 {
@@ -10,7 +11,7 @@ namespace TeamCoding.Extensions
             ITextDocument textDoc;
             if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDoc))
             {
-                return Path.GetFullPath(textDoc.FilePath); // TODO: Cache this (maybe make a class to manage this stuff)
+                return DocumentPaths.GetFullPath(textDoc.FilePath);
             }
             else
             {

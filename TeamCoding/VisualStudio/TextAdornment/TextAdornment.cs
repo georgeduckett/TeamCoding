@@ -73,7 +73,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Layer.RemoveAllAdornments();
-
+            // TODO: Re-use adornments where the adornment just needs to be changed
             foreach(var caret in CaretPositions)
             {
                 var nodes = await TeamCodingPackage.Current.CaretAdornmentDataProvider.GetCaretAdornmentData(View.TextSnapshot, caret.CaretMemberHashCodes);

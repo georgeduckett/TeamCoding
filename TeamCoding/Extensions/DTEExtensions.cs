@@ -1,4 +1,5 @@
 ﻿using EnvDTE;
+using TeamCoding.Documents;
 
 namespace TeamCoding.Extensions
 {
@@ -10,7 +11,7 @@ namespace TeamCoding.Extensions
         }
         public static string GetWindowsFilePath(this Document document)
         {
-            return document.FullName.GetCorrectCaseOfParentFolder();
+            return DocumentPaths.GetCorrectCase(document.FullName);
         }
     }
 }

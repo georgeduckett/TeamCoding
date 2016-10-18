@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="CredentialManagement\NativeMethods.cs" />
     <Compile Include="CredentialManagement\WindowsCredential.cs" />
+    <Compile Include="Documents\DocumentPaths.cs" />
     <Compile Include="Documents\SourceControlRepositories\CachedSourceControlRepository.cs" />
     <Compile Include="Documents\SourceControlRepositories\SolutionNameBasedRepository.cs" />
     <Compile Include="Events\CombinedEvent.cs" />
@@ -81,7 +82,6 @@
     <Compile Include="Extensions\DTEExtensions.cs" />
     <Compile Include="Extensions\IDBConnectionExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
