@@ -30,47 +30,58 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         {
             ConnectTask = ChangeRedisServer();
         }
+        private readonly static SemaphoreSlim GetServerStringErrorTextSemaphore = new SemaphoreSlim(1, 1);
         public static async Task<string> GetServerStringErrorText(string serverString)
-        {
+        {            
             if (string.IsNullOrWhiteSpace(serverString))
             {
                 return "Server cannot be purely whitespace";
             }
-            using(var redisClient = await ConnectionMultiplexer.ConnectAsync(serverString))
+            await GetServerStringErrorTextSemaphore.WaitAsync();
+            try
             {
-                if (!redisClient.IsConnected)
+                using (var redisClient = await ConnectionMultiplexer.ConnectAsync(serverString))
                 {
-                    return "Could not connect to redis server";
-                }
-
-                var subscribeTriggerEvent = new ManualResetEventSlim();
-                const string testChannel = "TeamCoding.RedisWrapper.Test";
-                var testValue = "test" + DateTime.UtcNow.ToString();
-                string receivedValue = null;
-                Action<RedisChannel, RedisValue> testHandler = (c, v) =>
+                    if (!redisClient.IsConnected)
                     {
-                        if (v.ToString() != testValue)
+                        return "Could not connect to redis server";
+                    }
+
+                    var subscribeTriggerEvent = new ManualResetEventSlim();
+                    const string testChannel = "TeamCoding.RedisWrapper.Test";
+                    var testValue = "test" + DateTime.UtcNow.ToString();
+                    string receivedValue = null;
+                    Action<RedisChannel, RedisValue> testHandler = (c, v) =>
                         {
-                            receivedValue = v.ToString();
-                        }
-                        subscribeTriggerEvent.Set();
-                    };
-                await redisClient.GetSubscriber().SubscribeAsync(testChannel, testHandler);
-                await Task.Delay(1000);
-                await redisClient.GetSubscriber().PublishAsync(testChannel, testValue);
+                            if (v.ToString() != testValue)
+                            {
+                                receivedValue = v.ToString();
+                            }
+                            subscribeTriggerEvent.Set();
+                        };
+                    var subscriber = redisClient.GetSubscriber();
+                    await subscriber.SubscribeAsync(testChannel, testHandler);
+                    await Task.Delay(1000);
+                    await subscriber.PublishAsync(testChannel, testValue);
 
-                if (subscribeTriggerEvent.Wait(5000))
-                {
-                    await redisClient.GetSubscriber().UnsubscribeAsync(testChannel, testHandler);
-                    if (receivedValue != null)
+                    if (subscribeTriggerEvent.Wait(10000))
                     {
-                        return $"Value recieved did not match value sent.{Environment.NewLine}Sent: {testValue}{Environment.NewLine}Received {receivedValue}";
+                        await subscriber.UnsubscribeAsync(testChannel, testHandler);
+                        if (receivedValue != null)
+                        {
+                            return $"Value recieved did not match value sent.{Environment.NewLine}Sent: {testValue}{Environment.NewLine}Received {receivedValue}";
+                        }
+                    }
+                    else
+                    {
+                        await subscriber.UnsubscribeAsync(testChannel, testHandler);
+                        return "Could not send and receive test message after 10 seconds";
                     }
                 }
-                else
-                {
-                    return "Could not send and receive test message after 5 seconds";
-                }
+            }
+            finally
+            {
+                GetServerStringErrorTextSemaphore.Release();
             }
 
             return null;
