@@ -15,6 +15,7 @@ using System.Windows;
 using System.Collections.Generic;
 using TeamCoding.Interfaces.Documents;
 using TeamCoding.Documents;
+using TeamCoding.VisualStudio.Controls;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -27,8 +28,10 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private readonly DocumentRepoMetaData RepoDocument;
 
         private Func<IRemotelyAccessedDocumentData, bool> OpenFilesFilter;
+        private readonly Dictionary<string, Queue<FrameworkElement>> UserAvatars = new Dictionary<string, Queue<FrameworkElement>>();
         public TextAdornment(IWpfTextView view)
         {
+
             OpenFilesFilter = of => of.Repository == RepoDocument.RepoUrl &&
                                     of.RelativePath == RepoDocument.RelativePath &&
                                     of.RepositoryBranch == RepoDocument.RepoBranch &&
@@ -44,13 +47,21 @@ namespace TeamCoding.VisualStudio.TextAdornment
             RepoDocument = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
 
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RefreshAdornments;
-            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged += RefreshAdornments;
+            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged += UserSettings_UserCodeDisplayChanged;
             View.LayoutChanged += OnLayoutChanged;
 
             var penBrush = new SolidColorBrush(Colors.Red);
             penBrush.Freeze();
             CaretPen = new Pen(penBrush, 1);
             CaretPen.Freeze();
+        }
+
+        private async void UserSettings_UserCodeDisplayChanged(object sender, EventArgs e)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            Layer.RemoveAllAdornments();
+            UserAvatars.Clear();
+            RefreshAdornments(sender, e);
         }
 
         private async void RefreshAdornments(object sender, EventArgs e)
@@ -73,7 +84,6 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Layer.RemoveAllAdornments();
-            // TODO: Re-use adornments where the adornment just needs to be changed
             foreach(var caret in CaretPositions)
             {
                 var nodes = await TeamCodingPackage.Current.CaretAdornmentDataProvider.GetCaretAdornmentData(View.TextSnapshot, caret.CaretMemberHashCodes);
@@ -129,34 +139,56 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, image, null);
 
                 FrameworkElement userControl = null;
-
+                if (UserAvatars.ContainsKey(userIdentity.Id) && UserAvatars[userIdentity.Id].Count != 0)
+                {
+                    userControl = UserAvatars[userIdentity.Id].Dequeue();
+                }
                 if (TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplay == Options.UserSettings.UserDisplaySetting.Colour)
                 {
-                    userControl = new Border()
+                    if (userControl == null)
                     {
-                        Background = UserColours.GetUserBrush(userIdentity),
-                        CornerRadius = new CornerRadius((caretGeometry.Bounds.Height / 2) / 2)
-                    };
+                        userControl = new Border()
+                        {
+                            Tag = userIdentity.Id,
+                            Background = UserColours.GetUserBrush(userIdentity),
+                            CornerRadius = new CornerRadius((caretGeometry.Bounds.Height / 2) / 2)
+                        };
+                    }
                     userControl.Width = caretGeometry.Bounds.Height / 2;
                     userControl.Height = caretGeometry.Bounds.Height / 2;
                     Canvas.SetTop(userControl, caretGeometry.Bounds.Top - (userControl.Height * 0.75));
                 }
                 else
                 {
-                    userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
+                    if (userControl == null)
+                    {
+                        userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
+                    }
                     userControl.Width = caretGeometry.Bounds.Height / 1.25f;
                     userControl.Height = caretGeometry.Bounds.Height / 1.25f;
                     Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
                 }
                 userControl.ToolTip = userIdentity.DisplayName ?? userIdentity.Id;
                 Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - userControl.Width / 2);
-                Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, null);
+                Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, AdornmentRemoved);
             }
         }
-
+        public void AdornmentRemoved(object sender, UIElement element)
+        {
+            var frameworkElement = element as FrameworkElement;
+            if (frameworkElement?.Tag as string != null)
+            {
+                if(!UserAvatars.ContainsKey(frameworkElement.Tag as string))
+                {
+                    UserAvatars.Add(frameworkElement.Tag as string, new Queue<FrameworkElement>());
+                }
+                UserAvatars[frameworkElement.Tag as string].Enqueue(frameworkElement);
+            }
+        }
         public void Dispose()
         {
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RefreshAdornments;
+            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged -= UserSettings_UserCodeDisplayChanged;
         }
     }
 }

@@ -41,6 +41,16 @@ namespace TeamCoding.VisualStudio.Controls
                 OnPropertyChanged(nameof(BorderVisibility));
             }
         }
+        private string _Tag;
+        public string Tag
+        {
+            get { return _Tag; }
+            set
+            {
+                _Tag = value;
+                OnPropertyChanged(nameof(Tag));
+            }
+        }
         private string _ToolTip;
         public string ToolTip
         {

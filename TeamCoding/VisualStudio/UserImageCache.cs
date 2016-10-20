@@ -57,6 +57,7 @@ namespace TeamCoding.VisualStudio
 
             context = new UserAvatarModel();
             context.ToolTip = (userIdentity.DisplayName ?? userIdentity.Id);
+            context.Tag = userIdentity.Id;
             context.BorderBrush = context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
             
             SetContextAccordingToDisplaySettings(context, userIdentity);
