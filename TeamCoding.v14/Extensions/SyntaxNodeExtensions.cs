@@ -37,10 +37,32 @@ namespace TeamCoding.Extensions
 
             var identityHash = syntaxNode.GetCodeElementIdentityCommon()?.GetHashCode() ?? 0;
 
+            var fieldDeclarationNodeCS = syntaxNode as Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax;
+            var fieldDeclarationNodeVB = syntaxNode as Microsoft.CodeAnalysis.VisualBasic.Syntax.FieldDeclarationSyntax;
             var methodDeclarationNode = syntaxNode as BaseMethodDeclarationSyntax;
             var methodBaseNode = syntaxNode as MethodBlockBaseSyntax;
 
-            if (methodDeclarationNode != null)
+            if(fieldDeclarationNodeCS != null)
+            {
+                // We could have seveal methods with the overloads, so base the hash on the parameter types too
+                identityHash = 17 * 31 + identityHash;
+
+                foreach (var var in fieldDeclarationNodeCS.Declaration.Variables)
+                {
+                    identityHash = identityHash * 31 + var.Identifier.Text.GetHashCode();
+                }
+            }
+            else if (fieldDeclarationNodeVB != null)
+            {
+                foreach (var dec in fieldDeclarationNodeVB.Declarators)
+                {
+                    foreach (var var in dec.Names)
+                    {
+                        identityHash = identityHash * 31 + var.Identifier.Text.GetHashCode();
+                    }
+                }
+            }
+            else if (methodDeclarationNode != null)
             {
                 // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
