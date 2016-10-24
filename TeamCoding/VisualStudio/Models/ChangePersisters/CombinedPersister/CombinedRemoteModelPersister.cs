@@ -10,6 +10,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
     public class CombinedRemoteModelPersister : IRemoteModelPersister
     {
         private readonly IRemoteModelPersister[] RemoteModelPersisters;
+        private IRemotelyAccessedDocumentData[] CachedOpenFiles = null;
         public event EventHandler RemoteModelReceived
         {
             add
@@ -27,31 +28,49 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
                 }
             }
         }
-
-        public IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles() => RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles().ToArray()).GroupBy(scdd => new
+        public IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles()
         {
-            scdd.Repository,
-            scdd.RepositoryBranch,
-            scdd.RelativePath,
-            scdd.IdeUserIdentity.Id
-        }).Select(g => new RemotelyAccessedDocumentData()
-        {
-            Repository = g.Key.Repository,
-            RepositoryBranch = g.Key.RepositoryBranch,
-            RelativePath = g.Key.RelativePath,
-            IdeUserIdentity = g.First().IdeUserIdentity,
-            HasFocus = g.Any(scdd => scdd.HasFocus),
-            BeingEdited = g.Any(scdd => scdd.BeingEdited),
-            CaretPositionInfo = g.FirstOrDefault(scdd => scdd.CaretPositionInfo != null)?.CaretPositionInfo
-        }).ToArray();
+            if (CachedOpenFiles != null)
+            {
+                return CachedOpenFiles;
+            }
+            else
+            {
+                return CachedOpenFiles = RemoteModelPersisters.SelectMany(rmp => rmp.GetOpenFiles().ToArray()).GroupBy(scdd => new
+                {
+                    scdd.Repository,
+                    scdd.RepositoryBranch,
+                    scdd.RelativePath,
+                    scdd.IdeUserIdentity.Id
+                }).Select(g => new RemotelyAccessedDocumentData()
+                {
+                    Repository = g.Key.Repository,
+                    RepositoryBranch = g.Key.RepositoryBranch,
+                    RelativePath = g.Key.RelativePath,
+                    IdeUserIdentity = g.First().IdeUserIdentity,
+                    HasFocus = g.Any(scdd => scdd.HasFocus),
+                    BeingEdited = g.Any(scdd => scdd.BeingEdited),
+                    CaretPositionInfo = g.FirstOrDefault(scdd => scdd.CaretPositionInfo != null)?.CaretPositionInfo
+                }).ToArray();
+            }
+        }
         public CombinedRemoteModelPersister(params IRemoteModelPersister[] remoteModelPersisters)
         {
             RemoteModelPersisters = remoteModelPersisters;
+            foreach(var remoteModelPersister in RemoteModelPersisters)
+            {
+                remoteModelPersister.RemoteModelReceived += RemoteModelPersister_RemoteModelReceived;
+            }
+        }
+        private void RemoteModelPersister_RemoteModelReceived(object sender, EventArgs e)
+        {
+            CachedOpenFiles = null;
         }
         public void Dispose()
         {
             foreach(var remoteModelPersister in RemoteModelPersisters)
             {
+                remoteModelPersister.RemoteModelReceived -= RemoteModelPersister_RemoteModelReceived;
                 remoteModelPersister.Dispose();
             }
         }

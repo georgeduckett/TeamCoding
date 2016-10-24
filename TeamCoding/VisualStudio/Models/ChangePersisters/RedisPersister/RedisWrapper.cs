@@ -49,7 +49,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 
                     var subscribeTriggerEvent = new ManualResetEventSlim();
                     const string testChannel = "TeamCoding.RedisWrapper.Test";
-                    var testValue = "test" + DateTime.UtcNow.ToString();
+                    var testValue = Guid.NewGuid().ToString();
                     string receivedValue = null;
                     Action<RedisChannel, RedisValue> testHandler = (c, v) =>
                         {

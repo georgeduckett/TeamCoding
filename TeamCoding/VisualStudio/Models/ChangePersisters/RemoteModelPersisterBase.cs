@@ -14,16 +14,28 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         public event EventHandler RemoteModelReceived;
         private readonly SharedSettings SharedSettings;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
-        public IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles() => RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new RemotelyAccessedDocumentData()
+        private IRemotelyAccessedDocumentData[] CachedOpenFiles = null;
+
+        public IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles()
         {
-            Repository = of.RepoUrl,
-            RepositoryBranch = of.RepoBranch,
-            IdeUserIdentity = model.IDEUserIdentity,
-            RelativePath = of.RelativePath,
-            BeingEdited = of.BeingEdited,
-            HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault(),
-            CaretPositionInfo = of.CaretPositionInfo
-        }));
+            if (CachedOpenFiles != null)
+            {
+                return CachedOpenFiles;
+            }
+            else
+            {
+                return CachedOpenFiles = RemoteModels.Values.SelectMany(model => model.OpenFiles.Select(of => new RemotelyAccessedDocumentData()
+                {
+                    Repository = of.RepoUrl,
+                    RepositoryBranch = of.RepoBranch,
+                    IdeUserIdentity = model.IDEUserIdentity,
+                    RelativePath = of.RelativePath,
+                    BeingEdited = of.BeingEdited,
+                    HasFocus = of == model.OpenFiles.OrderByDescending(oof => oof.LastActioned).FirstOrDefault(),
+                    CaretPositionInfo = of.CaretPositionInfo
+                })).ToArray();
+            }
+        }
         public RemoteModelPersisterBase()
         {
             SharedSettings = TeamCodingPackage.Current.Settings.SharedSettings;
@@ -46,11 +58,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         public void ClearRemoteModels()
         {
             RemoteModels.Clear();
+            CachedOpenFiles = null;
         }
         public void OnRemoteModelReceived(RemoteIDEModel remoteModel)
         {
             TeamCodingPackage.Current.IDEWrapper.InvokeAsync(() =>
             {
+                CachedOpenFiles = null;
                 if (remoteModel == null)
                 {
                     ClearRemoteModels();

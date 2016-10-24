@@ -7,7 +7,10 @@ namespace TeamCoding.Extensions
     {
         public static string GetRelatedFilePath(this DocumentView documentView)
         {
-            var fileName = documentView.Name.Split('|')[2];
+            var firstPipe = documentView.Name.IndexOf('|');
+            var secondPipe = documentView.Name.IndexOf('|', firstPipe + 1);
+            var thirdPipe = documentView.Name.IndexOf('|', secondPipe + 1);
+            var fileName = documentView.Name.Substring(secondPipe + 1, thirdPipe - secondPipe - 1);
             return DocumentPaths.GetCorrectCase(fileName);
         }
     }

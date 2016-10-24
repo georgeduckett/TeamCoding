@@ -133,8 +133,9 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 };
 
                 // Align the image with the top of the bounds of the text geometry
-                Canvas.SetLeft(image, caretGeometry.Bounds.Left);
-                Canvas.SetTop(image, caretGeometry.Bounds.Top);
+                var bounds = caretGeometry.Bounds;
+                Canvas.SetLeft(image, bounds.Left);
+                Canvas.SetTop(image, bounds.Top);
 
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, image, null);
 
@@ -151,12 +152,12 @@ namespace TeamCoding.VisualStudio.TextAdornment
                         {
                             Tag = userIdentity.Id,
                             Background = UserColours.GetUserBrush(userIdentity),
-                            CornerRadius = new CornerRadius((caretGeometry.Bounds.Height / 2) / 2)
+                            CornerRadius = new CornerRadius(bounds.Height / 2 / 2)
                         };
                     }
-                    userControl.Width = caretGeometry.Bounds.Height / 2;
-                    userControl.Height = caretGeometry.Bounds.Height / 2;
-                    Canvas.SetTop(userControl, caretGeometry.Bounds.Top - (userControl.Height * 0.75));
+                    userControl.Width = bounds.Height / 2;
+                    userControl.Height = bounds.Height / 2;
+                    Canvas.SetTop(userControl, bounds.Top - (userControl.Height * 0.75));
                 }
                 else
                 {
@@ -164,12 +165,12 @@ namespace TeamCoding.VisualStudio.TextAdornment
                     {
                         userControl = TeamCodingPackage.Current.UserImages.CreateUserIdentityControl(userIdentity);
                     }
-                    userControl.Width = caretGeometry.Bounds.Height / 1.25f;
-                    userControl.Height = caretGeometry.Bounds.Height / 1.25f;
-                    Canvas.SetTop(userControl, caretGeometry.Bounds.Top - userControl.Height);
+                    userControl.Width = bounds.Height / 1.25f;
+                    userControl.Height = bounds.Height / 1.25f;
+                    Canvas.SetTop(userControl, bounds.Top - userControl.Height);
                 }
                 userControl.ToolTip = userIdentity.DisplayName ?? userIdentity.Id;
-                Canvas.SetLeft(userControl, caretGeometry.Bounds.Left - userControl.Width / 2);
+                Canvas.SetLeft(userControl, bounds.Left - userControl.Width / 2);
                 Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, remoteCaretSpan, null, userControl, AdornmentRemoved);
             }
         }
