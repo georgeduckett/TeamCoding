@@ -39,11 +39,15 @@ namespace TeamCoding.Documents
                 var oldNodesCount = nodes.Count;
                 for (int nodeIndex = 0; nodeIndex < oldNodesCount; nodeIndex++)
                 {
-                    foreach(var childNode in nodes[nodeIndex].ChildNodes())
+                    foreach(var childTokenOrNode in nodes[nodeIndex].ChildNodesAndTokens())
                     {
-                        if(childNode.GetValueBasedHashCode() == caretMemberHashcodes[i])
+                        if (childTokenOrNode.IsNode)
                         {
-                            nodes.Add(childNode);
+                            var childNode = childTokenOrNode.AsNode();
+                            if (childNode.GetValueBasedHashCode() == caretMemberHashcodes[i])
+                            {
+                                nodes.Add(childNode);
+                            }
                         }
                     }
                 }
