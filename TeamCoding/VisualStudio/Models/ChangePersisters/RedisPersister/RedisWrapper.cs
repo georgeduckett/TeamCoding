@@ -61,7 +61,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                         };
                     var subscriber = redisClient.GetSubscriber();
                     await subscriber.SubscribeAsync(testChannel, testHandler);
-                    await Task.Delay(1000);
                     await subscriber.PublishAsync(testChannel, testValue);
 
                     if (subscribeTriggerEvent.Wait(10000))
