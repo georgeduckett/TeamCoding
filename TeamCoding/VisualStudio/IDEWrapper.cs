@@ -29,6 +29,7 @@ namespace TeamCoding.VisualStudio
         private readonly EnvDTE.DTE DTE;
         public string SolutionFilePath => DTE?.Solution?.FullName;
         private readonly List<Action> WpfCreatedCallbacks = new List<Action>();
+        private DocumentTabPanel CachedDocumentTabPanel = null;
         public IDEWrapper(EnvDTE.DTE dte)
         {
             DTE = dte;
@@ -49,9 +50,8 @@ namespace TeamCoding.VisualStudio
                 var filePath = window.GetWindowsFilePath();
 
                 if (filePath == null) return;
-
-                var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
-                var titlePanels = documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
+                CacheDocPanel();
+                var titlePanels = CachedDocumentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>();
 
                 var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
@@ -59,6 +59,14 @@ namespace TeamCoding.VisualStudio
 
                 UpdateTabImages(tabItemWithFilePath.Item, filePath, remoteOpenFiles, false);
             });
+        }
+
+        private void CacheDocPanel()
+        {
+            if (CachedDocumentTabPanel == null || !CachedDocumentTabPanel.HasParent(WpfMainWindow))
+            {
+                CachedDocumentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
+            }
         }
 
         private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
@@ -130,16 +138,16 @@ namespace TeamCoding.VisualStudio
         {
             try
             {
-                var documentTabPanel = WpfMainWindow.FindChild<DocumentTabPanel>();
+                CacheDocPanel();
 
-                if (documentTabPanel == null)
+                if (CachedDocumentTabPanel == null)
                 { // We don't have a doc panel ATM (no docs are open)
                     return;
                 }
 
                 var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
-                foreach (var titlePanel in documentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>().Where(tp => tp.DataContext is DocumentView))
+                foreach (var titlePanel in CachedDocumentTabPanel.FindChildren("TitlePanel").Cast<DockPanel>().Where(tp => tp.DataContext is DocumentView))
                 {
                     UpdateTabImages(titlePanel, (titlePanel.DataContext as DocumentView).GetRelatedFilePath(), remoteOpenFiles, forceUpdate);
                 }

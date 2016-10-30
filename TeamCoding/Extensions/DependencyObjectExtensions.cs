@@ -9,6 +9,24 @@ namespace TeamCoding.Extensions
 {
     public static class DependencyObjectExtensions
     {
+        public static bool HasParent(this DependencyObject child, DependencyObject targetParent)
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+
+            if (parent == null)
+            {
+                return false;
+            }
+            
+            if (parent == targetParent)
+            {
+                return true;
+            }
+            else
+            {
+                return HasParent(parent, targetParent);
+            }
+        }
         public static T FindParent<T>(this DependencyObject child) where T : DependencyObject
         {
             var parent = VisualTreeHelper.GetParent(child);
