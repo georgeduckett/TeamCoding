@@ -40,7 +40,7 @@ WHEN NOT MATCHED THEN
 
         public event EventHandler DataChanged;
         private DateTime LastSqlWriteTime = DateTime.UtcNow;
-        private readonly Task RowHeartBeatTask;
+        private Task RowHeartBeatTask;
         private CancellationTokenSource SqlHeartBeatCancelSource;
         private CancellationToken SqlHeartBeatCancelToken;
         private SqlWatcher TableWatcher;
@@ -133,11 +133,28 @@ WHEN NOT MATCHED THEN
         {
             CreateRowWatcher();
             TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionStringChanged += Settings_SqlServerConnectionStringChanged;
+        }
+        private void CreateRowWatcher()
+        {
+            var sqlServerConnectionString = TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString;
+            if (ConnectionStringWorking(sqlServerConnectionString))
+            {
+                TableWatcher = new SqlWatcher(sqlServerConnectionString, SelectCommand);
+                TableWatcher.DataChanged += TableWatcher_DataChanged;
+                TableWatcher.Start();
+
+                StartHeartBeatTask();
+            }
+        }
+        private void StartHeartBeatTask()
+        {
+            SqlHeartBeatCancelSource?.Cancel();
+            RowHeartBeatTask?.Wait();
 
             SqlHeartBeatCancelSource = new CancellationTokenSource();
             SqlHeartBeatCancelToken = SqlHeartBeatCancelSource.Token;
             RowHeartBeatTask = new Task(() =>
-            { // TODO: Make this thread part of the create row watcher
+            {
                 while (!SqlHeartBeatCancelToken.IsCancellationRequested)
                 {
                     if (string.IsNullOrEmpty(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
@@ -174,17 +191,6 @@ WHEN NOT MATCHED THEN
 
             RowHeartBeatTask.Start();
         }
-        private void CreateRowWatcher()
-        {
-            var sqlServerConnectionString = TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString;
-            if (ConnectionStringWorking(sqlServerConnectionString))
-            {
-                TableWatcher = new SqlWatcher(sqlServerConnectionString, SelectCommand);
-                TableWatcher.DataChanged += TableWatcher_DataChanged;
-                TableWatcher.Start();
-            }
-        }
-
         private void TableWatcher_DataChanged(object sender, EventArgs e)
         {
             DataChanged?.Invoke(this, EventArgs.Empty);
@@ -240,7 +246,7 @@ WHEN NOT MATCHED THEN
         }
         public void Dispose()
         {
-            SqlHeartBeatCancelSource.Cancel();
+            SqlHeartBeatCancelSource?.Cancel();
             if (ConnectionStringWorking(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString))
             {
                 SqlDependency.Stop(TeamCodingPackage.Current.Settings.SharedSettings.SqlServerConnectionString);
@@ -262,7 +268,7 @@ CLOSE Conv;
 DEALLOCATE Conv;");
                 }
             }
-            RowHeartBeatTask.Wait();
+            RowHeartBeatTask?.Wait();
             if (TableWatcher != null)
             {
                 TableWatcher.DataChanged -= TableWatcher_DataChanged;
