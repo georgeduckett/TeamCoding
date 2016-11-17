@@ -112,15 +112,15 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private void CreateVisual(CaretAdornmentData nodeData, int caretOffset, IUserIdentity userIdentity)
         {
-            if (nodeData.SpanStart + caretOffset > View.TextSnapshot.Length)
-            {
-                return;
-            }
-            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, Math.Min(nodeData.SpanStart + caretOffset, nodeData.SpanEnd), 1);
-            Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);
+            var atEnd = nodeData.SpanStart + caretOffset >= View.TextSnapshot.Length;
+            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, atEnd ? View.TextSnapshot.Length - 1 : Math.Min(nodeData.SpanStart + caretOffset, nodeData.SpanEnd), 1);
+            var onSameLineAsEnd = remoteCaretSpan.Start.GetContainingLine().LineNumber == View.TextSnapshot.GetLineNumberFromPosition(View.TextSnapshot.Length);
+
+            Geometry characterGeometry = View.TextViewLines.GetLineMarkerGeometry(remoteCaretSpan);
             if (characterGeometry != null)
             {
-                var caretGeometry = new LineGeometry(characterGeometry.Bounds.TopLeft, characterGeometry.Bounds.BottomLeft);
+                var caretGeometry = new LineGeometry(atEnd && onSameLineAsEnd ? characterGeometry.Bounds.TopRight : characterGeometry.Bounds.TopLeft,
+                                                     atEnd && onSameLineAsEnd ? characterGeometry.Bounds.BottomRight : characterGeometry.Bounds.BottomLeft);
                 var drawing = new GeometryDrawing(null, UserColours.GetUserPen(userIdentity), caretGeometry);
                 drawing.Freeze();
 
