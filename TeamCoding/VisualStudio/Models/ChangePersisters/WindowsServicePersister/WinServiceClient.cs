@@ -128,6 +128,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         }
         public static Task<string> GetIPSettingErrorText(string ipSetting)
         {
+            if (ipSetting == null)
+            {
+                return Task.FromResult("No IP address given");
+            }
             IPAddress tmpIP;
             int port;
             var split = ipSetting.Split(':');

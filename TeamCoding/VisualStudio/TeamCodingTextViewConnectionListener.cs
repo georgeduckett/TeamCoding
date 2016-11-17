@@ -27,15 +27,13 @@ namespace TeamCoding.VisualStudio
             TextClassifierService = textClassifierService;
             TextDocFactory.TextDocumentDisposed += TextDocFactory_TextDocumentDisposed;
         }
-        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        public async void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textView.GetTextDocumentFilePath()) == null) return;
 
-                var test = AppDomain.CurrentDomain.GetAssemblies().OrderBy(a => a.FullName).ToArray();
-
-                TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView).Wait();
+                await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;
 

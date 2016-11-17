@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using Microsoft.VisualStudio.CodeSense.Client.Common;
+using Microsoft.TeamFoundation.CodeSense.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +23,13 @@ namespace TeamCoding.Extensions
                    syntaxNode is TypeBlockSyntax ||
                    syntaxNode is MethodBlockBaseSyntax;
         }
+        public static int GetNameBasedHashCode(this SyntaxNode syntaxNode)
+        {
+            // TODO: Get name from Microsoft.TeamFoundation.CodeSense.Client.Common.dll
+            // Get name based on all types the classes CSharpSyntaxNodeExtensions.PropertyVisitor and VisualBasicSyntaxNodeExtensions.PropertyVisitor visit
+            // If language is Visual Basic use StringComparer.OrdinalIgnoreCase.GetHashCode(name) else StringComparer.Ordinal(name)
+            return 0;
+        }
         public static int GetValueBasedHashCode(this SyntaxNode syntaxNode)
         {
             if (syntaxNode == null)
@@ -35,7 +42,7 @@ namespace TeamCoding.Extensions
                 return _SyntaxNodeHashes[syntaxNode];
             }
 
-            var identityHash = syntaxNode.GetCodeElementIdentityCommon()?.GetHashCode() ?? 0;
+            var identityHash = syntaxNode.GetNameBasedHashCode();
 
             var fieldDeclarationNodeCS = syntaxNode as Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax;
             var fieldDeclarationNodeVB = syntaxNode as Microsoft.CodeAnalysis.VisualBasic.Syntax.FieldDeclarationSyntax;
@@ -88,7 +95,6 @@ namespace TeamCoding.Extensions
 
             if (!(syntaxNode is ICompilationUnitSyntax) && (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0))
             {
-
                 identityHash = syntaxNode.ToString().GetHashCode();
             }
 
