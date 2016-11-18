@@ -27,7 +27,7 @@ using TeamCoding.VisualStudio.Models.ChangePersisters.SqlServerPersister;
 using TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersister;
 
 namespace TeamCoding
-{
+{ // TODO: Very occasionally threads get stuck on loading a project causing VS to hang
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(Guids.PackageGuidString)]

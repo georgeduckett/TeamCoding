@@ -73,6 +73,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                     }
                     else
                     {
+                        // TODO: Why does the redis property checker intermittently fail (locks?)
                         await subscriber.UnsubscribeAsync(testChannel, testHandler);
                         return "Could not send and receive test message after 10 seconds";
                     }
