@@ -116,7 +116,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, atEnd ? View.TextSnapshot.Length - 1 : Math.Min(nodeData.SpanStart + caretOffset, nodeData.SpanEnd), 1);
             var onSameLineAsEnd = remoteCaretSpan.Start.GetContainingLine().LineNumber == View.TextSnapshot.GetLineNumberFromPosition(View.TextSnapshot.Length);
 
-            Geometry characterGeometry = View.TextViewLines.GetLineMarkerGeometry(remoteCaretSpan);
+            Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);
             if (characterGeometry != null)
             {
                 var caretGeometry = new LineGeometry(atEnd && onSameLineAsEnd ? characterGeometry.Bounds.TopRight : characterGeometry.Bounds.TopLeft,
