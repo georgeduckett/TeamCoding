@@ -42,9 +42,20 @@ namespace TeamCoding.VisualStudio
                 {
                     textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
                     textView.Caret.PositionChanged += Caret_PositionChanged;
+                    textView.LayoutChanged += TextView_LayoutChanged;
                 }
             }
         }
+
+        private async void TextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        {
+            var textView = sender as IWpfTextView;
+            if (e.NewOrReformattedLines.Contains(textView.Caret.ContainingTextViewLine))
+            {
+                await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(new CaretPositionChangedEventArgs(textView, textView.Caret.Position, textView.Caret.Position));
+            }
+        }
+
         private async void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
             await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
@@ -82,6 +93,7 @@ namespace TeamCoding.VisualStudio
                 {
                     textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;
                     textView.Caret.PositionChanged -= Caret_PositionChanged;
+                    textView.LayoutChanged -= TextView_LayoutChanged;
                 }
             }
         }
