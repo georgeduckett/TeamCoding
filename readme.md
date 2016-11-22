@@ -8,6 +8,7 @@ In the options menu (under Team Coding) where you can also set user settings and
 by opening a repository with a `teamcoding.json` file in it (shared settings will be taken from there).
 An example of a valid `teamcoding.json` file can be found in the options menu.
 The borders around the user image at the top of open tabs are coloured white for the user's selected tab and grey for an edited document tab.
+You can test the extension on your own, or test that you've got a sharing method correctly set up by ticking the "Show yourself" checkbox.
 
 **Settings:** The settings are located at Tools->Options->Team Coding.
 There are configuration options for your user identity (how you appear to others) and how others appear to you, as well as configuration options for how to share open document information with others.
@@ -28,7 +29,7 @@ Currently sharing options are a shared folder, Redis, Slack, an SQL Server table
 
 **Links:** [GitHub Repo](https://github.com/georgeduckett/TeamCoding/)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding)
+[![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding) (Currently failing due to lack of VS2017 build image on Appveyor)
 
 ---
 
