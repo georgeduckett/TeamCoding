@@ -63,7 +63,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                     await subscriber.SubscribeAsync(testChannel, testHandler);
                     await subscriber.PublishAsync(testChannel, testValue);
 
-                    if (subscribeTriggerEvent.Wait(10000))
+                    if (await subscribeTriggerEvent.WaitHandle.AsTask(TimeSpan.FromSeconds(10)))
                     {
                         await subscriber.UnsubscribeAsync(testChannel, testHandler);
                         if (receivedValue != null)
@@ -73,7 +73,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                     }
                     else
                     {
-                        // TODO: Why does the redis property checker intermittently fail (locks?)
+                        // TODO: Why does the redis property checker intermittently fail (locks?); does it still fail now we're using a task?
                         await subscriber.UnsubscribeAsync(testChannel, testHandler);
                         return "Could not send and receive test message after 10 seconds";
                     }
