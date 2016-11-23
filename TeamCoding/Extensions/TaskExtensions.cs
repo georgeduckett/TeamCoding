@@ -24,15 +24,16 @@ namespace TeamCoding.Extensions
         /// <returns>The result of the task if there's no exception, otherwise default(<typeparamref name="TResult"/>)</returns>
         public static async Task<TResult> HandleException<TResult>(this Task<TResult> task, Action<Exception> handleException)
         {
+            TResult result = default(TResult);
             try
             {
-                await task;
+                result = await task;
             }
             catch(Exception ex)
             {
                 handleException(ex);
             }
-            return task.IsFaulted ? default(TResult) : task.Result;
+            return result;
         }
         public static Task<TResult> HandleException<TResult>(this Task<TResult> task)
         {
