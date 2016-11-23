@@ -105,7 +105,7 @@ namespace TeamCoding.WindowsService
 #if RELEASE
                     if (client != socket)
 #endif
-                    {
+                    { // TODO: Does this work for displaying myself?
                         try
                         {
                             client.SendMessage(sendBuffer);
