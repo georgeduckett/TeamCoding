@@ -135,7 +135,7 @@ namespace TeamCoding.Extensions
             }
         }
         public static int GetValueBasedHashCode(this SyntaxNode syntaxNode)
-        {
+        { // TODO: Maybe figure out how to get a hash code of statements, so we can be more specific as to where the cursor is
             if (syntaxNode == null)
             {
                 throw new ArgumentNullException(nameof(syntaxNode));
