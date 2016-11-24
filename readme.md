@@ -29,7 +29,7 @@ Currently sharing options are a shared folder, Redis, Slack, an SQL Server table
 
 **Links:** [GitHub Repo](https://github.com/georgeduckett/TeamCoding/)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding) (Currently failing due to lack of VS2017 build image on Appveyor)
+[![Build status](https://ci.appveyor.com/api/projects/status/vqgmu9893sxn3p7m?svg=true)](https://ci.appveyor.com/project/georgeduckett/teamcoding)
 
 ---
 
