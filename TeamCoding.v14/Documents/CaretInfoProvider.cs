@@ -39,7 +39,17 @@ namespace TeamCoding.Documents
                     TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteInformation($"Document with unsupported language found: {caretToken.Language}"); return null;
             }
 
-            return new DocumentRepoMetaData.CaretInfo() { SyntaxNodeIds = memberHashCodes, LeafMemberCaretOffset = snapshotPoint.Position - memberNodes.Last().SpanStart };
+            var lastNode = memberNodes.Last();
+
+            var caretLine = snapshotPoint.GetContainingLine();
+            var lastNodeLine = snapshotPoint.Snapshot.GetLineFromPosition(lastNode.Span.Start);
+
+            return new DocumentRepoMetaData.CaretInfo()
+            {
+                SyntaxNodeIds = memberHashCodes,
+                LeafMemberLineOffset = caretLine.LineNumber - lastNodeLine.LineNumber,
+                LeafMemberCaretOffset = snapshotPoint.Position - caretLine.Start
+            };
         }
     }
 }

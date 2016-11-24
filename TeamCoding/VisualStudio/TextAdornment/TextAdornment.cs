@@ -72,6 +72,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
                                                           {
                                                               CaretMemberHashCodes = of.CaretPositionInfo.SyntaxNodeIds,
                                                               of.CaretPositionInfo.LeafMemberCaretOffset,
+                                                              of.CaretPositionInfo.LeafMemberLineOffset,
                                                               of.IdeUserIdentity
                                                           }).ToArray();
 
@@ -91,7 +92,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
                 foreach(var node in nodes)
                 {
                     // We got to the end, matching all nodes all the way down
-                    CreateVisual(node, caret.LeafMemberCaretOffset, caret.IdeUserIdentity);
+                    CreateVisual(node, caret.LeafMemberLineOffset, caret.LeafMemberCaretOffset, caret.IdeUserIdentity);
                 }
             }
         }
@@ -110,10 +111,23 @@ namespace TeamCoding.VisualStudio.TextAdornment
             RefreshAdornments(sender, EventArgs.Empty);
         }
 
-        private void CreateVisual(CaretAdornmentData nodeData, int caretOffset, IUserIdentity userIdentity)
+        private void CreateVisual(CaretAdornmentData nodeData, int caretLineOffset, int caretOffset, IUserIdentity userIdentity)
         {
-            var atEnd = nodeData.SpanStart + caretOffset >= View.TextSnapshot.Length;
-            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, atEnd ? View.TextSnapshot.Length - 1 : Math.Min(nodeData.SpanStart + caretOffset, nodeData.SpanEnd), 1);
+            var caretLineNumber = View.TextSnapshot.GetLineNumberFromPosition(nodeData.SpanStart) + caretLineOffset;
+
+            var caretPosition = View.TextSnapshot.GetLineFromLineNumber(caretLineNumber).Start.Position + caretOffset;
+
+            if(caretPosition < nodeData.NonWhiteSpaceStart)
+            {
+                caretPosition = nodeData.NonWhiteSpaceStart;
+            }
+            else if(caretPosition > nodeData.SpanEnd)
+            {
+                caretPosition = nodeData.SpanEnd;
+            }
+
+            var atEnd = caretPosition >= View.TextSnapshot.Length;
+            var remoteCaretSpan = new SnapshotSpan(View.TextSnapshot, atEnd ? View.TextSnapshot.Length - 1 : caretPosition, 1);
             var onSameLineAsEnd = remoteCaretSpan.Start.GetContainingLine().LineNumber == View.TextSnapshot.GetLineNumberFromPosition(View.TextSnapshot.Length);
 
             Geometry characterGeometry = View.TextViewLines.GetMarkerGeometry(remoteCaretSpan);

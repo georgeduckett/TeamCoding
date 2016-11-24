@@ -8,8 +8,9 @@ namespace TeamCoding.Interfaces.Documents
 {
     public struct CaretAdornmentData
     {
+        public readonly int NonWhiteSpaceStart;
         public readonly int SpanStart;
         public readonly int SpanEnd;
-        public CaretAdornmentData(int spanStart, int spanEnd) { SpanStart = spanStart; SpanEnd = spanEnd; }
+        public CaretAdornmentData(int nonWhiteSpaceStart, int spanStart, int spanEnd) { NonWhiteSpaceStart = nonWhiteSpaceStart; SpanStart = spanStart; SpanEnd = spanEnd; }
     }
 }

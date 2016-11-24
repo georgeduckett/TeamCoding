@@ -54,7 +54,8 @@ namespace TeamCoding.Documents
                 nodes.RemoveRange(0, oldNodesCount);
                 i++;
             }
-            return nodes.Select(n => new CaretAdornmentData(n.SpanStart, n.Span.End));
+            
+            return nodes.Select(n => new CaretAdornmentData(n.FullSpan.Start + (n.HasLeadingTrivia ? n.GetLeadingTrivia().SelectMany(t => t.ToFullString()).TakeWhile(c => char.IsWhiteSpace(c)).Count() : 0), n.SpanStart, n.Span.End));
         }
     }
 }

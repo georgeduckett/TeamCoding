@@ -18,6 +18,8 @@ namespace TeamCoding.Documents
             public int[] SyntaxNodeIds { get; set; } = new int[0];
             [ProtoBuf.ProtoMember(2)]
             public int LeafMemberCaretOffset { get; set; }
+            [ProtoBuf.ProtoMember(3)]
+            public int LeafMemberLineOffset { get; set; }
         }
         [ProtoBuf.ProtoMember(1)]
         public string RepoUrl { get; set; }
