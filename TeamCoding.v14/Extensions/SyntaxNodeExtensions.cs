@@ -77,9 +77,13 @@ namespace TeamCoding.Extensions
                 case EnumDeclarationSyntax typedNode: name = typedNode.Identifier.ToString(); break;
                 case OperatorDeclarationSyntax typedNode: name = typedNode.OperatorToken.ToString(); break;
                 case ConversionOperatorDeclarationSyntax typedNode: name = typedNode.Type.ToString(); break;
-                    // TODO: Handle multiple indexers with different types
-                case IndexerDeclarationSyntax typedNode: name = typedNode.ExplicitInterfaceSpecifier != null ? typedNode.ExplicitInterfaceSpecifier.Name + ".[]" : "[]"; break;
-                
+                    // TODO: Test multiple indexers with different types
+                case IndexerDeclarationSyntax typedNode:
+                    var parameters = typedNode.ParameterList.Parameters.Select(p => p.Type.ToString());
+                    string parameterString = string.Join(", ", parameters);
+                    name = typedNode.ExplicitInterfaceSpecifier != null ? typedNode.ExplicitInterfaceSpecifier.Name + $".[{parameterString}]" : $"[{parameterString}]"; break;
+
+
                 case MethodDeclarationSyntax typedNode:
                     name = typedNode.Identifier.ToString() + typedNode.TypeParameterList.GetGenericParametersString() + typedNode.ParameterList.GetParameterTypesString();
                     if (typedNode.ExplicitInterfaceSpecifier != null)
