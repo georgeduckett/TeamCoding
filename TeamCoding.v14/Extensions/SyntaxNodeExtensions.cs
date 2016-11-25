@@ -14,7 +14,7 @@ namespace TeamCoding.Extensions
 {
     public static partial class SyntaxNodeExtensions
     {
-        public static bool IsTrackedLeafNode(this SyntaxNode syntaxNode)
+        public static bool IsUniquelyIdentifiedNode(this SyntaxNode syntaxNode)
         {
             return syntaxNode is MemberDeclarationSyntax ||
                    syntaxNode is TypeBlockSyntax ||

@@ -26,7 +26,7 @@ namespace TeamCoding.Documents
             int[] memberHashCodes = null;
             IEnumerable<SyntaxNode> memberNodes = null;
 
-            var desiredLeafNode = caretToken.Parent.AncestorsAndSelf().FirstOrDefault(n => n.IsTrackedLeafNode());
+            var desiredLeafNode = caretToken.Parent.AncestorsAndSelf().FirstOrDefault(n => n.IsUniquelyIdentifiedNode());
 
             switch (caretToken.Language)
             {

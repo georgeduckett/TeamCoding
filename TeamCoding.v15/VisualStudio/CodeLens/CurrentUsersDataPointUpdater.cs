@@ -67,7 +67,7 @@ namespace TeamCoding.VisualStudio.CodeLens
 
                 // Find the first node that we start the node chain from (any node that is tracked; a class or member declaration etc)
                 var syntaxNodeChain = node.AncestorsAndSelf().ToArray();
-                var trackedLeafNodes = syntaxNodeChain.Where(n => n.IsTrackedLeafNode()).Reverse().ToArray();
+                var trackedLeafNodes = syntaxNodeChain.Where(n => n.IsUniquelyIdentifiedNode()).Reverse().ToArray();
                 
                 var foundMatch = false;
                 for (int i = 0; i < trackedLeafNodes.Length; i++)
