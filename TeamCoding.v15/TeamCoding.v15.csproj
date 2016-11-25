@@ -432,6 +432,9 @@
     <Compile Include="..\TeamCoding.v14\Extensions\SyntaxNodeExtensions.cs">
       <Link>Extensions\SyntaxNodeExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\TeamCoding.v14\Extensions\SyntaxNodeExtensions.SyntaxNodeHashCache.cs">
+      <Link>Extensions\SyntaxNodeExtensions.SyntaxNodeHashCache.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPointViewModelProvider.cs">
       <DependentUpon>CurrentUsersDataPointViewModelProvider.tt</DependentUpon>
