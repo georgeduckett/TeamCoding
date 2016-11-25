@@ -426,6 +426,9 @@
     <Compile Include="..\TeamCoding.v14\Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs">
       <Link>Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs</Link>
     </Compile>
+    <Compile Include="..\TeamCoding.v14\Extensions\ParameterListSyntaxExtensions.cs">
+      <Link>Extensions\ParameterListSyntaxExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\TeamCoding.v14\Extensions\SyntaxNodeExtensions.cs">
       <Link>Extensions\SyntaxNodeExtensions.cs</Link>
     </Compile>

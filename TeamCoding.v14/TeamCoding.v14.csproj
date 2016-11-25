@@ -404,6 +404,7 @@
     <Compile Include="Documents\CaretAdornmentDataProvider.cs" />
     <Compile Include="Documents\CaretInfoProvider.cs" />
     <Compile Include="Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs" />
+    <Compile Include="Extensions\ParameterListSyntaxExtensions.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisualStudio\CodeLens\CurrentUsersDataPoint.cs" />
