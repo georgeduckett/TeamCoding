@@ -14,8 +14,34 @@ namespace TeamCoding.Extensions
 {
     public static class SyntaxNodeExtensions
     {
-        private static readonly Dictionary<SyntaxNode, int> _SyntaxNodeHashes = new Dictionary<SyntaxNode, int>();
-        private static readonly MultiValueDictionary<string, SyntaxNode> _SyntaxNodesFromFilePath = new MultiValueDictionary<string, SyntaxNode>();
+        private static class SyntaxNodeHashCache
+        {
+            private static readonly Dictionary<SyntaxNode, int> _SyntaxNodeHashes = new Dictionary<SyntaxNode, int>();
+            private static readonly MultiValueDictionary<string, SyntaxNode> _SyntaxNodesFromFilePath = new MultiValueDictionary<string, SyntaxNode>();
+
+            public static bool TryGetHash(SyntaxNode node, out int hash) => _SyntaxNodeHashes.TryGetValue(node, out hash);
+
+            public static void Add(SyntaxNode syntaxNode, int identityHash)
+            {
+                var filePath = syntaxNode.SyntaxTree?.FilePath;
+                if (syntaxNode is ICompilationUnitSyntax && filePath != null && _SyntaxNodesFromFilePath.ContainsKey(filePath))
+                {
+                    // If we've got a new compilation unit syntax then any syntax nodes from the same file won't get used so remove them.
+                    foreach (var node in _SyntaxNodesFromFilePath[filePath])
+                    {
+                        _SyntaxNodeHashes.Remove(node);
+                    }
+                    _SyntaxNodesFromFilePath.Remove(filePath);
+                }
+
+                if (filePath != null)
+                {
+                    _SyntaxNodesFromFilePath.Add(filePath, syntaxNode);
+                }
+                _SyntaxNodeHashes.Add(syntaxNode, identityHash);
+            }
+        }
+
 
         public static bool IsTrackedLeafNode(this SyntaxNode syntaxNode)
         {
@@ -141,16 +167,17 @@ namespace TeamCoding.Extensions
                 throw new ArgumentNullException(nameof(syntaxNode));
             }
 
-            if (_SyntaxNodeHashes.ContainsKey(syntaxNode))
+            if (SyntaxNodeHashCache.TryGetHash(syntaxNode, out int hash))
             {
-                return _SyntaxNodeHashes[syntaxNode];
+                return hash;
             }
 
             var name = syntaxNode.GetName();
 
             var identityHash = 0;
 
-            if (name != null) {
+            if (name != null)
+            {
                 identityHash = syntaxNode is VisualBasicSyntaxNode ? StringComparer.OrdinalIgnoreCase.GetHashCode(name) : StringComparer.Ordinal.GetHashCode(name);
             }
 
@@ -208,22 +235,7 @@ namespace TeamCoding.Extensions
                 identityHash = syntaxNode.ToString().GetHashCode();
             }
 
-            var filePath = syntaxNode.SyntaxTree?.FilePath;
-            if(syntaxNode is ICompilationUnitSyntax && filePath != null && _SyntaxNodesFromFilePath.ContainsKey(filePath))
-            {
-                // If we've got a new compilation unit syntax then any syntax nodes from the same file won't get used so remove them.
-                foreach(var node in _SyntaxNodesFromFilePath[filePath])
-                {
-                    _SyntaxNodeHashes.Remove(node);
-                }
-                _SyntaxNodesFromFilePath.Remove(filePath);
-            }
-
-            if (filePath != null)
-            {
-                _SyntaxNodesFromFilePath.Add(filePath, syntaxNode);
-            }
-            _SyntaxNodeHashes.Add(syntaxNode, identityHash);
+            SyntaxNodeHashCache.Add(syntaxNode, identityHash);
 
             return identityHash;
         }
