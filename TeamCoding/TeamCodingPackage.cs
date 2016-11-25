@@ -152,8 +152,7 @@ namespace TeamCoding
         private int GetMajorVsVersion()
         {
             var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
-            Version version;
-            if (Version.TryParse(dte.Version, out version))
+            if (Version.TryParse(dte.Version, out var version))
             {
                 return version.Major;
             }

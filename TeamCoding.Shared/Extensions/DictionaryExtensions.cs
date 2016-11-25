@@ -21,8 +21,7 @@ namespace TeamCoding.Extensions
 
             foreach (var kvp in first)
             {
-                TValue secondValue;
-                if (!second.TryGetValue(kvp.Key, out secondValue))
+                if (!second.TryGetValue(kvp.Key, out var secondValue))
                     return false;
                 if (!valueComparer.Equals(kvp.Value, secondValue))
                     return false;

@@ -19,9 +19,7 @@ namespace TeamCoding.VisualStudio
         public static SolidColorBrush GetUserBrush(IUserIdentity user)
         {
             var hash = user.Id.GetHashCode();
-
-            SolidColorBrush brush;
-            if(!UserToBrush.TryGetValue(hash, out brush))
+            if (!UserToBrush.TryGetValue(hash, out var brush))
             {
                 brush = new SolidColorBrush(VisuallyDistinctColours.GetColourFromSeed(hash));
                 brush.Freeze();
@@ -31,9 +29,7 @@ namespace TeamCoding.VisualStudio
         public static Pen GetUserPen(IUserIdentity user)
         {
             var hash = user.Id.GetHashCode();
-
-            Pen pen;
-            if (!UserToPen.TryGetValue(hash, out pen))
+            if (!UserToPen.TryGetValue(hash, out var pen))
             {
                 pen = new Pen(GetUserBrush(user), 1);
                 pen.Freeze();

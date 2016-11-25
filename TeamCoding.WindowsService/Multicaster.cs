@@ -91,8 +91,7 @@ namespace TeamCoding.WindowsService
                 }
                 catch(SocketException)
                 {
-                    byte _;
-                    ClientSockets.TryRemove(socket, out _);
+                    ClientSockets.TryRemove(socket, out byte _);
                     break;
                     // TODO: Determine which exceptions are intermittent and handle recovering before just bailing out
                 }

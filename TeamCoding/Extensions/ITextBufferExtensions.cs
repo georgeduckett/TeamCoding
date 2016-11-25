@@ -8,8 +8,7 @@ namespace TeamCoding.Extensions
     {
         public static string GetTextDocumentFilePath(this ITextBuffer textBuffer)
         {
-            ITextDocument textDoc;
-            if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDoc))
+            if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument textDoc))
             {
                 return DocumentPaths.GetFullPath(textDoc.FilePath);
             }

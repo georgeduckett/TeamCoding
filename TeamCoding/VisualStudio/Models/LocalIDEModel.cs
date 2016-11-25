@@ -114,10 +114,9 @@ namespace TeamCoding.VisualStudio.Models
 
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
-            DocumentRepoMetaData tmp;
             lock (OpenFilesLock)
             {
-                OpenFiles.TryRemove(textDocument.FilePath, out tmp);
+                OpenFiles.TryRemove(textDocument.FilePath, out var tmp);
             }
             OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
         }

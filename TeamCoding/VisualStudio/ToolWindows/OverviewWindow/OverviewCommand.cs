@@ -24,7 +24,7 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly Package package;
+        private readonly Package Package;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OverviewCommand"/> class.
@@ -33,18 +33,13 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         /// <param name="package">Owner package, not null.</param>
         private OverviewCommand(Package package)
         {
-            if (package == null)
-            {
-                throw new ArgumentNullException("package");
-            }
+            Package = package ?? throw new ArgumentNullException(nameof(package));
 
-            this.package = package;
-
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandID);
+                var menuItem = new MenuCommand(ShowToolWindow, menuCommandID);
                 commandService.AddCommand(menuItem);
             }
         }
@@ -65,7 +60,7 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         {
             get
             {
-                return this.package;
+                return this.Package;
             }
         }
 
@@ -88,7 +83,7 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            ToolWindowPane window = this.package.FindToolWindow(typeof(Overview), 0, true);
+            ToolWindowPane window = this.Package.FindToolWindow(typeof(Overview), 0, true);
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException("Cannot create tool window");

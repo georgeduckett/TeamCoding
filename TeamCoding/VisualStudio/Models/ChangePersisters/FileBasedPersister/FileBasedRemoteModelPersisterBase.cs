@@ -27,13 +27,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
 
         private void CreateNewFileWatcher()
         {
-            FileWatcher = new FileSystemWatcher();
-            FileWatcher.Filter = "*.bin";
+            FileWatcher = new FileSystemWatcher()
+            {
+                Filter = "*.bin",
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName
+            };
             FileWatcher.Created += FileWatcher_Changed;
             FileWatcher.Deleted += FileWatcher_Changed;
             FileWatcher.Changed += FileWatcher_Changed;
             FileWatcher.Renamed += FileWatcher_Changed;
-            FileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName;
         }
         private void SharedSettings_FileBasedPersisterPathChanging(object sender, EventArgs e)
         {

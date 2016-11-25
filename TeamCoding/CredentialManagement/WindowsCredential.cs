@@ -28,10 +28,7 @@ namespace TeamCoding.CredentialManagement
         public bool Load()
         {
             UnmanagedCodePermission.Demand();
-
-            IntPtr credPointer;
-
-            bool result = NativeMethods.CredRead(Target, CredentialType.Generic, 0, out credPointer);
+            bool result = NativeMethods.CredRead(Target, CredentialType.Generic, 0, out var credPointer);
             if (!result)
             {
                 return false;

@@ -15,8 +15,7 @@ namespace TeamCoding
         private static readonly Dictionary<Type, object> CachedObjectInstances = new Dictionary<Type, object>();
         public static T Get<T>()
         {
-            object o;
-            if(CachedObjectInstances.TryGetValue(typeof(T), out o))
+            if (CachedObjectInstances.TryGetValue(typeof(T), out object o))
             {
                 return (T)o;
             }

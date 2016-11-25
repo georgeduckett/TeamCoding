@@ -31,19 +31,14 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private readonly Dictionary<string, Queue<FrameworkElement>> UserAvatars = new Dictionary<string, Queue<FrameworkElement>>();
         public TextAdornment(IWpfTextView view)
         {
-
             OpenFilesFilter = of => of.Repository == RepoDocument.RepoUrl &&
                                     of.RelativePath == RepoDocument.RelativePath &&
                                     of.RepositoryBranch == RepoDocument.RepoBranch &&
                                     of.CaretPositionInfo != null;
-            if (view == null)
-            {
-                throw new ArgumentNullException(nameof(view));
-            }
+
+            View = view ?? throw new ArgumentNullException(nameof(view));
 
             Layer = view.GetAdornmentLayer("TextAdornment");
-
-            View = view;
             RepoDocument = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
 
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RefreshAdornmentsAsync;

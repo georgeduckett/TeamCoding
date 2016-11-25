@@ -37,9 +37,7 @@ namespace TeamCoding.VisualStudio
 
                 await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextViewAsync(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
-                ITextDocument textDoc;
-
-                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
+                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out var textDoc);
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
@@ -88,9 +86,7 @@ namespace TeamCoding.VisualStudio
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView closed
                 textView.TextBuffer.Changed -= TextBuffer_Changed;
-                ITextDocument textDoc;
-
-                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out textDoc);
+                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out var textDoc);
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;

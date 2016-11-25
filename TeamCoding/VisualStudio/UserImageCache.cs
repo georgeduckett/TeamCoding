@@ -49,17 +49,17 @@ namespace TeamCoding.VisualStudio
         }
         public UserAvatarModel CreateUserAvatarModel(IUserIdentity userIdentity)
         {
-            UserAvatarModel context;
-            if(UserModels.TryGetValue(userIdentity.Id, out context))
+            if (UserModels.TryGetValue(userIdentity.Id, out var context))
             {
                 return context;
             }
 
-            context = new UserAvatarModel();
-            context.ToolTip = (userIdentity.DisplayName ?? userIdentity.Id);
-            context.Tag = userIdentity.Id;
+            context = new UserAvatarModel()
+            {
+                ToolTip = (userIdentity.DisplayName ?? userIdentity.Id),
+                Tag = userIdentity.Id
+            };
             context.BorderBrush = context.BackgroundBrush = UserColours.GetUserBrush(userIdentity);
-            
             SetContextAccordingToDisplaySettings(context, userIdentity);
 
             UserModels.Add(userIdentity.Id, context);

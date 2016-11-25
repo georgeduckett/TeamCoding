@@ -132,19 +132,18 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
             {
                 return Task.FromResult("No IP address given");
             }
-            IPAddress tmpIP;
-            int port;
+
             var split = ipSetting.Split(':');
 
             if (split.Length != 2)
             {
                 return Task.FromResult("Port missing, use the format IPAddress:Port");
             }
-            else if (!IPAddress.TryParse(split[0], out tmpIP))
+            else if (!IPAddress.TryParse(split[0], out var tmpIP))
             {
                 return Task.FromResult("IP address could not be parsed");
             }
-            else if (!int.TryParse(split[1], out port))
+            else if (!int.TryParse(split[1], out int port))
             {
                 return Task.FromResult("Port could not be parsed");
             }
