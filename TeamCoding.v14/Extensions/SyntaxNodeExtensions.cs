@@ -113,19 +113,9 @@ namespace TeamCoding.Extensions
 
             var name = syntaxNode.GetName();
 
-            var identityHash = 0;
+            var identityHash = name == null ? 0 : syntaxNode is VisualBasicSyntaxNode ? StringComparer.OrdinalIgnoreCase.GetHashCode(name) : StringComparer.Ordinal.GetHashCode(name);
 
-            if (name != null)
-            {
-                identityHash = syntaxNode is VisualBasicSyntaxNode ? StringComparer.OrdinalIgnoreCase.GetHashCode(name) : StringComparer.Ordinal.GetHashCode(name);
-            }
-
-            var fieldDeclarationNodeCS = syntaxNode as Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax;
-            var fieldDeclarationNodeVB = syntaxNode as Microsoft.CodeAnalysis.VisualBasic.Syntax.FieldDeclarationSyntax;
-            var methodDeclarationNode = syntaxNode as BaseMethodDeclarationSyntax;
-            var methodBaseNode = syntaxNode as MethodBlockBaseSyntax;
-
-            if(fieldDeclarationNodeCS != null)
+            if(syntaxNode is Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax fieldDeclarationNodeCS)
             {
                 // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
@@ -135,7 +125,7 @@ namespace TeamCoding.Extensions
                     identityHash = identityHash * 31 + var.Identifier.Text.GetHashCode();
                 }
             }
-            else if (fieldDeclarationNodeVB != null)
+            else if (syntaxNode is Microsoft.CodeAnalysis.VisualBasic.Syntax.FieldDeclarationSyntax fieldDeclarationNodeVB)
             {
                 foreach (var dec in fieldDeclarationNodeVB.Declarators)
                 {
@@ -145,7 +135,7 @@ namespace TeamCoding.Extensions
                     }
                 }
             }
-            else if (methodDeclarationNode != null)
+            else if (syntaxNode is BaseMethodDeclarationSyntax methodDeclarationNode)
             {
                 // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
@@ -155,7 +145,7 @@ namespace TeamCoding.Extensions
                     identityHash = identityHash * 31 + param.Type.GetValueBasedHashCode();
                 }
             }
-            else if (methodBaseNode != null)
+            else if (syntaxNode is MethodBlockBaseSyntax methodBaseNode)
             {
                 // We could have seveal methods with the overloads, so base the hash on the parameter types too
                 identityHash = 17 * 31 + identityHash;
