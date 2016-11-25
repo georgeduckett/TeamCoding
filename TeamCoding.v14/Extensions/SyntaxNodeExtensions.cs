@@ -20,7 +20,7 @@ namespace TeamCoding.Extensions
                    syntaxNode is TypeBlockSyntax ||
                    syntaxNode is MethodBlockBaseSyntax;
         }
-        public static string GetName(this SyntaxNode syntaxNode)
+        public static string GetIdentifyingString(this SyntaxNode syntaxNode)
         {
             string name = null;
             switch (syntaxNode)
@@ -77,19 +77,19 @@ namespace TeamCoding.Extensions
                 case OperatorStatementSyntax typedNode: name = typedNode.OperatorToken.ToString(); break;
                 case PropertyStatementSyntax typedNode: name = typedNode.Identifier.ToString(); break;
                 case SubNewStatementSyntax typedNode: name = typedNode.NewKeyword.ToString(); break;
-                case ClassBlockSyntax typedNode: name = typedNode.ClassStatement.GetName(); break;
-                case ConstructorBlockSyntax typedNode: name = typedNode.BlockStatement.GetName(); break;
-                case EnumBlockSyntax typedNode: name = typedNode.EnumStatement.GetName(); break;
-                case InterfaceBlockSyntax typedNode: name = typedNode.BlockStatement.GetName(); break;
-                case MethodBlockSyntax typedNode: name = typedNode.BlockStatement.GetName(); break;
-                case ModuleBlockSyntax typedNode: name = typedNode.BlockStatement.GetName(); break;
-                case NamespaceBlockSyntax typedNode: name = typedNode.NamespaceStatement.GetName(); break;
-                case PropertyBlockSyntax typedNode: name = typedNode.PropertyStatement.GetName(); break;
-                case StructureBlockSyntax typedNode: name = typedNode.BlockStatement.GetName(); break;
-                default: return syntaxNode.Parent.GetName();
+                case ClassBlockSyntax typedNode: name = typedNode.ClassStatement.GetIdentifyingString(); break;
+                case ConstructorBlockSyntax typedNode: name = typedNode.BlockStatement.GetIdentifyingString(); break;
+                case EnumBlockSyntax typedNode: name = typedNode.EnumStatement.GetIdentifyingString(); break;
+                case InterfaceBlockSyntax typedNode: name = typedNode.BlockStatement.GetIdentifyingString(); break;
+                case MethodBlockSyntax typedNode: name = typedNode.BlockStatement.GetIdentifyingString(); break;
+                case ModuleBlockSyntax typedNode: name = typedNode.BlockStatement.GetIdentifyingString(); break;
+                case NamespaceBlockSyntax typedNode: name = typedNode.NamespaceStatement.GetIdentifyingString(); break;
+                case PropertyBlockSyntax typedNode: name = typedNode.PropertyStatement.GetIdentifyingString(); break;
+                case StructureBlockSyntax typedNode: name = typedNode.BlockStatement.GetIdentifyingString(); break;
+                default: return syntaxNode.Parent.GetIdentifyingString();
             }
 
-            string parentName = syntaxNode.Parent.GetName();
+            string parentName = syntaxNode.Parent.GetIdentifyingString();
             if (parentName != null)
             {
                 return parentName + "." + name;
@@ -111,53 +111,9 @@ namespace TeamCoding.Extensions
                 return hash;
             }
 
-            var name = syntaxNode.GetName();
+            var name = syntaxNode.GetIdentifyingString();
 
             var identityHash = name == null ? 0 : syntaxNode is VisualBasicSyntaxNode ? StringComparer.OrdinalIgnoreCase.GetHashCode(name) : StringComparer.Ordinal.GetHashCode(name);
-
-            if(syntaxNode is Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax fieldDeclarationNodeCS)
-            {
-                // We could have seveal methods with the overloads, so base the hash on the parameter types too
-                identityHash = 17 * 31 + identityHash;
-
-                foreach (var var in fieldDeclarationNodeCS.Declaration.Variables)
-                {
-                    identityHash = identityHash * 31 + var.Identifier.Text.GetHashCode();
-                }
-            }
-            else if (syntaxNode is Microsoft.CodeAnalysis.VisualBasic.Syntax.FieldDeclarationSyntax fieldDeclarationNodeVB)
-            {
-                foreach (var dec in fieldDeclarationNodeVB.Declarators)
-                {
-                    foreach (var var in dec.Names)
-                    {
-                        identityHash = identityHash * 31 + var.Identifier.Text.GetHashCode();
-                    }
-                }
-            }
-            else if (syntaxNode is BaseMethodDeclarationSyntax methodDeclarationNode)
-            {
-                // We could have seveal methods with the overloads, so base the hash on the parameter types too
-                identityHash = 17 * 31 + identityHash;
-
-                foreach (var param in methodDeclarationNode.ParameterList.Parameters)
-                {
-                    identityHash = identityHash * 31 + param.Type.GetValueBasedHashCode();
-                }
-            }
-            else if (syntaxNode is MethodBlockBaseSyntax methodBaseNode)
-            {
-                // We could have seveal methods with the overloads, so base the hash on the parameter types too
-                identityHash = 17 * 31 + identityHash;
-
-                if (methodBaseNode.BlockStatement?.ParameterList != null)
-                {
-                    foreach (var param in methodBaseNode.BlockStatement.ParameterList.Parameters)
-                    {
-                        identityHash = identityHash * 31 + param.AsClause.Type.GetValueBasedHashCode();
-                    }
-                }
-            }
 
             if (!(syntaxNode is ICompilationUnitSyntax) && (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0))
             {
