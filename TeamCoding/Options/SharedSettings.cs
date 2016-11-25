@@ -56,7 +56,7 @@ namespace TeamCoding.Options
             FileBasedPersisterPathProperty = new SettingProperty<string>(this, SharedFolderLocalModelPersister.FolderPathIsValid);
             FileBasedPersisterPathProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(FileBasedPersisterPath)}: {FileBasedPersisterPath}");
 
-            RedisServerProperty = new SettingProperty<string>(this, RedisWrapper.GetServerStringErrorText);
+            RedisServerProperty = new SettingProperty<string>(this, RedisWrapper.GetServerStringErrorTextAsync);
             RedisServerProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(RedisServer)}: {RedisServer}");
 
             SlackTokenProperty = new SettingProperty<string>(this, SlackWrapper.SlackTokenIsValid);
@@ -65,7 +65,7 @@ namespace TeamCoding.Options
             SlackChannelProperty = new SettingProperty<string>(this, SlackWrapper.SlackChannelIsValid);
             SlackChannelProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SlackChannel)}: {SlackChannel}");
 
-            SqlServerConnectionStringProperty = new SettingProperty<string>(this, SqlConnectionWrapper.GetConnectionStringErrorText);
+            SqlServerConnectionStringProperty = new SettingProperty<string>(this, SqlConnectionWrapper.GetConnectionStringErrorTextAsync);
             SqlServerConnectionStringProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(SqlServerConnectionString)}: {SqlServerConnectionString}");
 
             WinServiceIPAddressProperty = new SettingProperty<string>(this, WinServiceClient.GetIPSettingErrorText);

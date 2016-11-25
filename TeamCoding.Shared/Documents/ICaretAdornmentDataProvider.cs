@@ -9,6 +9,6 @@ namespace TeamCoding.Interfaces.Documents
 {
     public interface ICaretAdornmentDataProvider
     {
-        Task<IEnumerable<CaretAdornmentData>> GetCaretAdornmentData(ITextSnapshot textSnapshot, int[] caretMemberHashCodes);
+        Task<IEnumerable<CaretAdornmentData>> GetCaretAdornmentDataAsync(ITextSnapshot textSnapshot, int[] caretMemberHashCodes);
     }
 }

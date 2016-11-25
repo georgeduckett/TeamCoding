@@ -17,21 +17,21 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
             SettingProperties = settingProperties;
             IdeModel = model;
 
-            IdeModel.ModelChanged += IdeModel_ModelChanged;
+            IdeModel.ModelChanged += IdeModel_ModelChangedAsync;
             foreach (var property in SettingProperties)
             {
-                property.Changing += SettingProperty_Changing;
-                property.Changed += SettingProperty_Changed;
+                property.Changing += SettingProperty_ChangingAsync;
+                property.Changed += SettingProperty_ChangedAsync;
             }
         }
-        private async void SettingProperty_Changing(object sender, EventArgs e)
+        private async void SettingProperty_ChangingAsync(object sender, EventArgs e)
         {
-            if (await RequiredPropertiesAreSet())
+            if (await RequiredPropertiesAreSetAsync())
             {
                 SendModel(new RemoteIDEModel(new LocalIDEModel()));
             }
         }
-        protected virtual async Task<bool> RequiredPropertiesAreSet()
+        protected virtual async Task<bool> RequiredPropertiesAreSetAsync()
         {
             if (SettingProperties.Any(p => string.IsNullOrEmpty(p.Value))) return false;
 
@@ -41,21 +41,21 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
 
             return propertyTasks.All(pt => pt.Result);
         }
-        private async void IdeModel_ModelChanged(object sender, EventArgs e)
+        private async void IdeModel_ModelChangedAsync(object sender, EventArgs e)
         {
-            await SendChanges();
+            await SendChangesAsync();
         }
-        private async void SettingProperty_Changed(object sender, EventArgs e)
+        private async void SettingProperty_ChangedAsync(object sender, EventArgs e)
         {
-            await SendChanges();
+            await SendChangesAsync();
         }
-        public Task SendUpdate()
+        public Task SendUpdateAsync()
         {
-            return SendChanges();
+            return SendChangesAsync();
         }
-        private async Task SendChanges()
+        private async Task SendChangesAsync()
         {
-            if (await RequiredPropertiesAreSet())
+            if (await RequiredPropertiesAreSetAsync())
             {
                 SendModel(new RemoteIDEModel(IdeModel));
             }
@@ -65,8 +65,8 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         {
             foreach (var property in SettingProperties)
             {
-                property.Changing += SettingProperty_Changing;
-                property.Changed += SettingProperty_Changed;
+                property.Changing += SettingProperty_ChangingAsync;
+                property.Changed += SettingProperty_ChangedAsync;
             }
         }
     }

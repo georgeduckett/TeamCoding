@@ -22,7 +22,7 @@ namespace TeamCoding.Extensions
         /// <param name="task">The task to handle exceptions for</param>
         /// <param name="handleException">What to do if there is an exception</param>
         /// <returns>The result of the task if there's no exception, otherwise default(<typeparamref name="TResult"/>)</returns>
-        public static async Task<TResult> HandleException<TResult>(this Task<TResult> task, Action<Exception> handleException)
+        public static async Task<TResult> HandleExceptionAsync<TResult>(this Task<TResult> task, Action<Exception> handleException)
         {
             TResult result = default(TResult);
             try
@@ -46,7 +46,7 @@ namespace TeamCoding.Extensions
         /// <param name="task">The task to handle exceptions for</param>
         /// <param name="handleException">What to do if there is an exception</param>
         /// <returns>A task that upon completion will have waited for the task, and handled any exception</returns>
-        public static async Task HandleException(this Task task, Action<Exception> handleException)
+        public static async Task HandleExceptionAsync(this Task task, Action<Exception> handleException)
         {
             try
             {

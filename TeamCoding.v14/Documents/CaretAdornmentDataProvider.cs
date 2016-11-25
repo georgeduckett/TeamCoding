@@ -13,7 +13,7 @@ namespace TeamCoding.Documents
 {
     public class CaretAdornmentDataProvider : ICaretAdornmentDataProvider
     {
-        public async Task<IEnumerable<CaretAdornmentData>> GetCaretAdornmentData(ITextSnapshot textSnapshot, int[] caretMemberHashcodes)
+        public async Task<IEnumerable<CaretAdornmentData>> GetCaretAdornmentDataAsync(ITextSnapshot textSnapshot, int[] caretMemberHashcodes)
         {
             if(caretMemberHashcodes == null || caretMemberHashcodes.Length == 0)
             {

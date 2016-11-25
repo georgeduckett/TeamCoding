@@ -22,7 +22,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         }
         protected override void SendModel(RemoteIDEModel remoteModel)
         {
-            TeamCodingPackage.Current.Slack.Publish(TeamCodingPackage.Current.ObjectSlackMessageConverter.ToBotMessage(remoteModel)).HandleException();
+            TeamCodingPackage.Current.Slack.PublishAsync(TeamCodingPackage.Current.ObjectSlackMessageConverter.ToBotMessage(remoteModel)).HandleException();
         }
     }
 }

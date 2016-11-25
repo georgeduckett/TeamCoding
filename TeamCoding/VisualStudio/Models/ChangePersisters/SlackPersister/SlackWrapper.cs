@@ -18,29 +18,29 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         private List<Action<SlackMessage>> SubscribedActions = new List<Action<SlackMessage>>();
         public SlackWrapper()
         {
-            ConnectTask = ConnectSlack();
+            ConnectTask = ConnectSlackAsync();
             TeamCodingPackage.Current.Settings.SharedSettings.SlackTokenChanged += SharedSettings_SlackSettingsChanged;
             TeamCodingPackage.Current.Settings.SharedSettings.SlackChannelChanged += SharedSettings_SlackSettingsChanged;
         }
-        private async Task ChangeSlackServer()
+        private async Task ChangeSlackServerAsync()
         {
             // We don't worry about the result of the task as any exceptions are already handled
             await ConnectTask;
             ResetSlack();
-            await ConnectSlack();
+            await ConnectSlackAsync();
         }
         private void SharedSettings_SlackSettingsChanged(object sender, EventArgs e)
         {
-            ConnectTask = ChangeSlackServer();
+            ConnectTask = ChangeSlackServerAsync();
         }
-        private async Task ConnectSlack()
+        private async Task ConnectSlackAsync()
         {
             var slackToken = TeamCodingPackage.Current.Settings.SharedSettings.SlackToken;
             if (!string.IsNullOrWhiteSpace(slackToken))
             {
                 TeamCodingPackage.Current.Logger.WriteInformation($"Connecting to Slack using token: \"{slackToken}\"");
                 SlackClient = await new SlackConnector.SlackConnector().Connect(slackToken)
-                    .HandleException((ex) => TeamCodingPackage.Current.Logger.WriteError($"Failed to connect to Slack using token: {slackToken}", ex));
+                    .HandleExceptionAsync((ex) => TeamCodingPackage.Current.Logger.WriteError($"Failed to connect to Slack using token: {slackToken}", ex));
                 if (SlackClient?.IsConnected ?? false)
                 {
                     TeamCodingPackage.Current.Logger.WriteInformation($"Connected to Slack using token: \"{slackToken}\"");
@@ -53,15 +53,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
                     typeof(ContactDetails).GetProperty(nameof(ContactDetails.Id)).SetValue(SlackClient.Self, null);
 
                     SlackClient.OnMessageReceived += SlackClient_OnMessageReceived;
-                    SlackClient.OnDisconnect += SlackClient_OnDisconnect;
+                    SlackClient.OnDisconnect += SlackClient_OnDisconnectAsync;
                 }
             }
         }
 
-        private async void SlackClient_OnDisconnect()
+        private async void SlackClient_OnDisconnectAsync()
         {
             TeamCodingPackage.Current.Logger.WriteError($"Disconnected from Slack, trying to re-connect");
-            await ConnectSlack();
+            await ConnectSlackAsync();
         }
 
         private Task SlackClient_OnMessageReceived(SlackMessage message)
@@ -85,7 +85,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
             }
             return Task.CompletedTask;
         }
-        internal async Task Publish(BotMessage message)
+        internal async Task PublishAsync(BotMessage message)
         {
             await ConnectTask; // Wait to be connected first
 
@@ -148,7 +148,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
         {
             if (SlackClient != null)
             {
-                SlackClient.OnDisconnect -= SlackClient_OnDisconnect;
+                SlackClient.OnDisconnect -= SlackClient_OnDisconnectAsync;
                 SlackClient.Disconnect();
                 SlackClient = null;
             }

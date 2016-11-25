@@ -13,9 +13,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
         {
             LocalModelPersisters = localModelPersisters;
         }
-        public async Task SendUpdate()
+        public async Task SendUpdateAsync()
         {
-            await Task.WhenAll(LocalModelPersisters.Select(lmp => lmp.SendUpdate()));
+            await Task.WhenAll(LocalModelPersisters.Select(lmp => lmp.SendUpdateAsync()));
         }
         public void Dispose()
         {

@@ -14,7 +14,7 @@ namespace TeamCoding.Documents
 {
     public class CaretInfoProvider : ICaretInfoProvider
     {
-        public async Task<DocumentRepoMetaData.CaretInfo> GetCaretInfo(SnapshotPoint snapshotPoint)
+        public async Task<DocumentRepoMetaData.CaretInfo> GetCaretInfoAsync(SnapshotPoint snapshotPoint)
         {
             var document = snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)

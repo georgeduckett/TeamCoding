@@ -11,6 +11,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     /// </summary>
     public interface ILocalModelPerisister : IDisposable
     {
-        Task SendUpdate();
+        Task SendUpdateAsync();
     }
 }

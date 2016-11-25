@@ -157,7 +157,7 @@ namespace TeamCoding.Options
             ((ComboBox)sender).GetBindingExpression(ComboBox.TextProperty)?.UpdateSource();
             sbiTitle.Content = sbitxtDescription.Text = null;
         }
-        private void cmdShowJsonExample_Click(object sender, RoutedEventArgs e)
+        private void CmdShowJsonExample_Click(object sender, RoutedEventArgs e)
         {
             new TeamCodingExample().ShowModal();
         }

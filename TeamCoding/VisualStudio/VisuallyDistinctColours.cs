@@ -47,9 +47,9 @@ namespace TeamCoding.VisualStudio
 
         public static Brush GetTextBrushFromBackgroundColour(Color backgroundColour)
         {
-            var r = f(backgroundColour.R / 255.0);
-            var g = f(backgroundColour.G / 255.0);
-            var b = f(backgroundColour.B / 255.0);
+            var r = F(backgroundColour.R / 255.0);
+            var g = F(backgroundColour.G / 255.0);
+            var b = F(backgroundColour.B / 255.0);
 
             var l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
@@ -59,7 +59,7 @@ namespace TeamCoding.VisualStudio
                 return Brushes.White;
         }
 
-        private static double f(double c)
+        private static double F(double c)
         {
             if (c <= 0.03928)
             {

@@ -46,8 +46,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
             View = view;
             RepoDocument = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
 
-            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RefreshAdornments;
-            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged += UserSettings_UserCodeDisplayChanged;
+            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RefreshAdornmentsAsync;
+            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged += UserSettings_UserCodeDisplayChangedAsync;
             View.LayoutChanged += OnLayoutChanged;
 
             var penBrush = new SolidColorBrush(Colors.Red);
@@ -56,15 +56,15 @@ namespace TeamCoding.VisualStudio.TextAdornment
             CaretPen.Freeze();
         }
 
-        private async void UserSettings_UserCodeDisplayChanged(object sender, EventArgs e)
+        private async void UserSettings_UserCodeDisplayChangedAsync(object sender, EventArgs e)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Layer.RemoveAllAdornments();
             UserAvatars.Clear();
-            RefreshAdornments(sender, e);
+            RefreshAdornmentsAsync(sender, e);
         }
 
-        private async void RefreshAdornments(object sender, EventArgs e)
+        private async void RefreshAdornmentsAsync(object sender, EventArgs e)
         {
             var CaretPositions = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                                           .Where(OpenFilesFilter)
@@ -87,7 +87,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             Layer.RemoveAllAdornments();
             foreach(var caret in CaretPositions)
             {
-                var nodes = await TeamCodingPackage.Current.CaretAdornmentDataProvider.GetCaretAdornmentData(View.TextSnapshot, caret.CaretMemberHashCodes);
+                var nodes = await TeamCodingPackage.Current.CaretAdornmentDataProvider.GetCaretAdornmentDataAsync(View.TextSnapshot, caret.CaretMemberHashCodes);
 
                 foreach(var node in nodes)
                 {
@@ -108,7 +108,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// <param name="e">The event arguments.</param>
         internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            RefreshAdornments(sender, EventArgs.Empty);
+            RefreshAdornmentsAsync(sender, EventArgs.Empty);
         }
 
         private void CreateVisual(CaretAdornmentData nodeData, int caretLineOffset, int caretOffset, IUserIdentity userIdentity)
@@ -202,8 +202,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
         }
         public void Dispose()
         {
-            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RefreshAdornments;
-            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged -= UserSettings_UserCodeDisplayChanged;
+            TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived -= RefreshAdornmentsAsync;
+            TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged -= UserSettings_UserCodeDisplayChangedAsync;
         }
     }
 }

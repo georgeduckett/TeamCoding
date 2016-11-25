@@ -39,11 +39,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.WindowsServicePersiste
         {
             CancelTokenSource = new CancellationTokenSource();
             CancelToken = CancelTokenSource.Token;
-            var listenTask = Listen();
+            var listenTask = ListenInternalAsync();
 
             return listenTask;
         }
-        private async Task Listen()
+        private async Task ListenInternalAsync()
         {
             try
             {

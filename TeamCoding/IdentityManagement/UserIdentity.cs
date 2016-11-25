@@ -36,7 +36,7 @@ namespace TeamCoding.IdentityManagement
         {
             return UserColours.GetUserColour(this);
         }
-        public static async Task<string> GetGravatarDisplayNameFromEmail(string email)
+        public static async Task<string> GetGravatarDisplayNameFromEmailAsync(string email)
         {
             var result = await TeamCodingPackage.Current.HttpClient.GetAsync($"https://www.gravatar.com/{CalculateMD5Hash(email).ToLower()}.json?d=404").HandleException();
             if (!result.IsSuccessStatusCode) return null;

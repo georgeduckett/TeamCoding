@@ -16,22 +16,22 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         private Dictionary<string, List<Action<RedisChannel, RedisValue>>> SubscribedActions = new Dictionary<string, List<Action<RedisChannel, RedisValue>>>();
         public RedisWrapper()
         {
-            ConnectTask = ConnectRedis();
+            ConnectTask = ConnectRedisAsync();
             TeamCodingPackage.Current.Settings.SharedSettings.RedisServerChanged += SharedSettings_RedisServerChanged;
         }
-        private async Task ChangeRedisServer()
+        private async Task ChangeRedisServerAsync()
         {
             // We don't worry about the result of the task as any exceptions are already handled
             await ConnectTask;
             ResetRedis();
-            await ConnectRedis();
+            await ConnectRedisAsync();
         }
         private void SharedSettings_RedisServerChanged(object sender, EventArgs e)
         {
-            ConnectTask = ChangeRedisServer();
+            ConnectTask = ChangeRedisServerAsync();
         }
         private readonly static SemaphoreSlim GetServerStringErrorTextSemaphore = new SemaphoreSlim(1, 1);
-        public static async Task<string> GetServerStringErrorText(string serverString)
+        public static async Task<string> GetServerStringErrorTextAsync(string serverString)
         {            
             if (string.IsNullOrWhiteSpace(serverString))
             {
@@ -86,14 +86,14 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 
             return null;
         }
-        private async Task ConnectRedis()
+        private async Task ConnectRedisAsync()
         {
             var redisServer = TeamCodingPackage.Current.Settings.SharedSettings.RedisServer;
             if (!string.IsNullOrWhiteSpace(redisServer))
             {
                 TeamCodingPackage.Current.Logger.WriteInformation($"Connecting to Redis using config string: \"{redisServer}\"");
                 RedisClient = await ConnectionMultiplexer.ConnectAsync(redisServer)
-                    .HandleException((ex) => TeamCodingPackage.Current.Logger.WriteError($"Failed to connect to redis server using config string: {redisServer}"));
+                    .HandleExceptionAsync((ex) => TeamCodingPackage.Current.Logger.WriteError($"Failed to connect to redis server using config string: {redisServer}"));
 
                 if (RedisClient != null)
                 {
@@ -110,7 +110,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             }
         }
 
-        internal async Task Publish(string channel, byte[] data)
+        internal async Task PublishAsync(string channel, byte[] data)
         {
             await ConnectTask; // Wait to be connected first
 
@@ -124,7 +124,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 TeamCodingPackage.Current.Logger.WriteInformation("Redisclient == null, didn't send model");
             }
         }
-        internal async Task Subscribe(string channel, Action<RedisChannel, RedisValue> action)
+        internal async Task SubscribeAsync(string channel, Action<RedisChannel, RedisValue> action)
         {
             lock (SubscribedActions)
             {

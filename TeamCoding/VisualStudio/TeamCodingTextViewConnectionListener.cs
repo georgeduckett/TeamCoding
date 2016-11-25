@@ -27,13 +27,15 @@ namespace TeamCoding.VisualStudio
             TextClassifierService = textClassifierService;
             TextDocFactory.TextDocumentDisposed += TextDocFactory_TextDocumentDisposed;
         }
+#pragma warning disable IDE1006 // Naming Styles
         public async void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+#pragma warning restore IDE1006 // Naming Styles
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
                 if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textView.GetTextDocumentFilePath()) == null) return;
 
-                await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextView(textView);
+                await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextViewAsync(textView);
                 textView.TextBuffer.Changed += TextBuffer_Changed;
                 ITextDocument textDoc;
 
@@ -41,24 +43,24 @@ namespace TeamCoding.VisualStudio
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
-                    textView.Caret.PositionChanged += Caret_PositionChanged;
-                    textView.LayoutChanged += TextView_LayoutChanged;
+                    textView.Caret.PositionChanged += Caret_PositionChangedAsync;
+                    textView.LayoutChanged += TextView_LayoutChangedAsync;
                 }
             }
         }
 
-        private async void TextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        private async void TextView_LayoutChangedAsync(object sender, TextViewLayoutChangedEventArgs e)
         {
             var textView = sender as IWpfTextView;
             if (e.NewOrReformattedLines.Contains(textView.Caret.ContainingTextViewLine))
             {
-                await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(new CaretPositionChangedEventArgs(textView, textView.Caret.Position, textView.Caret.Position));
+                await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChangedAsync(new CaretPositionChangedEventArgs(textView, textView.Caret.Position, textView.Caret.Position));
             }
         }
 
-        private async void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        private async void Caret_PositionChangedAsync(object sender, CaretPositionChangedEventArgs e)
         {
-            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChanged(e);
+            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChangedAsync(e);
         }
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)
         {
@@ -92,8 +94,8 @@ namespace TeamCoding.VisualStudio
                 if (textDoc != null)
                 {
                     textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;
-                    textView.Caret.PositionChanged -= Caret_PositionChanged;
-                    textView.LayoutChanged -= TextView_LayoutChanged;
+                    textView.Caret.PositionChanged -= Caret_PositionChangedAsync;
+                    textView.LayoutChanged -= TextView_LayoutChangedAsync;
                 }
             }
         }

@@ -15,6 +15,6 @@ namespace TeamCoding.Interfaces.Documents
         /// </summary>
         /// <param name="snapshotPoint">Must be a Microsoft.VisualStudio.Text.SnapshotPoint</param>
         /// <returns></returns>
-        Task<DocumentRepoMetaData.CaretInfo> GetCaretInfo(SnapshotPoint snapshotPoint);
+        Task<DocumentRepoMetaData.CaretInfo> GetCaretInfoAsync(SnapshotPoint snapshotPoint);
     }
 }

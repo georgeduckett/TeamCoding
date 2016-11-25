@@ -41,7 +41,7 @@ namespace TeamCoding.IdentityManagement
                 var oldDisplayName = Identity.DisplayName;
                 try
                 {
-                    Identity.DisplayName = await UserIdentity.GetGravatarDisplayNameFromEmail(credential.Username).HandleException();
+                    Identity.DisplayName = await UserIdentity.GetGravatarDisplayNameFromEmailAsync(credential.Username).HandleException();
                 }
                 catch { } // Swallow failures here since they're dealt with above
                 if (oldDisplayName != Identity.DisplayName)

@@ -39,14 +39,14 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         public RemoteModelPersisterBase()
         {
             SharedSettings = TeamCodingPackage.Current.Settings.SharedSettings;
-            SharedSettings.ShowSelfChanged += SharedSettings_ShowSelfChanged;
+            SharedSettings.ShowSelfChanged += SharedSettings_ShowSelfChangedAsync;
         }
 
-        private async void SharedSettings_ShowSelfChanged(object sender, EventArgs e)
+        private async void SharedSettings_ShowSelfChangedAsync(object sender, EventArgs e)
         {
             if (SharedSettings.ShowSelf)
             {
-                await TeamCodingPackage.Current.LocalModelChangeManager.SendUpdate();
+                await TeamCodingPackage.Current.LocalModelChangeManager.SendUpdateAsync();
             }
             else if (RemoteModels.ContainsKey(LocalIDEModel.Id.Value))
             {
@@ -96,7 +96,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         public virtual void Dispose()
         {
-            SharedSettings.ShowSelfChanged -= SharedSettings_ShowSelfChanged;
+            SharedSettings.ShowSelfChanged -= SharedSettings_ShowSelfChangedAsync;
         }
 
     }

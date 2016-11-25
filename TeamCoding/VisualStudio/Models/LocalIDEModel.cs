@@ -71,11 +71,11 @@ namespace TeamCoding.VisualStudio.Models
             TextContentChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
             TextDocumentSavedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
         }
-        public async System.Threading.Tasks.Task OnCaretPositionChanged(CaretPositionChangedEventArgs e)
+        public async System.Threading.Tasks.Task OnCaretPositionChangedAsync(CaretPositionChangedEventArgs e)
         {
             var filePath = e.TextView.TextBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfo(e.NewPosition.BufferPosition);
+            sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfoAsync(e.NewPosition.BufferPosition);
             if (sourceControlInfo != null)
             {
                 lock (OpenFilesLock)
@@ -87,12 +87,12 @@ namespace TeamCoding.VisualStudio.Models
             }
             CaretPositionChangedInternal?.Invoke(this, e);
         }
-        public async System.Threading.Tasks.Task OnOpenedTextView(IWpfTextView view)
+        public async System.Threading.Tasks.Task OnOpenedTextViewAsync(IWpfTextView view)
         {
             var filePath = view.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
 
-            sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfo(view.Caret.Position.BufferPosition);
+            sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfoAsync(view.Caret.Position.BufferPosition);
 
             if (sourceControlInfo != null)
             {

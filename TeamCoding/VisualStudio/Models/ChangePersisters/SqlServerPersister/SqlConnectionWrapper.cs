@@ -77,7 +77,7 @@ WHEN NOT MATCHED THEN
             }
             return true;
         }
-        public static async Task<string> GetConnectionStringErrorText(string connectionString)
+        public static async Task<string> GetConnectionStringErrorTextAsync(string connectionString)
         {
             try
             {
