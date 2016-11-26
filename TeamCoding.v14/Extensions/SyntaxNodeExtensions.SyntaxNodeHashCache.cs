@@ -9,6 +9,9 @@ namespace TeamCoding.Extensions
 {
     public static partial class SyntaxNodeExtensions
     {
+        /// <summary>
+        /// Caches syntax node hashes. Handles removing old syntax nodes with a file path of a compilation unit we're asked for the hash of
+        /// </summary>
         private static class SyntaxNodeHashCache
         {
             private static readonly Dictionary<SyntaxNode, int> _SyntaxNodeHashes = new Dictionary<SyntaxNode, int>();
