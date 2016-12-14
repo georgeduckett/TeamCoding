@@ -25,10 +25,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 
                 var receivedModel = TeamCodingPackage.Current.ObjectSlackMessageConverter.ToIdeModel(receivedMessage);
 
-                receivedModel.IDEUserIdentity.ImageUrl = receivedModel.IDEUserIdentity.ImageUrl.TrimStart('<').TrimEnd('>');
-                if (receivedModel.IDEUserIdentity.DisplayName.Contains("|"))
+                receivedModel.IDEUserIdentity.ImageUrl = receivedModel.IDEUserIdentity.ImageUrl?.TrimStart('<')?.TrimEnd('>');
+                if (receivedModel.IDEUserIdentity.DisplayName?.Contains("|") ?? false)
                 {
-                    receivedModel.IDEUserIdentity.DisplayName = receivedModel.IDEUserIdentity.DisplayName.Substring(receivedModel.IDEUserIdentity.DisplayName.IndexOf('|') + 1).TrimEnd('>');
+                    receivedModel.IDEUserIdentity.DisplayName = receivedModel.IDEUserIdentity.DisplayName?.Substring(receivedModel.IDEUserIdentity.DisplayName.IndexOf('|') + 1).TrimEnd('>');
                 }
                 if (receivedModel.IDEUserIdentity.Id.Contains("|"))
                 {
@@ -37,7 +37,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.SlackPersister
 
                 foreach (var openFile in receivedModel.OpenFiles)
                 {
-                    openFile.RepoUrl = openFile.RepoUrl.TrimStart('<').TrimEnd('>');
+                    openFile.RepoUrl = openFile.RepoUrl?.TrimStart('<')?.TrimEnd('>');
                 }
 
                 OnRemoteModelReceived(receivedModel);
