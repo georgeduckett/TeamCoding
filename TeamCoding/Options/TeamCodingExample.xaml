@@ -9,9 +9,9 @@
     <Grid>
         <TextBox x:Name="txtExampleConfigJson" TextWrapping="WrapWithOverflow" xml:space="preserve" AcceptsReturn="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" >{
   "FileBasedPersisterPath": "\\\\FileServer\\TeamCodingPersistence",
-  "RedisServer": "localhost"
-  "SlackToken": "xxxx-00000000000-xxxxxxxxxxxxxxxxxxxxxxxx
-  "SlackChannel": "#teamcodingextensionsync"
+  "RedisServer": "localhost",
+  "SlackToken": "xxxx-00000000000-xxxxxxxxxxxxxxxxxxxxxxxx",
+  "SlackChannel": "#teamcodingextensionsync",
   "SqlServerConnectionString": "Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;"
 }</TextBox>
     </Grid>
