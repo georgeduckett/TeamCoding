@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     {
         // TODO: Cache all the different lookups we want to do
         public event EventHandler RemoteModelReceived;
-        private readonly SharedSettings SharedSettings;
+        private readonly UserSettings UserSettings;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
         private IRemotelyAccessedDocumentData[] CachedOpenFiles = null;
 
@@ -38,13 +38,13 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         public RemoteModelPersisterBase()
         {
-            SharedSettings = TeamCodingPackage.Current.Settings.SharedSettings;
-            SharedSettings.ShowSelfChanged += SharedSettings_ShowSelfChangedAsync;
+            UserSettings = TeamCodingPackage.Current.Settings.UserSettings;
+            UserSettings.ShowSelfChanged += SharedSettings_ShowSelfChangedAsync;
         }
 
         private async void SharedSettings_ShowSelfChangedAsync(object sender, EventArgs e)
         {
-            if (SharedSettings.ShowSelf)
+            if (UserSettings.ShowSelf)
             {
                 await TeamCodingPackage.Current.LocalModelChangeManager.SendUpdateAsync();
             }
@@ -70,7 +70,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                     ClearRemoteModels();
                     RemoteModelReceived?.Invoke(this, EventArgs.Empty);
                 }
-                else if (remoteModel.Id == LocalIDEModel.Id.Value && !TeamCodingPackage.Current.Settings.SharedSettings.ShowSelf)
+                else if (remoteModel.Id == LocalIDEModel.Id.Value && !TeamCodingPackage.Current.Settings.UserSettings.ShowSelf)
                 {
                     // If the remote model is the same as the local model, then remove it if it's there already
                     if (RemoteModels.ContainsKey(remoteModel.Id))
@@ -96,7 +96,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         public virtual void Dispose()
         {
-            SharedSettings.ShowSelfChanged -= SharedSettings_ShowSelfChangedAsync;
+            UserSettings.ShowSelfChanged -= SharedSettings_ShowSelfChangedAsync;
         }
 
     }

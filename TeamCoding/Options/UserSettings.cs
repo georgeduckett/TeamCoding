@@ -10,6 +10,11 @@ namespace TeamCoding.Options
     {
         public enum UserDisplaySetting { Avatar, Letter, Colour }
 
+        public bool ShowSelf { get { return ShowSelfProperty.Value; } set { ShowSelfProperty.Value = value; } }
+        public event EventHandler ShowSelfChanged { add { ShowSelfProperty.Changed += value; } remove { ShowSelfProperty.Changed -= value; } }
+        public event EventHandler ShowSelfChanging { add { ShowSelfProperty.Changing += value; } remove { ShowSelfProperty.Changing -= value; } }
+        public readonly SettingProperty<bool> ShowSelfProperty;
+        public const bool DefaultShowSelf = false;
         public string Username { get { return UsernameProperty.Value; } set { UsernameProperty.Value = value; } }
         public event EventHandler UsernameChanged { add { UsernameProperty.Changed += value; } remove { UsernameProperty.Changed -= value; } }
         public event EventHandler UsernameChanging { add { UsernameProperty.Changing += value; } remove { UsernameProperty.Changing -= value; } }
@@ -32,6 +37,9 @@ namespace TeamCoding.Options
         public const UserDisplaySetting DefaultUserTabDisplay = UserDisplaySetting.Avatar;
         public UserSettings()
         {
+            ShowSelfProperty = new SettingProperty<bool>(this, null);
+            ShowSelfProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(ShowSelf)}: {ShowSelf}");
+
             UsernameProperty = new SettingProperty<string>(this);
             UsernameProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(Username)}: {Username}");
 

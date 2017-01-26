@@ -7,10 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="400">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <Grid Height="500">
+        <Grid Height="475">
             <GroupBox Header="User Settings" Height="152" VerticalAlignment="Top">
                 <Grid>
-                    <TextBox x:Name="txtUsername" Margin="111,10,0,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
+                    <TextBox x:Name="txtUsername" Margin="111,10,109,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
                     <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtUsername, Mode=OneWay}" Margin="0,10,0,0"/>
                     <TextBox x:Name="txtUserImageUrl" Margin="111,44,0,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}" ToolTip="Set a custom image url. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUserImageUrl, Mode=OneWay}"/>
                     <Label x:Name="lblUserImageUrl" Content="User Url" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,41,0,0" Target="{Binding ElementName=txtUserImageUrl, Mode=OneWay}"/>
@@ -18,43 +18,43 @@
                     <Label x:Name="lblUserTabDisplay" Content="User Tab Display" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,69,0,0" Target="{Binding ElementName=txtUserTabDisplay, Mode=OneWay}"/>
                     <ComboBox x:Name="txtUserCodeDisplay" Margin="111,103,0,0" Height="23" VerticalAlignment="Top" ItemsSource="{Binding Path=UserDisplaySettings}" SelectedValue="{Binding UserCodeDisplay}" ToolTip="How to display other users within code windows." AutomationProperties.LabeledBy="{Binding ElementName=lblUserCodeDisplay, Mode=OneWay}"/>
                     <Label x:Name="lblUserCodeDisplay" Content="User Code Display" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,100,0,0" Target="{Binding ElementName=txtUserCodeDisplay, Mode=OneWay}"/>
+                    <CheckBox x:Name="chkShowSelf" Content="{x:Static local:OptionsPage.chkShowSelfCaption}" Margin="0,16,10,0" ToolTip="Show yourself; useful for seeing how you appear, testing out features on your own." IsChecked="{Binding ShowSelf}" Height="15" VerticalAlignment="Top" HorizontalAlignment="Right" Width="94"/>
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,157,0,0" Height="262" VerticalAlignment="Top">
+            <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,157,0,0" Height="231" VerticalAlignment="Top">
                 <Grid>
                     <CheckBox x:Name="chkUsingJsonSettings" Content="{x:Static local:OptionsPage.chkUsingJsonSettingsCaption}" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
-                    <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="CmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,0,0"/>
-                    <Label x:Name="lblFileBasedPersisterPath" Content="File Share Folder" HorizontalAlignment="Left" Target="{Binding ElementName=txtFileBasedPersisterPath, Mode=OneWay}" Margin="0,74,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtFileBasedPersisterPath" Margin="98,74,28,0" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}" Height="23" VerticalAlignment="Top"/>
-                    <Viewbox Stretch="Uniform" Margin="0,74,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
+                    <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="CmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,10,0"/>
+                    <Label x:Name="lblFileBasedPersisterPath" Content="File Share Folder" HorizontalAlignment="Left" Target="{Binding ElementName=txtFileBasedPersisterPath, Mode=OneWay}" Margin="0,39,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtFileBasedPersisterPath" Margin="98,39,28,0" Text="{Binding FileBasedPersisterPath}" ToolTip="Set a shared directory to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblFileBasedPersisterPath, Mode=OneWay}" Height="23" VerticalAlignment="Top"/>
+                    <Viewbox Stretch="Uniform" Margin="0,39,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
                         <TextBlock x:Name="tbFileBasedPersisterPath" />
                     </Viewbox>
-                    <Label x:Name="lblRedisServer" Content="Redis Server" HorizontalAlignment="Left" Target="{Binding ElementName=txtRedisServer, Mode=OneWay}" Margin="0,100,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtRedisServer" Margin="98,102,28,0" Height="23" VerticalAlignment="Top" Text="{Binding RedisServer}" ToolTip="Set a redis server to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblRedisServer, Mode=OneWay}"/>
-                    <Viewbox Stretch="Uniform" Margin="0,102,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
+                    <Label x:Name="lblRedisServer" Content="Redis Server" HorizontalAlignment="Left" Target="{Binding ElementName=txtRedisServer, Mode=OneWay}" Margin="0,65,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtRedisServer" Margin="98,67,28,0" Height="23" VerticalAlignment="Top" Text="{Binding RedisServer}" ToolTip="Set a redis server to use to share your coding sessions" AutomationProperties.LabeledBy="{Binding ElementName=lblRedisServer, Mode=OneWay}"/>
+                    <Viewbox Stretch="Uniform" Margin="0,67,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
                         <TextBlock x:Name="tbRedisServer" />
                     </Viewbox>
-                    <Label x:Name="lblSlackToken" Content="Slack Token" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackToken, Mode=OneWay}" Margin="0,128,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtSlackToken" Margin="98,130,28,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackToken}" ToolTip="Set a Slack token (a bot token, starting 'xoxb-') to use to share your coding sessions." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackToken, Mode=OneWay}"/>
-                    <Viewbox Stretch="Uniform" Margin="0,130,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
+                    <Label x:Name="lblSlackToken" Content="Slack Token" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackToken, Mode=OneWay}" Margin="0,93,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSlackToken" Margin="98,95,28,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackToken}" ToolTip="Set a Slack token (a bot token, starting 'xoxb-') to use to share your coding sessions." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackToken, Mode=OneWay}"/>
+                    <Viewbox Stretch="Uniform" Margin="0,95,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
                         <TextBlock x:Name="tbSlackToken"  />
                     </Viewbox>
-                    <Label x:Name="lblSlackChannel" Content="Slack Channel" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackChannel, Mode=OneWay}" Margin="0,156,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtSlackChannel" Margin="98,158,28,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackChannel}" ToolTip="Set a Slack channel to use to share your coding sessions. Sync messages will be posted here (disable notifications!)." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackChannel, Mode=OneWay}"/>
-                    <Viewbox Stretch="Uniform" Margin="0,158,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
+                    <Label x:Name="lblSlackChannel" Content="Slack Channel" HorizontalAlignment="Left" Target="{Binding ElementName=txtSlackChannel, Mode=OneWay}" Margin="0,122,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSlackChannel" Margin="98,124,28,0" Height="23" VerticalAlignment="Top" Text="{Binding SlackChannel}" ToolTip="Set a Slack channel to use to share your coding sessions. Sync messages will be posted here (disable notifications!)." AutomationProperties.LabeledBy="{Binding ElementName=lblSlackChannel, Mode=OneWay}"/>
+                    <Viewbox Stretch="Uniform" Margin="0,124,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
                         <TextBlock x:Name="tbSlackChannel"  />
                     </Viewbox>
-                    <Label x:Name="lblSqlServerConnectionString" Content="Sql Server Conn." HorizontalAlignment="Left" Target="{Binding ElementName=txtSqlServerConnectionString, Mode=OneWay}" Margin="0,184,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtSqlServerConnectionString" Margin="98,186,28,0" Height="23" VerticalAlignment="Top" Text="{Binding SqlServerConnectionString}" ToolTip="Set a connection to SQL Server to share your coding sessions. Uses a table called [dbo].[TeamCodingSync] and requires the database to have ENABLE_BROKER set." AutomationProperties.LabeledBy="{Binding ElementName=lblSqlServerConnectionString, Mode=OneWay}"/>
-                    <Viewbox Stretch="Uniform" Margin="0,186,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
+                    <Label x:Name="lblSqlServerConnectionString" Content="Sql Server Conn." HorizontalAlignment="Left" Target="{Binding ElementName=txtSqlServerConnectionString, Mode=OneWay}" Margin="0,150,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSqlServerConnectionString" Margin="98,152,28,0" Height="23" VerticalAlignment="Top" Text="{Binding SqlServerConnectionString}" ToolTip="Set a connection to SQL Server to share your coding sessions. Uses a table called [dbo].[TeamCodingSync] and requires the database to have ENABLE_BROKER set." AutomationProperties.LabeledBy="{Binding ElementName=lblSqlServerConnectionString, Mode=OneWay}"/>
+                    <Viewbox Stretch="Uniform" Margin="0,152,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
                         <TextBlock x:Name="tbSqlServerConnectionString" />
                     </Viewbox>
-                    <Label x:Name="lblWinServiceIPAddress" Content="Win. Service IP" HorizontalAlignment="Left" Target="{Binding ElementName=txtWinServiceIPAddress, Mode=OneWay}" Margin="0,212,0,0" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtWinServiceIPAddress" Margin="98,214,28,0" Height="23" VerticalAlignment="Top" Text="{Binding WinServiceIPAddress}" ToolTip="Specify the IP address and port (123.456.789.123:23023) of the PC running the companion windows service. The default port is 23023" AutomationProperties.LabeledBy="{Binding ElementName=lblWinServiceIPAddress, Mode=OneWay}"/>
-                    <Viewbox Stretch="Uniform" Margin="0,214,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top" >
+                    <Label x:Name="lblWinServiceIPAddress" Content="Win. Service IP" HorizontalAlignment="Left" Target="{Binding ElementName=txtWinServiceIPAddress, Mode=OneWay}" Margin="0,178,0,0" Height="26" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtWinServiceIPAddress" Margin="98,180,28,0" Height="23" VerticalAlignment="Top" Text="{Binding WinServiceIPAddress}" ToolTip="Specify the IP address and port (123.456.789.123:23023) of the PC running the companion windows service. The default port is 23023" AutomationProperties.LabeledBy="{Binding ElementName=lblWinServiceIPAddress, Mode=OneWay}"/>
+                    <Viewbox Stretch="Uniform" Margin="0,180,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top" >
                         <TextBlock x:Name="tbWinServiceIPAddress" />
                     </Viewbox>
-                    <CheckBox x:Name="chkShowSelf" Content="{x:Static local:OptionsPage.chkShowSelfCaption}" HorizontalAlignment="Left" Margin="5,42,0,0" ToolTip="Show yourself; useful for seeing how you appear, testing out features on your own." IsChecked="{Binding ShowSelf}" Height="15" VerticalAlignment="Top"/>
                 </Grid>
             </GroupBox>
 
