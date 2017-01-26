@@ -36,24 +36,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 })).ToArray();
             }
         }
-        public RemoteModelPersisterBase()
-        {
-            UserSettings = TeamCodingPackage.Current.Settings.UserSettings;
-            UserSettings.ShowSelfChanged += SharedSettings_ShowSelfChangedAsync;
-        }
-
-        private async void SharedSettings_ShowSelfChangedAsync(object sender, EventArgs e)
-        {
-            if (UserSettings.ShowSelf)
-            {
-                await TeamCodingPackage.Current.LocalModelChangeManager.SendUpdateAsync();
-            }
-            else if (RemoteModels.ContainsKey(LocalIDEModel.Id.Value))
-            {
-                RemoteModels.Remove(LocalIDEModel.Id.Value);
-                RemoteModelReceived?.Invoke(this, EventArgs.Empty);
-            }
-        }
 
         public void ClearRemoteModels()
         {
@@ -96,7 +78,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
         }
         public virtual void Dispose()
         {
-            UserSettings.ShowSelfChanged -= SharedSettings_ShowSelfChangedAsync;
+
         }
 
     }

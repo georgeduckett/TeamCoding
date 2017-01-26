@@ -10,6 +10,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
 {
     public abstract class LocalModelPersisterBase : ILocalModelPerisister
     {
+        private readonly UserSettings UserSettings;
         private readonly LocalIDEModel IdeModel;
         private readonly SettingProperty<string>[] SettingProperties;
         public LocalModelPersisterBase(LocalIDEModel model, params SettingProperty<string>[] settingProperties)
@@ -22,6 +23,20 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
             {
                 property.Changing += SettingProperty_ChangingAsync;
                 property.Changed += SettingProperty_ChangedAsync;
+            }
+            UserSettings = TeamCodingPackage.Current.Settings.UserSettings;
+            UserSettings.ShowSelfChanged += UserSettings_ShowSelfChangedAsync;
+        }
+
+        private async void UserSettings_ShowSelfChangedAsync(object sender, EventArgs e)
+        {
+            if (UserSettings.ShowSelf)
+            {
+                await TeamCodingPackage.Current.LocalModelChangeManager.SendUpdateAsync();
+            }
+            else
+            {
+                SendModel(new RemoteIDEModel(new LocalIDEModel()));
             }
         }
         private async void SettingProperty_ChangingAsync(object sender, EventArgs e)
@@ -68,6 +83,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 property.Changing += SettingProperty_ChangingAsync;
                 property.Changed += SettingProperty_ChangedAsync;
             }
+            UserSettings.ShowSelfChanged -= UserSettings_ShowSelfChangedAsync;
         }
     }
 }
