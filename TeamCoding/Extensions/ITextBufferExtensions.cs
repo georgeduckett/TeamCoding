@@ -8,14 +8,20 @@ namespace TeamCoding.Extensions
     {
         public static string GetTextDocumentFilePath(this ITextBuffer textBuffer)
         {
-            if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument textDoc))
+            ITextDocument textDoc;
+            if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDoc))
             {
                 return DocumentPaths.GetFullPath(textDoc.FilePath);
             }
-            else
+            else if (textBuffer.Properties.TryGetProperty("IdentityMapping", out textBuffer))
             {
-                return null;
+                if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDoc))
+                {
+                    return DocumentPaths.GetFullPath(textDoc.FilePath);
+                }
             }
+
+            return null;
         }
     }
 }
