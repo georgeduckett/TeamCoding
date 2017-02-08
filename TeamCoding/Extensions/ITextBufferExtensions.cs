@@ -13,7 +13,7 @@ namespace TeamCoding.Extensions
             {
                 return DocumentPaths.GetFullPath(textDoc.FilePath);
             }
-            else if (textBuffer is IProjectionBuffer ProjBuffer && ProjBuffer.SourceBuffers.Count == 1) // TODO: Handle multiple source buffers
+            else if (textBuffer is IProjectionBuffer ProjBuffer && ProjBuffer.SourceBuffers.Count != 0) // TODO: Handle multiple source buffers properly
             {
                 return GetTextDocumentFilePath(ProjBuffer.SourceBuffers[0]);
             }
