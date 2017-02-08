@@ -28,7 +28,7 @@ namespace TeamCoding.Extensions
                 // Don't throw an exception on null, just return null
                 case null: return null;
                 // If we're a visual basic node and the parent is a "block" type one then we should return null as it's the parent that has the name;
-                case VisualBasicSyntaxNode typedNode when (typedNode.Parent.GetType().Name.Contains("Block")): return null;
+                case VisualBasicSyntaxNode typedNode when (typedNode?.Parent?.GetType()?.Name?.Contains("Block") ?? false): return null;
                 // CSharp Nodes
                 case ConstructorDeclarationSyntax typedNode: name = typedNode.Identifier.ToString(); break;
                 case DestructorDeclarationSyntax typedNode: name = "~" + typedNode.Identifier.ToString(); break;
