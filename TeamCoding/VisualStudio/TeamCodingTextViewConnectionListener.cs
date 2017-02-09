@@ -33,7 +33,7 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
-                var filePath = textView.GetTextDocumentFilePath(); // TODO: Handle this returning null (log it, then return from this function)
+                var filePath = textView.GetTextDocumentFilePath(); // TODO: Move to using GetTextDocumentFilePaths and handling multiple text document file paths
                 if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath) == null) return;
 
                 await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextViewAsync(textView);

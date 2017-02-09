@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TeamCoding.Documents;
 
 namespace TeamCoding.Extensions
@@ -9,16 +11,26 @@ namespace TeamCoding.Extensions
     {
         public static string GetTextDocumentFilePath(this ITextBuffer textBuffer)
         {
+            return GetTextDocumentFilePaths(textBuffer).FirstOrDefault();
+        }
+        public static IEnumerable<string> GetTextDocumentFilePaths(this ITextBuffer textBuffer)
+        {
             if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument textDoc))
             {
-                return DocumentPaths.GetFullPath(textDoc.FilePath);
+                return new[] { DocumentPaths.GetFullPath(textDoc.FilePath) };
             }
-            else if (textBuffer is IProjectionBuffer ProjBuffer && ProjBuffer.SourceBuffers.Count != 0) // TODO: Handle multiple source buffers properly
+            else if (textBuffer is IProjectionBuffer ProjBuffer && ProjBuffer.SourceBuffers.Count != 0)
             {
-                return GetTextDocumentFilePath(ProjBuffer.SourceBuffers[0]);
+                return GetTextDocumentFilePaths(ProjBuffer.SourceBuffers);
             }
-
-            return null;
+            else
+            {
+                return Enumerable.Empty<string>();
+            }
+        }
+        public static IEnumerable<string> GetTextDocumentFilePaths(IEnumerable<ITextBuffer> textBuffers)
+        {
+            return textBuffers.Select(b => GetTextDocumentFilePath(b)).Distinct();
         }
     }
 }
