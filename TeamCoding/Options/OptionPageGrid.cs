@@ -32,7 +32,7 @@ namespace TeamCoding.Options
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);
-            TeamCodingPackage.Current.Settings.Update(this);
+            TeamCodingPackage.Current.Settings.UpdateFromGrid(this);
         }
     }
 }

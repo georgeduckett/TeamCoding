@@ -25,7 +25,7 @@ namespace TeamCoding.Options
                 [SharedSettings] = typeof(SharedSettings).GetProperties()
             };
 
-            Update((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
+            UpdateFromGrid((OptionPageGrid)TeamCodingPackage.Current.GetDialogPage(typeof(OptionPageGrid)));
         }
         internal bool LoadFromJsonFile(string solutionFile = null)
         {
@@ -80,7 +80,7 @@ namespace TeamCoding.Options
 
             return true;
         }
-        internal void Update(OptionPageGrid optionPageGrid)
+        internal void UpdateFromGrid(OptionPageGrid optionPageGrid)
         {
             foreach (var key in SettingsProperties.Keys)
             {
@@ -91,6 +91,21 @@ namespace TeamCoding.Options
                     if (optionProp != null)
                     {
                         prop.SetValue(key, optionProp.GetValue(optionPageGrid));
+                    }
+                }
+            }
+        }
+        internal void UpdateToGrid(OptionPageGrid optionPageGrid)
+        {
+            foreach (var key in SettingsProperties.Keys)
+            {
+                foreach (var prop in SettingsProperties[key])
+                {
+                    var optionProp = OptionPageGridProperties.SingleOrDefault(p => p.Name == prop.Name);
+
+                    if (optionProp != null)
+                    {
+                        optionProp.SetValue(optionPageGrid, prop.GetValue(key));
                     }
                 }
             }

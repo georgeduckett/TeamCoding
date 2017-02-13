@@ -119,10 +119,15 @@ namespace TeamCoding.Options
                 }, TextBoxIsValidTaskCancelSources[textBox].Token, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
-
         private void OptionsPage_Loaded(object sender, RoutedEventArgs e)
         {
             var loadedFromFile = TeamCodingPackage.Current?.Settings?.LoadFromJsonFile() ?? false;
+
+            // After we've loaded the users settings override any Json settings
+            if (loadedFromFile)
+            {
+                TeamCodingPackage.Current.Settings.UpdateToGrid((OptionPageGrid)DataContext);
+            }
 
             foreach (var child in grpPersistence.Children().OfType<FrameworkElement>())
             {
@@ -133,10 +138,11 @@ namespace TeamCoding.Options
 
             foreach (var textBox in grpPersistence.FindChildren<TextBox>())
             {
-                var bindingPath = (textBox).GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+                var bindingPath = textBox.GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
 
                 if (bindingPath != null)
                 {
+                    textBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
                     ReEvaluateTextboxSetting(textBox);
                 }
             }
