@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="0.8.0" Language="en-US" Publisher="George Duckett" />
+    <Identity Id="TeamCoding.George Duckett.307fe055-6f5e-40d7-bb11-13abd012e528" Version="1.0.0" Language="en-US" Publisher="George Duckett" />
     <DisplayName>TeamCoding</DisplayName>
     <Description xml:space="preserve">The Team Coding Visual Studio extension helps discover team members who are working in the same area of a source controlled solution as you. It displays icons on tabs, text in CodeLens is as well as showing a coloured caret where they are working for C# and visual basic code.</Description>
     <MoreInfo>https://github.com/georgeduckett/TeamCoding</MoreInfo>
