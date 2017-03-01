@@ -17,7 +17,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.FileBasedPersister
         private static readonly string SessionId = Guid.NewGuid().ToString("N");
         protected readonly string PersistenceFileSearchFormat = $"OpenDocs{SessionId}_*.bin";
         protected readonly string PersistenceFile = $"OpenDocs{SessionId}_{System.Diagnostics.Process.GetCurrentProcess().Id}.bin";
-        private readonly LocalIDEModel IdeModel;
         protected abstract string PersistenceFolderPath { get; }
         protected string PersistenceFilePath => PersistenceFolderPath == null ? null : Path.Combine(PersistenceFolderPath, PersistenceFile);
 

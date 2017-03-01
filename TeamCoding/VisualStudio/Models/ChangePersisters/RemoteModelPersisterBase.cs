@@ -12,7 +12,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     {
         // TODO: Cache all the different lookups we want to do
         public event EventHandler RemoteModelReceived;
-        private readonly UserSettings UserSettings;
         private readonly Dictionary<string, RemoteIDEModel> RemoteModels = new Dictionary<string, RemoteIDEModel>();
         private IRemotelyAccessedDocumentData[] CachedOpenFiles = null;
 
