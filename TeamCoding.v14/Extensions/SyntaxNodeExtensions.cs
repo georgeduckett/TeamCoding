@@ -63,6 +63,8 @@ namespace TeamCoding.Extensions
                         name = typedNode.ExplicitInterfaceSpecifier.Name.ToString() + "." + name;
                     }
                     break;
+                case EventDeclarationSyntax typedNode: name = typedNode.Identifier.ToString(); break;
+                case Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax typedNode: name = string.Join(", ", typedNode.Declaration.Variables.Select(v => v.Identifier.ToString()));break;
 
                 // Visual Basic Nodes
                 case ClassStatementSyntax typedNode: name = typedNode.Identifier.ToString() + typedNode.TypeParameterList.GetGenericParametersString(); break;
