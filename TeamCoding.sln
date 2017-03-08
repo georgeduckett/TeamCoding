@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25920.0
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamCoding", "TeamCoding\TeamCoding.csproj", "{F9EE549E-E774-4C67-AB5F-FA5212D8B501}"
 EndProject
@@ -37,7 +37,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v15", "v15", "{63183E3E-79E
 	ProjectSection(SolutionItems) = preProject
 		References\v15\Microsoft.Alm.Shared.dll = References\v15\Microsoft.Alm.Shared.dll
 		References\v15\Microsoft.TeamFoundation.CodeSense.Client.Common.dll = References\v15\Microsoft.TeamFoundation.CodeSense.Client.Common.dll
-		References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll = References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll
 		References\v15\Microsoft.VisualStudio.Alm.Shared.dll = References\v15\Microsoft.VisualStudio.Alm.Shared.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll = References\v15\Microsoft.VisualStudio.CodeSense.Client.Common.dll
 		References\v15\Microsoft.VisualStudio.CodeSense.dll = References\v15\Microsoft.VisualStudio.CodeSense.dll
