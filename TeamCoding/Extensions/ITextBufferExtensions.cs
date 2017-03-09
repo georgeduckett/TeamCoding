@@ -19,7 +19,7 @@ namespace TeamCoding.Extensions
             {
                 return new[] { DocumentPaths.GetFullPath(textDoc.FilePath) };
             }
-            else if (textBuffer is IProjectionBuffer ProjBuffer && ProjBuffer.SourceBuffers.Count != 0)
+            else if (textBuffer is IProjectionBufferBase ProjBuffer && ProjBuffer.SourceBuffers.Count != 0)
             {
                 return GetTextDocumentFilePaths(ProjBuffer.SourceBuffers);
             }
