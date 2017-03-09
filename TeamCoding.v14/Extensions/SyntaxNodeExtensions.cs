@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Interfaces.Extensions;
 
 namespace TeamCoding.Extensions
 {
@@ -115,11 +116,11 @@ namespace TeamCoding.Extensions
 
             var name = syntaxNode.GetIdentifyingString();
 
-            var identityHash = name == null ? 0 : syntaxNode is VisualBasicSyntaxNode ? StringComparer.OrdinalIgnoreCase.GetHashCode(name) : StringComparer.Ordinal.GetHashCode(name);
+            var identityHash = name == null ? 0 : name.ToIntegerCode(syntaxNode is VisualBasicSyntaxNode);
 
             if (!(syntaxNode is ICompilationUnitSyntax) && (identityHash == 0 || syntaxNode.ChildNodes().Count() == 0))
             {
-                identityHash = syntaxNode.ToString().GetHashCode();
+                identityHash = syntaxNode.ToString().ToIntegerCode();
             }
 
             SyntaxNodeHashCache.Add(syntaxNode, identityHash);
