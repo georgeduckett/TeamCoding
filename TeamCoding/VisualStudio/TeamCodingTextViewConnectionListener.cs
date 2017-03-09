@@ -38,7 +38,7 @@ namespace TeamCoding.VisualStudio
 
                 if(filePath == null)
                 {
-                    TeamCodingPackage.Current.Logger.WriteError($@"Could not get file path for text view with TextBuffer properties:
+                    TeamCodingPackage.Current.Logger.WriteInformation($@"Could not get file path for text view with TextBuffer properties:
 {string.Join(Environment.NewLine, textView.TextBuffer.Properties.PropertyList.Select(p => p.Key.ToString() + ": " + p.Value.ToString()))}");
                     return;
                 }
