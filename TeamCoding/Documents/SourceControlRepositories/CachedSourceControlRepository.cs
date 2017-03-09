@@ -17,6 +17,9 @@ namespace TeamCoding.Documents.SourceControlRepositories
         public void RemoveCachedRepoData(string docFilePath) => RepoData.Remove(docFilePath);
         public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
+            if (string.IsNullOrEmpty(fullFilePath))
+                return null;
+
             if (RepoData.ContainsKey(fullFilePath))
             {
                 var fileRepoData = RepoData[fullFilePath];
