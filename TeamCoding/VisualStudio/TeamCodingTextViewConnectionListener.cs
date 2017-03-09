@@ -33,7 +33,16 @@ namespace TeamCoding.VisualStudio
         {
             if (reason == ConnectionReason.TextViewLifetime)
             { // TextView opened
-                var filePath = textView.GetTextDocumentFilePath(); // TODO: Move to using GetTextDocumentFilePaths and handling multiple text document file paths
+                // TODO: Move to using GetTextDocumentFilePaths and handling multiple text document file paths
+                var filePath = textView.GetTextDocumentFilePath() ?? subjectBuffers.Select(sb => sb.GetTextDocumentFilePath()).FirstOrDefault(fp => fp != null);
+
+                if(filePath == null)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError($@"Could not get file path for text view with TextBuffer properties:
+{string.Join(Environment.NewLine, textView.TextBuffer.Properties.PropertyList.Select(p => p.Key.ToString() + ": " + p.Value.ToString()))}");
+                    return;
+                }
+
                 if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath) == null) return;
 
                 await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextViewAsync(textView);
