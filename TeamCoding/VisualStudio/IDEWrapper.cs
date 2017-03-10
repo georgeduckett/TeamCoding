@@ -47,7 +47,16 @@ namespace TeamCoding.VisualStudio
         {
             InvokeAsync(() =>
             {
-                var filePath = window.GetWindowsFilePath();
+                string filePath = null;
+
+                try
+                {
+                    filePath = window.GetWindowsFilePath();
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError("The EnvDTE.Window is disposed.", ex);
+                }
 
                 if (filePath == null) return;
                 CacheDocPanel();
