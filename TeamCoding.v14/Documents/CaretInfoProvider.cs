@@ -21,7 +21,13 @@ namespace TeamCoding.Documents
             {
                 return null;
             }
+
             var syntaxRoot = await document.GetSyntaxRootAsync();
+            if (syntaxRoot == null)
+            {
+                return null;
+            }
+
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
             int[] memberHashCodes = null;
             IEnumerable<SyntaxNode> memberNodes = null;
