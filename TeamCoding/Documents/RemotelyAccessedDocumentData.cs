@@ -19,7 +19,10 @@ namespace TeamCoding.Documents
         {
             var hash = 17;
             hash = hash * 31 + Repository.GetHashCode();
-            hash = hash * 31 + RepositoryBranch.GetHashCode();
+
+            if (!string.IsNullOrEmpty(RepositoryBranch))
+                hash = hash * 31 + RepositoryBranch.GetHashCode();
+
             hash = hash * 31 + IdeUserIdentity.GetHashCode();
             hash = hash * 31 + BeingEdited.GetHashCode();
             hash = hash * 31 + HasFocus.GetHashCode();
