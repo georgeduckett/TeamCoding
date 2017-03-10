@@ -31,8 +31,8 @@ namespace TeamCoding.VisualStudio.TextAdornment
         private readonly Dictionary<string, Queue<FrameworkElement>> UserAvatars = new Dictionary<string, Queue<FrameworkElement>>();
         public TextAdornment(IWpfTextView view)
         {
-            OpenFilesFilter = of => of.Repository == RepoDocument.RepoUrl &&
-                                    of.RelativePath == RepoDocument.RelativePath &&
+            OpenFilesFilter = of => of.Repository.Equals(RepoDocument.RepoUrl, StringComparison.OrdinalIgnoreCase) &&
+                                    of.RelativePath.Equals(RepoDocument.RelativePath, StringComparison.OrdinalIgnoreCase) &&
                                     of.RepositoryBranch == RepoDocument.RepoBranch &&
                                     of.CaretPositionInfo != null;
 

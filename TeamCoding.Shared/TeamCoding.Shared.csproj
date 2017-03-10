@@ -75,6 +75,7 @@
     <Compile Include="Documents\SourceControlRepositories\ISourceControlRepository.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IdentityManagement\IUserIdentity.cs" />
     <Compile Include="IntArrayEqualityComparer.cs" />
     <Compile Include="ITeamCodingPackageProvider.cs" />
