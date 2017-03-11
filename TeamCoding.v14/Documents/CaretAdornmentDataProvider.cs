@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Text;
 using TeamCoding.Interfaces.Documents;
 using Microsoft.CodeAnalysis.Text;
 using TeamCoding.Extensions;
+using TeamCoding.Interfaces.Extensions;
 using Microsoft.CodeAnalysis;
 
 namespace TeamCoding.Documents
@@ -15,7 +16,7 @@ namespace TeamCoding.Documents
     {
         public async Task<IEnumerable<CaretAdornmentData>> GetCaretAdornmentDataAsync(ITextSnapshot textSnapshot, int[] caretMemberHashcodes)
         {
-            if(caretMemberHashcodes == null || caretMemberHashcodes.Length == 0)
+            if (caretMemberHashcodes == null || caretMemberHashcodes.Length == 0)
             {
                 return Enumerable.Empty<CaretAdornmentData>();
             }
@@ -23,11 +24,27 @@ namespace TeamCoding.Documents
             var document = textSnapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)
             {
-                return Enumerable.Empty<CaretAdornmentData>();
+                return GetTextCaretAdornmentData(textSnapshot, caretMemberHashcodes);
             }
+
             var syntaxTree = await document.GetSyntaxTreeAsync();
             var rootNode = await syntaxTree.GetRootAsync();
-
+            return GetRoslynCaretAdornmentData(caretMemberHashcodes, rootNode);
+        }
+        private IEnumerable<CaretAdornmentData> GetTextCaretAdornmentData(ITextSnapshot textSnapshot, int[] caretMemberHashcodes)
+        {
+            string snapshotText = textSnapshot.GetText();
+            if (caretMemberHashcodes.Length == 1 && snapshotText.ToIntegerCode() == caretMemberHashcodes[0])
+            {
+                return new[] { new CaretAdornmentData(0, 0, snapshotText.Length) };
+            }
+            else
+            {
+                return Enumerable.Empty<CaretAdornmentData>();
+            }
+        }
+        private static IEnumerable<CaretAdornmentData> GetRoslynCaretAdornmentData(int[] caretMemberHashcodes, SyntaxNode rootNode)
+        {
             if (rootNode.GetValueBasedHashCode() != caretMemberHashcodes[0])
             {
                 return Enumerable.Empty<CaretAdornmentData>();
@@ -39,7 +56,7 @@ namespace TeamCoding.Documents
                 var oldNodesCount = nodes.Count;
                 for (int nodeIndex = 0; nodeIndex < oldNodesCount; nodeIndex++)
                 {
-                    foreach(var childTokenOrNode in nodes[nodeIndex].ChildNodesAndTokens())
+                    foreach (var childTokenOrNode in nodes[nodeIndex].ChildNodesAndTokens())
                     {
                         if (childTokenOrNode.IsNode)
                         {
@@ -54,7 +71,7 @@ namespace TeamCoding.Documents
                 nodes.RemoveRange(0, oldNodesCount);
                 i++;
             }
-            
+
             return nodes.Select(n => new CaretAdornmentData(n.FullSpan.Start + (n.HasLeadingTrivia ? n.GetLeadingTrivia().SelectMany(t => t.ToFullString()).TakeWhile(c => char.IsWhiteSpace(c)).Count() : 0), n.SpanStart, n.Span.End));
         }
     }

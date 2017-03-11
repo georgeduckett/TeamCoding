@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TeamCoding.Documents;
 using TeamCoding.Extensions;
 using TeamCoding.Interfaces.Documents;
+using TeamCoding.Interfaces.Extensions;
 
 namespace TeamCoding.Documents
 {
@@ -19,7 +20,7 @@ namespace TeamCoding.Documents
             var document = snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)
             {
-                return null;
+                return GetTextCaretInfo(snapshotPoint);
             }
 
             var syntaxRoot = await document.GetSyntaxRootAsync();
@@ -28,6 +29,10 @@ namespace TeamCoding.Documents
                 return null;
             }
 
+            return GetRoslynCaretInfo(syntaxRoot, snapshotPoint);
+        }
+        private DocumentRepoMetaData.CaretInfo GetRoslynCaretInfo(SyntaxNode syntaxRoot, SnapshotPoint snapshotPoint)
+        {
             var caretToken = syntaxRoot.FindToken(snapshotPoint);
             int[] memberHashCodes = null;
             IEnumerable<SyntaxNode> memberNodes = null;
@@ -55,6 +60,14 @@ namespace TeamCoding.Documents
                 SyntaxNodeIds = memberHashCodes,
                 LeafMemberLineOffset = caretLine.LineNumber - lastNodeLine.LineNumber,
                 LeafMemberCaretOffset = snapshotPoint.Position - caretLine.Start
+            };
+        }
+        private DocumentRepoMetaData.CaretInfo GetTextCaretInfo(SnapshotPoint snapshotPoint)
+        {
+            return new DocumentRepoMetaData.CaretInfo()
+            {
+                SyntaxNodeIds = new[] { snapshotPoint.Snapshot.GetText().ToIntegerCode() },
+                LeafMemberCaretOffset = snapshotPoint.Position
             };
         }
     }
