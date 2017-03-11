@@ -31,78 +31,111 @@ namespace TeamCoding.VisualStudio
         public async void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
 #pragma warning restore IDE1006 // Naming Styles
         {
-            if (reason == ConnectionReason.TextViewLifetime)
-            { // TextView opened
-                // TODO: Move to using GetTextDocumentFilePaths and handling multiple text document file paths
-                var filePath = textView.GetTextDocumentFilePath() ?? subjectBuffers.Select(sb => sb.GetTextDocumentFilePath()).FirstOrDefault(fp => fp != null);
+            try
+            {
+                if (reason == ConnectionReason.TextViewLifetime)
+                { // TextView opened
+                  // TODO: Move to using GetTextDocumentFilePaths and handling multiple text document file paths
+                    var filePath = textView.GetTextDocumentFilePath() ?? subjectBuffers.Select(sb => sb.GetTextDocumentFilePath()).FirstOrDefault(fp => fp != null);
 
-                if(filePath == null)
-                {
-                    TeamCodingPackage.Current.Logger.WriteInformation($@"Could not get file path for text view with TextBuffer properties:
+                    if (filePath == null)
+                    {
+                        TeamCodingPackage.Current.Logger.WriteInformation($@"Could not get file path for text view with TextBuffer properties:
 {string.Join(Environment.NewLine, textView.TextBuffer.Properties.PropertyList.Select(p => p.Key.ToString() + ": " + p.Value.ToString()))}");
-                    return;
-                }
+                        return;
+                    }
 
-                if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath) == null) return;
+                    if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath) == null) return;
 
-                await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextViewAsync(textView);
-                textView.TextBuffer.Changed += TextBuffer_Changed;
-                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out var textDoc);
-                if (textDoc != null)
-                {
-                    textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
-                    textView.Caret.PositionChanged += Caret_PositionChangedAsync;
-                    textView.LayoutChanged += TextView_LayoutChangedAsync;
+                    await TeamCodingPackage.Current.LocalIdeModel.OnOpenedTextViewAsync(textView);
+                    textView.TextBuffer.Changed += TextBuffer_Changed;
+                    TextDocFactory.TryGetTextDocument(textView.TextBuffer, out var textDoc);
+                    if (textDoc != null)
+                    {
+                        textDoc.FileActionOccurred += TextDoc_FileActionOccurred;
+                        textView.Caret.PositionChanged += Caret_PositionChangedAsync;
+                        textView.LayoutChanged += TextView_LayoutChangedAsync;
+                    }
                 }
             }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
+            }
         }
-
         private async void TextView_LayoutChangedAsync(object sender, TextViewLayoutChangedEventArgs e)
         {
             var textView = sender as IWpfTextView;
             if (e.NewOrReformattedLines.Contains(textView.Caret.ContainingTextViewLine))
             {
-                await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChangedAsync(new CaretPositionChangedEventArgs(textView, textView.Caret.Position, textView.Caret.Position));
+                await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChangedAsync(new CaretPositionChangedEventArgs(textView, textView.Caret.Position, textView.Caret.Position)).HandleException();
             }
         }
-
         private async void Caret_PositionChangedAsync(object sender, CaretPositionChangedEventArgs e)
         {
-            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChangedAsync(e);
+            await TeamCodingPackage.Current.LocalIdeModel.OnCaretPositionChangedAsync(e).HandleException();
         }
         private void TextDocFactory_TextDocumentDisposed(object sender, TextDocumentEventArgs e)
         {
-            TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentDisposed(e.TextDocument, e);
+            try
+            {
+                TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentDisposed(e.TextDocument, e);
+            }
+            catch(Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
+            }
         }
         private void TextDoc_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
+            try
             {
-                TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
-
-                // If the file was the config file then try and load the settings
-                if (e.FilePath.EndsWith(Options.Settings.TeamCodingConfigFileName))
+                if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
                 {
-                    TeamCodingPackage.Current.Settings.LoadFromJsonFile();
+                    TeamCodingPackage.Current.LocalIdeModel.OnTextDocumentSaved(sender as ITextDocument, e);
+
+                    // If the file was the config file then try and load the settings
+                    if (e.FilePath.EndsWith(Options.Settings.TeamCodingConfigFileName))
+                    {
+                        TeamCodingPackage.Current.Settings.LoadFromJsonFile();
+                    }
                 }
+            }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
             }
         }
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            TeamCodingPackage.Current.LocalIdeModel.OnTextBufferChanged(sender as ITextBuffer, e);
+            try
+            {
+                TeamCodingPackage.Current.LocalIdeModel.OnTextBufferChanged(sender as ITextBuffer, e);
+            }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
+            }
         }
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
-            if (reason == ConnectionReason.TextViewLifetime)
-            { // TextView closed
-                textView.TextBuffer.Changed -= TextBuffer_Changed;
-                TextDocFactory.TryGetTextDocument(textView.TextBuffer, out var textDoc);
-                if (textDoc != null)
-                {
-                    textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;
-                    textView.Caret.PositionChanged -= Caret_PositionChangedAsync;
-                    textView.LayoutChanged -= TextView_LayoutChangedAsync;
+            try
+            {
+                if (reason == ConnectionReason.TextViewLifetime)
+                { // TextView closed
+                    textView.TextBuffer.Changed -= TextBuffer_Changed;
+                    TextDocFactory.TryGetTextDocument(textView.TextBuffer, out var textDoc);
+                    if (textDoc != null)
+                    {
+                        textDoc.FileActionOccurred -= TextDoc_FileActionOccurred;
+                        textView.Caret.PositionChanged -= Caret_PositionChangedAsync;
+                        textView.LayoutChanged -= TextView_LayoutChangedAsync;
+                    }
                 }
+            }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
             }
         }
     }

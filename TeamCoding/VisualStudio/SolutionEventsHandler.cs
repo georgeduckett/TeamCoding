@@ -14,7 +14,14 @@ namespace TeamCoding.VisualStudio
         {
             if (fNewSolution == 0)
             {
-                TeamCodingPackage.Current.Settings.LoadFromJsonFile();
+                try
+                {
+                    TeamCodingPackage.Current.Settings.LoadFromJsonFile();
+                }
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+                {
+                    TeamCodingPackage.Current.Logger.WriteError(ex);
+                }
             }
 
             return Microsoft.VisualStudio.VSConstants.S_OK;

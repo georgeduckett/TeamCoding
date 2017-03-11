@@ -16,6 +16,23 @@ namespace TeamCoding.Extensions
             }
         }
         /// <summary>
+        /// Handles any exception caused by the task
+        /// </summary>
+        /// <param name="task">The task to handle exceptions for</param>
+        /// <param name="handleException">What to do if there is an exception</param>
+        /// <returns>A task that upon completion will have waited for the task, and handled any exception</returns>
+        public static async Task HandleExceptionAsync(this Task task, Action<Exception> handleException)
+        {
+            try
+            {
+                await task;
+            }
+            catch (Exception ex)
+            {
+                handleException(ex);
+            }
+        }
+        /// <summary>
         /// Handles any exception caused by the task, and returns default(<typeparamref name="TResult"/>)
         /// </summary>
         /// <typeparam name="TResult">The type of the result of the task</typeparam>
@@ -35,29 +52,12 @@ namespace TeamCoding.Extensions
             }
             return result;
         }
-        public static Task<TResult> HandleException<TResult>(this Task<TResult> task)
+        public static Task HandleException(this Task task)
         {
             task.ContinueWith(WriteTaskException, TaskContinuationOptions.OnlyOnFaulted);
             return task;
         }
-        /// <summary>
-        /// Handles any exception caused by the task
-        /// </summary>
-        /// <param name="task">The task to handle exceptions for</param>
-        /// <param name="handleException">What to do if there is an exception</param>
-        /// <returns>A task that upon completion will have waited for the task, and handled any exception</returns>
-        public static async Task HandleExceptionAsync(this Task task, Action<Exception> handleException)
-        {
-            try
-            {
-                await task;
-            }
-            catch (Exception ex)
-            {
-                handleException(ex);
-            }
-        }
-        public static Task HandleException(this Task task)
+        public static Task<TResult> HandleException<TResult>(this Task<TResult> task)
         {
             task.ContinueWith(WriteTaskException, TaskContinuationOptions.OnlyOnFaulted);
             return task;

@@ -80,29 +80,38 @@ namespace TeamCoding.VisualStudio
 
         private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
         {
-            var newFilePath = gotFocus.GetWindowsFilePath();
-
-            if(newFilePath != null)
+            try
             {
-                TeamCodingPackage.Current.LocalIdeModel.OnFileGotFocus(newFilePath);
+                var newFilePath = gotFocus.GetWindowsFilePath();
+
+                if (newFilePath != null)
+                {
+                    TeamCodingPackage.Current.LocalIdeModel.OnFileGotFocus(newFilePath);
+                }
+
+                var oldFilePath = lostFocus.GetWindowsFilePath();
+
+                if (oldFilePath != null)
+                {
+                    TeamCodingPackage.Current.LocalIdeModel.OnFileLostFocus(oldFilePath);
+                }
             }
-
-            var oldFilePath = lostFocus.GetWindowsFilePath();
-
-            if (oldFilePath != null)
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
             {
-                TeamCodingPackage.Current.LocalIdeModel.OnFileLostFocus(oldFilePath);
+                TeamCodingPackage.Current.Logger.WriteError(ex);
             }
         }
         public void InvokeAsync(Action callback)
         {
+            Action wrappedCallback = () => { try { callback(); } catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached) { TeamCodingPackage.Current.Logger.WriteError(ex); } };
+
             if (WpfMainWindow != null)
             {
-                WpfMainWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+                WpfMainWindow.Dispatcher.InvokeAsync(wrappedCallback, DispatcherPriority.ContextIdle);
             }
             else
             {
-                WpfCreatedCallbacks.Add(callback);
+                WpfCreatedCallbacks.Add(wrappedCallback);
                 try
                 {
                     WpfMainWindow = GetWpfMainWindow(DTE);
@@ -113,7 +122,7 @@ namespace TeamCoding.VisualStudio
                 {
                     foreach(var action in WpfCreatedCallbacks)
                     {
-                        WpfMainWindow.Dispatcher.InvokeAsync(callback, DispatcherPriority.ContextIdle);
+                        WpfMainWindow.Dispatcher.InvokeAsync(wrappedCallback, DispatcherPriority.ContextIdle);
                     }
                 }
             }

@@ -8,6 +8,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using TeamCoding.Extensions;
+using System;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -43,9 +44,16 @@ namespace TeamCoding.VisualStudio.TextAdornment
         /// <param name="textView">The <see cref="IWpfTextView"/> upon which the adornment should be placed</param>
         public void TextViewCreated(IWpfTextView textView)
         {
-            if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textView.GetTextDocumentFilePath()) == null) return;
+            try
+            {
+                if (TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textView.GetTextDocumentFilePath()) == null) return;
 
-            new TextAdornment(textView);
+                new TextAdornment(textView);
+            }
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+            {
+                TeamCodingPackage.Current.Logger.WriteError(ex);
+            }
         }
 
         #endregion
