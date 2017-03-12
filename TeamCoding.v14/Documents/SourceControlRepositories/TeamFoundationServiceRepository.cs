@@ -53,12 +53,15 @@ namespace TeamCoding.Documents.SourceControlRepositories
                 }
 
                 var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
+
+                var branch = versionControlServer.QueryBranchObjects(new ItemIdentifier(serverItem), RecursionType.None).FirstOrDefault()?.Properties?.Description;
                 return new DocumentRepoMetaData()
-                { // TODO: Populate the branch property
+                {
                     RepoProvider = nameof(TeamFoundationServiceRepository),
                     RelativePath = serverItem,
                     LastActioned = DateTime.UtcNow,
                     RepoUrl = workspaceInfo.ServerUri.ToString(),
+                    RepoBranch = branch,
                     BeingEdited = serverWorkspace.GetPendingChanges(fullFilePath).Any()
                 };
             }
