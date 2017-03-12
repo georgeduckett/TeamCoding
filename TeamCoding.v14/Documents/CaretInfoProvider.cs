@@ -88,7 +88,7 @@ namespace TeamCoding.Documents
             }
 
             return new DocumentRepoMetaData.CaretInfo()
-            { // TODO: Make the text caret info use line numbers based relative to the server's copy of the file (same with CaretAdornmentDataProvider)
+            {
                 SyntaxNodeIds = new int[1], // Dummy value
                 LeafMemberLineOffset = textSnapshotLineNumber,
                 LeafMemberCaretOffset = caretColumn
