@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Documents.SourceControlRepositories;
 using TeamCoding.Interfaces.Documents;
 using TeamCoding.Logging;
 using TeamCoding.VisualStudio.Models.ChangePersisters;
@@ -16,6 +17,7 @@ namespace TeamCoding
     {
         public ICaretAdornmentDataProvider CaretAdornmentDataProvider => TeamCodingPackage.Current.CaretAdornmentDataProvider;
         public ICaretInfoProvider CaretInfoProvider => TeamCodingPackage.Current.CaretInfoProvider;
+        public ISourceControlRepository SourceControlRepository => TeamCodingPackage.Current.SourceControlRepo;
         public HttpClient HttpClient => TeamCodingPackage.Current.HttpClient;
         public IRemoteModelPersister RemoteModelChangeManager => TeamCodingPackage.Current.RemoteModelChangeManager;
         public ILogger Logger => TeamCodingPackage.Current.Logger;

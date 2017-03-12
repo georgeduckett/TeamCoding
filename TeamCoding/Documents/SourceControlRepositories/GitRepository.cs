@@ -50,5 +50,59 @@ namespace TeamCoding.Documents.SourceControlRepositories
                 LastActioned = DateTime.UtcNow
             };
         }
+
+        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
+        {
+            var relativePath = GetRepoPath(fullFilePath);
+
+            // It's ok to return null here since calling methods will handle it and it allows us to not have some global "is this a repository setting"
+            // Another reason it's better to do it this way is there's no "before loading a solution" event, meaning lots of listeners get the IsEnabled setting change too late (after docs are loaded)
+            if (relativePath == null) return null;
+
+            var repo = new Repository(Repository.Discover(fullFilePath));
+
+            if (repo.Ignore.IsPathIgnored(relativePath)) return null;
+
+            var repoHeadTree = repo.Head.Tip.Tree;
+            var remoteMasterTree = repo.Head.TrackedBranch.Tip.Tree;
+
+            var change = repo.Diff.Compare<Patch>(new[] { fullFilePath }).SingleOrDefault();
+
+            if(change == null)
+            {
+                return null;
+            }
+
+            return ParsePatch(change.Patch);
+        }
+
+        private (int[] LineAdditions, int[] LineDeletions)? ParsePatch(string patch)
+        {
+            var lineAdditions = new List<int>();
+            var lineDeletions = new List<int>();
+            int? currentLine = null;
+
+            foreach(var line in patch.Split('\n'))
+            {
+                if (line.StartsWith("@@"))
+                {
+                    currentLine = int.Parse(line.Substring(4, line.IndexOf(',') - 4));
+                }
+                else if(line.StartsWith(" "))
+                {
+                    currentLine++;
+                }
+                else if(line.StartsWith("+") && currentLine != null)
+                {
+                    lineAdditions.Add(currentLine.Value);
+                }
+                else if (line.StartsWith("-") && currentLine != null)
+                {
+                    lineDeletions.Add(currentLine.Value);
+                }
+            }
+
+            return (lineAdditions.ToArray(), lineDeletions.ToArray());
+        }
     }
 }

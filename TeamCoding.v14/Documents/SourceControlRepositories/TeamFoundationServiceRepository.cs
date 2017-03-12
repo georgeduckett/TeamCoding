@@ -11,6 +11,11 @@ namespace TeamCoding.Documents.SourceControlRepositories
 {
     public class TeamFoundationServiceRepository : ISourceControlRepository
     {
+        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
+        {
+            return null; // TODO: Get the proper diff for TFS repositories
+        }
+
         public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
             var workspaceInfo = Workstation.Current.GetLocalWorkspaceInfo(fullFilePath);

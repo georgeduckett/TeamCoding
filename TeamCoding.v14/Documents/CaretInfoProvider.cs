@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
+using TeamCoding.Documents.SourceControlRepositories;
 using TeamCoding.Extensions;
 using TeamCoding.Interfaces.Documents;
 using TeamCoding.Interfaces.Extensions;
@@ -15,6 +16,7 @@ namespace TeamCoding.Documents
 {
     public class CaretInfoProvider : ICaretInfoProvider
     {
+        private readonly ISourceControlRepository SourceControlRepository = TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().SourceControlRepository;
         public async Task<DocumentRepoMetaData.CaretInfo> GetCaretInfoAsync(SnapshotPoint snapshotPoint)
         {
             var document = snapshotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
@@ -64,10 +66,32 @@ namespace TeamCoding.Documents
         }
         private DocumentRepoMetaData.CaretInfo GetTextCaretInfo(SnapshotPoint snapshotPoint)
         {
-            return new DocumentRepoMetaData.CaretInfo()
+            ITextSnapshotLine textSnapshotLine = snapshotPoint.GetContainingLine();
+            var caretColumn = snapshotPoint.Position - textSnapshotLine.Start;
+
+            var textSnapshotLineNumber = textSnapshotLine.LineNumber;
+
+            var filePath = snapshotPoint.Snapshot.TextBuffer.GetTextDocumentFilePath();
+
+            if (filePath != null && SourceControlRepository.GetRepoDocInfo(filePath) != null)
             {
-                SyntaxNodeIds = new[] { snapshotPoint.Snapshot.GetText().ToIntegerCode() },
-                LeafMemberCaretOffset = snapshotPoint.Position
+                var changes = SourceControlRepository.GetDiffWithServer(filePath);
+
+                if(changes != null)
+                {
+                    var (additions, deletions) = changes.Value;
+
+                    // If we've added lines before the caret line, then in the source we'd be on a line above for each line added (therefore subtract additions),
+                    // and for deletions we'd be on a line below (therefore add deletions)
+                    textSnapshotLineNumber += -additions.Count(n => n <= textSnapshotLineNumber) + deletions.Count(n => n <= textSnapshotLineNumber);
+                }
+            }
+
+            return new DocumentRepoMetaData.CaretInfo()
+            { // TODO: Make the text caret info use line numbers based relative to the server's copy of the file (same with CaretAdornmentDataProvider)
+                SyntaxNodeIds = new int[1], // Dummy value
+                LeafMemberLineOffset = textSnapshotLineNumber,
+                LeafMemberCaretOffset = caretColumn
             };
         }
     }

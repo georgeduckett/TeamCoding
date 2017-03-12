@@ -34,7 +34,7 @@ namespace TeamCoding.Documents
         private IEnumerable<CaretAdornmentData> GetTextCaretAdornmentData(ITextSnapshot textSnapshot, int[] caretMemberHashcodes)
         {
             string snapshotText = textSnapshot.GetText();
-            if (caretMemberHashcodes.Length == 1 && snapshotText.ToIntegerCode() == caretMemberHashcodes[0])
+            if (caretMemberHashcodes.Length == 1)
             {
                 return new[] { new CaretAdornmentData(0, 0, snapshotText.Length) };
             }

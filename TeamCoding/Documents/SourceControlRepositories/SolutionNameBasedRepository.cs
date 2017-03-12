@@ -45,5 +45,17 @@ namespace TeamCoding.Documents.SourceControlRepositories
         {
             return true;
         }
+
+        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
+        {
+            if (fullFilePath == null)
+            {
+                return null;
+            }
+            else
+            {
+                return (new int[0], new int[0]);
+            }
+        }
     }
 }

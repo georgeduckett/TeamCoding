@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using TeamCoding.Interfaces.Documents;
 using TeamCoding.Documents;
 using TeamCoding.VisualStudio.Controls;
+using TeamCoding.Documents.SourceControlRepositories;
 
 namespace TeamCoding.VisualStudio.TextAdornment
 {
@@ -29,8 +30,10 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private Func<IRemotelyAccessedDocumentData, bool> OpenFilesFilter;
         private readonly Dictionary<string, Queue<FrameworkElement>> UserAvatars = new Dictionary<string, Queue<FrameworkElement>>();
+        private readonly ISourceControlRepository SourceControlRepo;
         public TextAdornment(IWpfTextView view)
         {
+            SourceControlRepo = TeamCodingPackage.Current.SourceControlRepo;
             OpenFilesFilter = of => of.Repository.Equals(RepoDocument.RepoUrl, StringComparison.OrdinalIgnoreCase) &&
                                     of.RelativePath.Equals(RepoDocument.RelativePath, StringComparison.OrdinalIgnoreCase) &&
                                     of.RepositoryBranch == RepoDocument.RepoBranch &&
@@ -39,7 +42,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             View = view ?? throw new ArgumentNullException(nameof(view));
 
             Layer = view.GetAdornmentLayer("TextAdornment");
-            RepoDocument = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
+            RepoDocument = SourceControlRepo.GetRepoDocInfo(View.TextBuffer.GetTextDocumentFilePath());
 
             TeamCodingPackage.Current.RemoteModelChangeManager.RemoteModelReceived += RefreshAdornmentsAsync;
             TeamCodingPackage.Current.Settings.UserSettings.UserCodeDisplayChanged += UserSettings_UserCodeDisplayChangedAsync;
@@ -108,9 +111,23 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private void CreateVisual(CaretAdornmentData nodeData, int caretLineOffset, int caretOffset, IUserIdentity userIdentity)
         {
+            if (RepoDocument != null)
+            {
+                var changes = SourceControlRepo.GetDiffWithServer(View.TextBuffer.GetTextDocumentFilePath());
+
+                if (changes != null)
+                {
+                    var (additions, deletions) = changes.Value;
+
+                    // If we've added lines before the caret line, then in this file the caret would be on a line below for each line added (therefore add additions),
+                    // and for deletions the caret would be on a line above (therefore subtract deletions)
+                    caretLineOffset += additions.Count(n => n <= caretLineOffset) - deletions.Count(n => n <= caretLineOffset);
+                }
+            }
+
             var caretLineNumber = View.TextSnapshot.GetLineNumberFromPosition(nodeData.SpanStart) + caretLineOffset;
 
-            var caretPosition = View.TextSnapshot.GetLineFromLineNumber(caretLineNumber).Start.Position + caretOffset;
+            var caretPosition = View.TextSnapshot.GetLineFromLineNumber(Math.Min(caretLineNumber, View.TextSnapshot.LineCount - 1)).Start.Position + caretOffset;
 
             if(caretPosition < nodeData.NonWhiteSpaceStart)
             {

@@ -13,6 +13,7 @@ namespace TeamCoding
     {
         ICaretAdornmentDataProvider CaretAdornmentDataProvider { get; }
         ICaretInfoProvider CaretInfoProvider { get; }
+        ISourceControlRepository SourceControlRepository { get; }
         HttpClient HttpClient { get; }
         IRemoteModelPersister RemoteModelChangeManager { get; }
         ILogger Logger { get; }

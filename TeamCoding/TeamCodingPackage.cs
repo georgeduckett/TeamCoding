@@ -111,12 +111,12 @@ namespace TeamCoding
 
 
                 var versionedAssembly = GetVersionedAssembly();
-                CaretInfoProvider = GetVersionedType<ICaretInfoProvider>(versionedAssembly, "TeamCoding.Documents.CaretInfoProvider");
-                CaretAdornmentDataProvider = GetVersionedType<ICaretAdornmentDataProvider>(versionedAssembly, "TeamCoding.Documents.CaretAdornmentDataProvider");
                 SourceControlRepo = new CachedSourceControlRepository(
                     new GitRepository(),
                     GetVersionedType<ISourceControlRepository>(versionedAssembly, "TeamCoding.Documents.SourceControlRepositories.TeamFoundationServiceRepository"),
                     new SolutionNameBasedRepository());
+                CaretInfoProvider = GetVersionedType<ICaretInfoProvider>(versionedAssembly, "TeamCoding.Documents.CaretInfoProvider");
+                CaretAdornmentDataProvider = GetVersionedType<ICaretAdornmentDataProvider>(versionedAssembly, "TeamCoding.Documents.CaretAdornmentDataProvider");
                 IdentityProvider = new CachedFailoverIdentityProvider(new VSOptionsIdentityProvider(),
                                                                       new CredentialManagerIdentityProvider(new[] { "git:https://github.com", "https://github.com/" }),
                                                                       new VSIdentityProvider(),
