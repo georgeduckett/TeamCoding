@@ -111,7 +111,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private void CreateVisual(CaretAdornmentData nodeData, int caretLineOffset, int caretOffset, IUserIdentity userIdentity)
         {
-            if (RepoDocument != null)
+            if (RepoDocument != null && nodeData.RelativeToServerSource)
             {
                 var changes = SourceControlRepo.GetDiffWithServer(View.TextBuffer.GetTextDocumentFilePath());
 

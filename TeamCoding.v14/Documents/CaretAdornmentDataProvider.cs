@@ -36,7 +36,7 @@ namespace TeamCoding.Documents
             string snapshotText = textSnapshot.GetText();
             if (caretMemberHashcodes.Length == 1)
             {
-                return new[] { new CaretAdornmentData(0, 0, snapshotText.Length) };
+                return new[] { new CaretAdornmentData(true, 0, 0, snapshotText.Length) };
             }
             else
             {
@@ -72,7 +72,7 @@ namespace TeamCoding.Documents
                 i++;
             }
 
-            return nodes.Select(n => new CaretAdornmentData(n.FullSpan.Start + (n.HasLeadingTrivia ? n.GetLeadingTrivia().SelectMany(t => t.ToFullString()).TakeWhile(c => char.IsWhiteSpace(c)).Count() : 0), n.SpanStart, n.Span.End));
+            return nodes.Select(n => new CaretAdornmentData(false, n.FullSpan.Start + (n.HasLeadingTrivia ? n.GetLeadingTrivia().SelectMany(t => t.ToFullString()).TakeWhile(c => char.IsWhiteSpace(c)).Count() : 0), n.SpanStart, n.Span.End));
         }
     }
 }
