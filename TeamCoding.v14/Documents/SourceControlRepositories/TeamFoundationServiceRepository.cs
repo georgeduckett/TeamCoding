@@ -73,44 +73,45 @@ namespace TeamCoding.Documents.SourceControlRepositories
             var workspaceInfo = Workstation.Current.GetLocalWorkspaceInfo(fullFilePath);
             if (workspaceInfo == null) return null;
 
-            var projectCollection = new TfsTeamProjectCollection(workspaceInfo.ServerUri);
-            if (projectCollection == null) return null;
+            using (var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(workspaceInfo.ServerUri))
+            {
+                if (projectCollection == null) return null;
+                projectCollection.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
+                try
+                {
+                    projectCollection.EnsureAuthenticated();
+                }
+                catch (TeamFoundationServerUnauthorizedException ex)
+                {
+                    TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
+                    return null;
+                }
 
-            projectCollection.Credentials = System.Net.CredentialCache.DefaultCredentials;
-            try
-            {
-                projectCollection.EnsureAuthenticated();
-            }
-            catch (TeamFoundationServerUnauthorizedException ex)
-            {
-                TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
-                return null;
-            }
+                var serverWorkspace = workspaceInfo.GetWorkspace(projectCollection);
+                if (serverWorkspace == null) return null;
+                var versionControlServer = projectCollection.GetService<VersionControlServer>();
+                if (versionControlServer == null) return null;
 
-            var serverWorkspace = workspaceInfo.GetWorkspace(projectCollection);
-            if (serverWorkspace == null) return null;
-            var versionControlServer = projectCollection.GetService<VersionControlServer>();
-            if (versionControlServer == null) return null;
+                try
+                {
+                    if (!versionControlServer.ServerItemExists(fullFilePath, ItemType.File)) return null;
+                }
+                catch (TeamFoundationServerUnauthorizedException ex)
+                {
+                    TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
+                    return null;
+                }
 
-            try
-            {
-                if (!versionControlServer.ServerItemExists(fullFilePath, ItemType.File)) return null;
+                var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
+                return new DocumentRepoMetaData()
+                { // TODO: Populate the branch property
+                    RepoProvider = nameof(TeamFoundationServiceRepository),
+                    RelativePath = serverItem,
+                    LastActioned = DateTime.UtcNow,
+                    RepoUrl = workspaceInfo.ServerUri.ToString(),
+                    BeingEdited = serverWorkspace.GetPendingChanges(fullFilePath).Any()
+                };
             }
-            catch (TeamFoundationServerUnauthorizedException ex)
-            {
-                TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
-                return null;
-            }
-            
-            var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
-            return new DocumentRepoMetaData()
-            { // TODO: Populate the branch property
-                RepoProvider = nameof(TeamFoundationServiceRepository),
-                RelativePath = serverItem,
-                LastActioned = DateTime.UtcNow,
-                RepoUrl = workspaceInfo.ServerUri.ToString(),
-                BeingEdited = serverWorkspace.GetPendingChanges(fullFilePath).Any()
-            };
         }
     }
 }
