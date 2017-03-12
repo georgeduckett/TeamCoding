@@ -425,7 +425,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CurrentUsersDataPoint.tt</DependentUpon>
     </Compile>
-    <Compile Include="VisualStudio\CodeLens\MissingVS2017Classes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
