@@ -54,7 +54,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
 
                 var serverItem = serverWorkspace.GetServerItemForLocalItem(fullFilePath);
 
-                var branch = versionControlServer.QueryBranchObjects(new ItemIdentifier(serverItem), RecursionType.None).FirstOrDefault()?.Properties?.RootItem.Item;
+                var branch = versionControlServer.QueryBranchObjects(new ItemIdentifier(serverItem), RecursionType.None).FirstOrDefault()?.Properties?.RootItem?.Item;
                 return new DocumentRepoMetaData()
                 {
                     RepoProvider = nameof(TeamFoundationServiceRepository),
