@@ -76,6 +76,7 @@
     <Compile Include="Documents\DocumentRepoMetaData.cs" />
     <Compile Include="Documents\ICaretAdornmentDataProvider.cs" />
     <Compile Include="Documents\IRemotelyAccessedDocumentData.cs" />
+    <Compile Include="Documents\SourceControlRepositories\FileNumberBasis.cs" />
     <Compile Include="Documents\SourceControlRepositories\ISourceControlRepository.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

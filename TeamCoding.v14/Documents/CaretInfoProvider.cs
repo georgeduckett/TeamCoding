@@ -57,10 +57,12 @@ namespace TeamCoding.Documents
             var caretLine = snapshotPoint.GetContainingLine();
             var lastNodeLine = snapshotPoint.Snapshot.GetLineFromPosition(lastNode.Span.Start);
 
+            int leafMemberLineOffset = caretLine.LineNumber - lastNodeLine.LineNumber;
+
             return new DocumentRepoMetaData.CaretInfo()
             {
                 SyntaxNodeIds = memberHashCodes,
-                LeafMemberLineOffset = caretLine.LineNumber - lastNodeLine.LineNumber,
+                LeafMemberLineOffset = leafMemberLineOffset,
                 LeafMemberCaretOffset = snapshotPoint.Position - caretLine.Start
             };
         }
@@ -75,15 +77,11 @@ namespace TeamCoding.Documents
 
             if (filePath != null && SourceControlRepository.GetRepoDocInfo(filePath) != null)
             {
-                var changes = SourceControlRepository.GetDiffWithServer(filePath);
+                var serverLineNumber = SourceControlRepository.GetLineNumber(filePath, textSnapshotLineNumber, FileNumberBasis.Server);
 
-                if(changes != null)
+                if(serverLineNumber != null)
                 {
-                    var (additions, deletions) = changes.Value;
-
-                    // If we've added lines before the caret line, then in the source we'd be on a line above for each line added (therefore subtract additions),
-                    // and for deletions we'd be on a line below (therefore add deletions)
-                    textSnapshotLineNumber += -additions.Count(n => n <= textSnapshotLineNumber) + deletions.Count(n => n <= textSnapshotLineNumber);
+                    textSnapshotLineNumber = serverLineNumber.Value;
                 }
             }
 

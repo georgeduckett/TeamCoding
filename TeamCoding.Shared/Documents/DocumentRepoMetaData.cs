@@ -20,6 +20,8 @@ namespace TeamCoding.Documents
             public int LeafMemberCaretOffset { get; set; }
             [ProtoBuf.ProtoMember(3)]
             public int LeafMemberLineOffset { get; set; }
+            [ProtoBuf.ProtoMember(4)]
+            public int LeafMemberLineBasis { get; set; }
         }
         [ProtoBuf.ProtoMember(1)]
         public string RepoUrl { get; set; }

@@ -42,14 +42,14 @@ namespace TeamCoding.Documents.SourceControlRepositories
             return null;
         }
 
-        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
+        public int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis)
         {
             if (string.IsNullOrEmpty(fullFilePath))
                 return null;
 
             foreach (var repository in Repositories)
             {
-                var data = repository.GetDiffWithServer(fullFilePath);
+                var data = repository.GetLineNumber(fullFilePath, fileLineNumber, targetBasis);
                 if (data != null)
                 {
                     return data;

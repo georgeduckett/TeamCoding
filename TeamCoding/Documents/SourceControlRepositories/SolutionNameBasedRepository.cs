@@ -46,7 +46,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
             return true;
         }
 
-        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
+        public int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis)
         {
             if (fullFilePath == null)
             {
@@ -54,7 +54,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
             }
             else
             {
-                return (new int[0], new int[0]);
+                return fileLineNumber;
             }
         }
     }

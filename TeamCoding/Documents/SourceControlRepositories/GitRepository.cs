@@ -51,7 +51,7 @@ namespace TeamCoding.Documents.SourceControlRepositories
             };
         }
 
-        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
+        public int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis)
         {
             var relativePath = GetRepoPath(fullFilePath);
 
@@ -73,36 +73,79 @@ namespace TeamCoding.Documents.SourceControlRepositories
                 return null;
             }
 
-            return ParsePatch(change.Patch);
+            return ParsePatch(change.Patch, fileLineNumber, targetBasis);
         }
 
-        private (int[] LineAdditions, int[] LineDeletions)? ParsePatch(string patch)
+        private int? ParsePatch(string patch, int fileLineNumber, FileNumberBasis targetBasis)
         {
+            fileLineNumber++; // Because file lines are zero index based, but Git Diff isn't
             var lineAdditions = new List<int>();
             var lineDeletions = new List<int>();
-            int? currentLine = null;
+            int? changedLine = null;
+            int? sourceLine = null;
 
             foreach(var line in patch.Split('\n'))
             {
                 if (line.StartsWith("@@"))
                 {
-                    currentLine = int.Parse(line.Substring(4, line.IndexOf(',') - 4));
+                    var newLineStartIndex = line.IndexOf('+') + 1;
+                    var newChangedLine = int.Parse(line.Substring(newLineStartIndex, line.IndexOf(',', newLineStartIndex) - newLineStartIndex)) - 1;
+                    
+                    var newSourceLine = int.Parse(line.Substring(line.IndexOf('+') + 1, line.IndexOf(',') - 4)) - 1;
+
+
+                    if (targetBasis == FileNumberBasis.Server && newChangedLine >= fileLineNumber ||
+                        targetBasis == FileNumberBasis.Local && newSourceLine >= fileLineNumber)
+                    {
+                        break;
+                    }
+
+                    changedLine = newChangedLine;
+                    sourceLine = newSourceLine;
                 }
                 else if(line.StartsWith(" "))
                 {
-                    currentLine++;
+                    changedLine++;
+                    sourceLine++;
                 }
-                else if(line.StartsWith("+") && currentLine != null)
+                else if(line.StartsWith("+") && changedLine != null)
                 {
-                    lineAdditions.Add(currentLine.Value);
+                    changedLine++;
                 }
-                else if (line.StartsWith("-") && currentLine != null)
+                else if (line.StartsWith("-") && changedLine != null)
                 {
-                    lineDeletions.Add(currentLine.Value);
+                    changedLine--;
+                }
+
+                if(targetBasis == FileNumberBasis.Server && changedLine == fileLineNumber)
+                {
+                    return sourceLine - 1;
+                }
+                if(targetBasis == FileNumberBasis.Local && sourceLine == fileLineNumber)
+                {
+                    return changedLine - 1;
                 }
             }
 
-            return (lineAdditions.ToArray(), lineDeletions.ToArray());
+            
+            if (targetBasis == FileNumberBasis.Server)
+            {
+                if(sourceLine == null)
+                {
+                    return fileLineNumber - 1;
+                }
+
+                return sourceLine + (fileLineNumber - changedLine) - 1;
+            }
+            else
+            {
+                if (changedLine == null)
+                {
+                    return fileLineNumber - 1;
+                }
+
+                return changedLine + (fileLineNumber - sourceLine) - 1;
+            }
         }
     }
 }

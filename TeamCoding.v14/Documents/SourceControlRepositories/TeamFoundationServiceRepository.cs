@@ -13,11 +13,6 @@ namespace TeamCoding.Documents.SourceControlRepositories
 {
     public class TeamFoundationServiceRepository : ISourceControlRepository
     {
-        public (int[] LineAdditions, int[] LineDeletions)? GetDiffWithServer(string fullFilePath)
-        {
-            return null; // TODO: Get the proper diff for TFS repositories (because TFS Diff would require querying the server we need to maintain Diff ourselves)
-        }
-
         public DocumentRepoMetaData GetRepoDocInfo(string fullFilePath)
         {
             var workspaceInfo = Workstation.Current.GetLocalWorkspaceInfo(fullFilePath);
@@ -65,6 +60,11 @@ namespace TeamCoding.Documents.SourceControlRepositories
                     BeingEdited = serverWorkspace.GetPendingChanges(fullFilePath).Any()
                 };
             }
+        }
+
+        public int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis)
+        {
+            return null;
         }
     }
 }

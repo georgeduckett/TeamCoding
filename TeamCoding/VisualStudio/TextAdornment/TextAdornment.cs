@@ -113,15 +113,11 @@ namespace TeamCoding.VisualStudio.TextAdornment
         {
             if (RepoDocument != null && nodeData.RelativeToServerSource)
             {
-                var changes = SourceControlRepo.GetDiffWithServer(View.TextBuffer.GetTextDocumentFilePath());
+                var line = SourceControlRepo.GetLineNumber(View.TextBuffer.GetTextDocumentFilePath(), caretLineOffset, FileNumberBasis.Local);
 
-                if (changes != null)
+                if(line != null)
                 {
-                    var (additions, deletions) = changes.Value;
-
-                    // If we've added lines before the caret line, then in this file the caret would be on a line below for each line added (therefore add additions),
-                    // and for deletions the caret would be on a line above (therefore subtract deletions)
-                    caretLineOffset += additions.Count(n => n <= caretLineOffset) - deletions.Count(n => n <= caretLineOffset);
+                    caretLineOffset = line.Value;
                 }
             }
 
