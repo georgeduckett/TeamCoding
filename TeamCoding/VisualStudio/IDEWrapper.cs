@@ -64,9 +64,12 @@ namespace TeamCoding.VisualStudio
 
                 var remoteOpenFiles = TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles();
 
-                var tabItemWithFilePath = titlePanels.Select(t => new { Item = t, File = (t.DataContext as DocumentView).GetRelatedFilePath() }).Single(t => t.File == filePath);
+                var tabItemsWithFilePath = titlePanels.Select(t => new { Item = t, File = (t.DataContext as DocumentView).GetRelatedFilePath() }).Where(t => t.File == filePath);
 
-                UpdateTabImages(tabItemWithFilePath.Item, filePath, remoteOpenFiles, false);
+                foreach (var tabItemWithFilePath in tabItemsWithFilePath)
+                {
+                    UpdateTabImages(tabItemWithFilePath.Item, filePath, remoteOpenFiles, false);
+                }
             });
         }
 
