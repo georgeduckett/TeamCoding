@@ -36,7 +36,7 @@ namespace TeamCoding.VisualStudio.TextAdornment
             SourceControlRepo = TeamCodingPackage.Current.SourceControlRepo;
             OpenFilesFilter = of => of.Repository.Equals(RepoDocument.RepoUrl, StringComparison.OrdinalIgnoreCase) &&
                                     of.RelativePath.Equals(RepoDocument.RelativePath, StringComparison.OrdinalIgnoreCase) &&
-                                    of.RepositoryBranch == RepoDocument.RepoBranch &&
+                                    (TeamCodingPackage.Current.Settings.UserSettings.ShowAllBranches || of.RepositoryBranch == RepoDocument.RepoBranch) &&
                                     of.CaretPositionInfo != null;
 
             View = view ?? throw new ArgumentNullException(nameof(view));

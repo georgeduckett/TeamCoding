@@ -8,7 +8,7 @@
              d:DesignHeight="500" d:DesignWidth="400">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid Height="475">
-            <GroupBox Header="User Settings" Height="152" VerticalAlignment="Top">
+            <GroupBox Header="User Settings" Height="192" VerticalAlignment="Top">
                 <Grid>
                     <TextBox x:Name="txtUsername" Margin="111,10,109,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
                     <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtUsername, Mode=OneWay}" Margin="0,10,0,0"/>
@@ -19,9 +19,11 @@
                     <ComboBox x:Name="txtUserCodeDisplay" Margin="111,103,0,0" Height="23" VerticalAlignment="Top" ItemsSource="{Binding Path=UserDisplaySettings}" SelectedValue="{Binding UserCodeDisplay}" ToolTip="How to display other users within code windows." AutomationProperties.LabeledBy="{Binding ElementName=lblUserCodeDisplay, Mode=OneWay}"/>
                     <Label x:Name="lblUserCodeDisplay" Content="User Code Display" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,100,0,0" Target="{Binding ElementName=txtUserCodeDisplay, Mode=OneWay}"/>
                     <CheckBox x:Name="chkShowSelf" Content="{x:Static local:OptionsPage.chkShowSelfCaption}" Margin="0,16,10,0" ToolTip="Show yourself; useful for seeing how you appear, testing out features on your own." IsChecked="{Binding ShowSelf}" Height="15" VerticalAlignment="Top" HorizontalAlignment="Right" Width="94"/>
+                    <Label x:Name="lblShowAllBranches" Content="Show All Branches" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,131,0,0" Target="{Binding ElementName=txtUserCodeDisplay, Mode=OneWay}"/>
+                    <CheckBox x:Name="chkShowAllBranches" Margin="110,138,0,0" ToolTip="Show edits being made on other branches in the project" IsChecked="{Binding ShowAllBranches}" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left"  />
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,157,0,0" Height="231" VerticalAlignment="Top">
+            <GroupBox x:Name="grpPersistence" Header="IDE Sharing" Margin="0,197,0,0" Height="231" VerticalAlignment="Top">
                 <Grid>
                     <CheckBox x:Name="chkUsingJsonSettings" Content="{x:Static local:OptionsPage.chkUsingJsonSettingsCaption}" HorizontalAlignment="Left" Margin="5,12,0,0" ToolTip="If a TeamCoding.json file is found anywhere in an open solution those settings are used" IsEnabled="False" Height="15" VerticalAlignment="Top"/>
                     <Button x:Name="cmdShowJsonExample" Content="{x:Static local:OptionsPage.cmdShowJsonExampleCaption}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="180" Click="CmdShowJsonExample_Click" ToolTip="Show the contents of an example teamcoding.json file" Margin="0,7,10,0"/>
