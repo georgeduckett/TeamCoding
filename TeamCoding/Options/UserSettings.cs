@@ -35,6 +35,11 @@ namespace TeamCoding.Options
         public event EventHandler UserTabDisplayChanging { add { UserTabDisplayProperty.Changing += value; } remove { UserTabDisplayProperty.Changing -= value; } }
         private readonly SettingProperty<UserDisplaySetting> UserTabDisplayProperty;
         public const UserDisplaySetting DefaultUserTabDisplay = UserDisplaySetting.Avatar;
+        public bool ShowAllBranches { get { return ShowAllBranchesProperty.Value; } set { ShowAllBranchesProperty.Value = value; } }
+        public event EventHandler ShowAllBranchesChanged { add { ShowAllBranchesProperty.Changed += value; } remove { ShowAllBranchesProperty.Changed -= value; } }
+        public event EventHandler ShowAllBranchesChanging { add { ShowAllBranchesProperty.Changing += value; } remove { ShowAllBranchesProperty.Changing -= value; } }
+        public readonly SettingProperty<bool> ShowAllBranchesProperty;
+        public const bool DefaultShowAllBranches = false;
         public UserSettings()
         {
             ShowSelfProperty = new SettingProperty<bool>(this, null);
@@ -51,6 +56,9 @@ namespace TeamCoding.Options
 
             UserTabDisplayProperty = new SettingProperty<UserDisplaySetting>(this);
             UserTabDisplayProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(UserTabDisplay)}: {UserTabDisplay}");
+
+            ShowAllBranchesProperty = new SettingProperty<bool>(this, null);
+            ShowAllBranchesProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(ShowAllBranches)}: {ShowAllBranches}");
         }
     }
 }
