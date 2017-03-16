@@ -63,9 +63,6 @@ namespace TeamCoding.Documents.SourceControlRepositories
 
             if (repo.Ignore.IsPathIgnored(relativePath)) return null;
 
-            var repoHeadTree = repo.Head.Tip.Tree;
-            var remoteMasterTree = repo.Head.TrackedBranch.Tip.Tree;
-
             var change = repo.Diff.Compare<Patch>(new[] { fullFilePath }).SingleOrDefault();
 
             if(change == null)
