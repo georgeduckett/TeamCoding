@@ -18,7 +18,8 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         private class TypedDataContext
         {
             public IUserIdentity Identity { get; set; }
-            public bool HasInvitedCurrentUser { get; set; }
+            public bool LocalUserInvitedUs { get; set; }
+            public bool WeInvitedRemoteUser { get; set; }
             public Controls.UserAvatarModel UserAvatarModel { get; set; }
             public Documents.IRemotelyAccessedDocumentData[] Documents { get; set; }
         }
@@ -36,13 +37,15 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
             var usersWhoSentAnInvite = TeamCodingPackage.Current.RemoteModelChangeManager.UserIdsWithSharedSessionInvitesToLocalUser().ToArray();
+            var localInvitesToRemoteUsers = TeamCodingPackage.Current.LocalIdeModel.SharedSessionInvitedUsers();
 
             tvUserDocs.DataContext = (from of in TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                       group of by of.IdeUserIdentity into ofg
                                       select new TypedDataContext
                                       {
                                           Identity = ofg.Key,
-                                          HasInvitedCurrentUser = usersWhoSentAnInvite.Contains(ofg.Key.Id),
+                                          LocalUserInvitedUs = usersWhoSentAnInvite.Contains(ofg.Key.Id),
+                                          WeInvitedRemoteUser = localInvitesToRemoteUsers.ContainsKey(ofg.Key.Id),
                                           UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key),
                                           Documents = ofg.ToArray()
                                       }).ToArray();
@@ -79,6 +82,14 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
             var dataContext = (TypedDataContext)((MenuItem)e.Source).DataContext;
 
             TeamCodingPackage.Current.LocalIdeModel.CancelShareSessionWithUser(dataContext.Identity.Id);
+        }
+        private void AcceptInvite_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+        private void DeclineInvite_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
