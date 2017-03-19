@@ -14,5 +14,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     {
         event EventHandler RemoteModelReceived;
         IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles();
+        IEnumerable<string> UserIdsWithSharedSessionInvitesToLocalUser();
     }
 }

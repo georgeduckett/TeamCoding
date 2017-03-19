@@ -79,7 +79,7 @@ namespace TeamCoding.VisualStudio
             }
             else
             {
-                var firstLetter = (userIdentity.Id)[0];
+                var firstLetter = (userIdentity.DisplayName ?? userIdentity.Id)[0];
                 context.Letter = firstLetter;
 
                 context.LetterBrush = VisuallyDistinctColours.GetTextBrushFromBackgroundColour(UserColours.GetUserColour(userIdentity));

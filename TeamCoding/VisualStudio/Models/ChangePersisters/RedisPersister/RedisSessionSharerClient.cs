@@ -19,10 +19,15 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
             switch (sharingData.MessageType)
             {
                 case RedisSharingData.SharingDataType.RequestingSession: HandleRequestSession(sharingData); break;
+                case RedisSharingData.SharingDataType.CancelRequestingSession: HandleCancelRequestSession(sharingData); break;
                 case RedisSharingData.SharingDataType.EndingSession: HandleEndingSession(sharingData); break;
             }
         }
         private void HandleRequestSession(RedisSharingData sharingData)
+        {
+
+        }
+        private void HandleCancelRequestSession(RedisSharingData sharingData)
         {
             // TODO: Check we're not in a session already then present a dialog (or something) to the user
         }

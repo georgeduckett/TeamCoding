@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.IdentityManagement
 {
@@ -20,7 +21,7 @@ namespace TeamCoding.IdentityManagement
             }
             return new UserIdentity()
             {
-                Id = TeamCodingPackage.Current.Settings.UserSettings.Username,
+                Id = LocalIDEModel.Id.Value,
                 DisplayName = TeamCodingPackage.Current.Settings.UserSettings.Username,
                 ImageUrl = ImageUrl?.ToString()
             };

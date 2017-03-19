@@ -54,6 +54,9 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.CombinedPersister
                 }).ToArray();
             }
         }
+        public IEnumerable<string> UserIdsWithSharedSessionInvitesToLocalUser() => 
+            RemoteModelPersisters.SelectMany(rmp => rmp.UserIdsWithSharedSessionInvitesToLocalUser()).Distinct();
+
         public CombinedRemoteModelPersister(params IRemoteModelPersister[] remoteModelPersisters)
         {
             RemoteModelPersisters = remoteModelPersisters;

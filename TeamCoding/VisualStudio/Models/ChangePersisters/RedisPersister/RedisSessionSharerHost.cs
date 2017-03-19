@@ -23,10 +23,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 case RedisSharingData.SharingDataType.LeavingSession: HandleLeavingSession(sharingData); break;
             }
         }
-        public void RequestSession(string userId)
-        {
-            PublishSharingData(new RedisSharingData() { ToId = userId, MessageType = RedisSharingData.SharingDataType.RequestingSession });
-        }
         public void EndSession()
         {
             PublishSharingData(new RedisSharingData() { MessageType = RedisSharingData.SharingDataType.EndingSession });

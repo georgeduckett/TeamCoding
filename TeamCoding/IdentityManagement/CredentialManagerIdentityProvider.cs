@@ -1,5 +1,6 @@
 ﻿using TeamCoding.CredentialManagement;
 using TeamCoding.Extensions;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.IdentityManagement
 {
@@ -31,7 +32,7 @@ namespace TeamCoding.IdentityManagement
 
             Identity = new UserIdentity()
             {
-                Id = credential.Username,
+                Id = LocalIDEModel.Id.Value,
                 DisplayName = credential.Username,
                 ImageUrl = UserIdentity.GetGravatarUrlFromEmail(credential.Username)
             };

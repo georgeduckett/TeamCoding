@@ -1,4 +1,5 @@
 ﻿using System;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.IdentityManagement
 {
@@ -10,7 +11,7 @@ namespace TeamCoding.IdentityManagement
         public bool ShouldCache => true;
         public UserIdentity GetIdentity()
         {
-            return new UserIdentity() { Id = Environment.UserName, DisplayName = Environment.UserName };
+            return new UserIdentity() { Id = LocalIDEModel.Id.Value, DisplayName = Environment.UserName };
         }
     }
 }

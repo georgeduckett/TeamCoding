@@ -12,11 +12,27 @@
             <TreeView.ItemTemplate>
                 <DataTemplate>
                     <TreeViewItem ItemsSource="{Binding Documents}" Expanded="TreeViewItem_Expanded" Collapsed="TreeViewItem_Collapsed" Tag="{Binding Identity.Id}">
+                        <TreeViewItem.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Name="InviteUser" Header="Invite User" Click="InviteUser_Click"></MenuItem>
+                                <MenuItem Name="UninviteUser" Header="Uninvite User" Click="UninviteUser_Click"></MenuItem>
+                            </ContextMenu>
+                        </TreeViewItem.ContextMenu>
                         <TreeViewItem.HeaderTemplate>
                             <ItemContainerTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <ua:UserAvatar Width="16" Height="16" DataContext="{Binding DataContext.UserAvatarModel, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
-                                    <TextBlock Text="{Binding DataContext.Identity.DisplayName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Margin="5,0" Foreground="{DynamicResource VsBrush.WindowText}" />
+                                    <TextBlock Text="{Binding DataContext.Identity.DisplayName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Margin="5,0" Foreground="{DynamicResource VsBrush.WindowText}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.HasInvitedCurrentUser}" Value="True">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </ItemContainerTemplate>
                         </TreeViewItem.HeaderTemplate>

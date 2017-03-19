@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.IdentityManagement
 {
@@ -30,7 +31,7 @@ namespace TeamCoding.IdentityManagement
                         var bytes = ((byte[])sk.GetValue(ImageKeyname)).Skip(16).ToArray();
                         Identity = new UserIdentity()
                         {
-                            Id = userName,
+                            Id = LocalIDEModel.Id.Value,
                             DisplayName = userName,
                             ImageUrl = UserIdentity.GetGravatarUrlFromEmail(email),
                             ImageBytes = IsVSPlaceholderImage(bytes) ? null : bytes, // Only use the image if it's not a default one

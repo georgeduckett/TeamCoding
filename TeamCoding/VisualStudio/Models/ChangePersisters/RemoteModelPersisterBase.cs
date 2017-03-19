@@ -35,6 +35,10 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 })).ToArray();
             }
         }
+        public IEnumerable<string> UserIdsWithSharedSessionInvitesToLocalUser() => from rm in RemoteModels.Values
+                                                                                   from invitedUserId in rm.SharedSessionInvitedUsers.Keys
+                                                                                   where invitedUserId == LocalIDEModel.Id.Value
+                                                                                   select rm.Id;
 
         public void ClearRemoteModels()
         {

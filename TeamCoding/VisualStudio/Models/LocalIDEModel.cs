@@ -45,6 +45,9 @@ namespace TeamCoding.VisualStudio.Models
 
         private object OpenFilesLock = new object();
         private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
+        private readonly ConcurrentDictionary<string, bool> _SharedSessionInvitedUsers = new ConcurrentDictionary<string, bool>();
+
+        public IReadOnlyDictionary<string, bool> SharedSessionInvitedUsers() => _SharedSessionInvitedUsers;
 
         private DelayedEvent OpenViewsChangedInternal = new DelayedEvent(500);
         public event EventHandler OpenViewsChanged { add { OpenViewsChangedInternal.Event += value; } remove { OpenViewsChangedInternal.Event -= value; } }
@@ -143,7 +146,16 @@ namespace TeamCoding.VisualStudio.Models
                 return OpenFiles.Values.ToArray();
             }
         }
-
+        public void ShareSessionWithUser(string userId)
+        {
+            _SharedSessionInvitedUsers.TryAdd(userId, false);
+            ModelChangedInternal?.Invoke(this, EventArgs.Empty);
+        }
+        public void CancelShareSessionWithUser(string userId)
+        {
+            _SharedSessionInvitedUsers.TryRemove(userId, out _);
+            ModelChangedInternal?.Invoke(this, EventArgs.Empty);
+        }
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
         {
             var filePath = textBuffer.GetTextDocumentFilePath();

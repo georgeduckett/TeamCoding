@@ -10,7 +10,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
     [ProtoContract]
     public class RedisSharingData
     {
-        public enum SharingDataType { RequestingSession, AccceptingSession, DecliningSession, LeavingSession, EndingSession }
+        public enum SharingDataType { RequestingSession, CancelRequestingSession, AccceptingSession, DecliningSession, LeavingSession, EndingSession }
         [ProtoMember(1)]
         public string FromId;
         [ProtoMember(2)]

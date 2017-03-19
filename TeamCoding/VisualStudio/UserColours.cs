@@ -14,11 +14,11 @@ namespace TeamCoding.VisualStudio
         private static readonly Dictionary<int, Pen> UserToPen = new Dictionary<int, Pen>();
         public static Color GetUserColour(IUserIdentity user)
         {
-            return VisuallyDistinctColours.GetColourFromSeed(user.Id.GetHashCode());
+            return VisuallyDistinctColours.GetColourFromSeed((user.DisplayName ?? user.Id).GetHashCode());
         }
         public static SolidColorBrush GetUserBrush(IUserIdentity user)
         {
-            var hash = user.Id.GetHashCode();
+            var hash = (user.DisplayName ?? user.Id).GetHashCode();
             if (!UserToBrush.TryGetValue(hash, out var brush))
             {
                 brush = new SolidColorBrush(VisuallyDistinctColours.GetColourFromSeed(hash));
@@ -28,7 +28,7 @@ namespace TeamCoding.VisualStudio
         }
         public static Pen GetUserPen(IUserIdentity user)
         {
-            var hash = user.Id.GetHashCode();
+            var hash = (user.DisplayName ?? user.Id).GetHashCode();
             if (!UserToPen.TryGetValue(hash, out var pen))
             {
                 pen = new Pen(GetUserBrush(user), 1);
