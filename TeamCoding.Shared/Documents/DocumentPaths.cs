@@ -39,6 +39,10 @@ namespace TeamCoding.Documents
         }
         private static string GetCorrectCaseInternal(string fileOrFolder)
         { // http://stackoverflow.com/a/29751774
+            if (string.IsNullOrEmpty(fileOrFolder))
+            {
+                return fileOrFolder;
+            }
             string myParentFolder = Path.GetDirectoryName(fileOrFolder);
             string myChildName = Path.GetFileName(fileOrFolder);
             if (ReferenceEquals(myParentFolder, null))
