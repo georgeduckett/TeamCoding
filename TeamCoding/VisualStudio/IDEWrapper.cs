@@ -153,7 +153,7 @@ namespace TeamCoding.VisualStudio
         }
         public void UpdateIDE(bool forceUpdate)
         {
-            WpfMainWindow.Dispatcher.InvokeAsync(() => UpdateIDE_Internal(forceUpdate));
+            WpfMainWindow?.Dispatcher.InvokeAsync(() => UpdateIDE_Internal(forceUpdate));
         }
         private void UpdateIDE_Internal(bool forceUpdate)
         {
