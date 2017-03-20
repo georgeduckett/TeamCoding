@@ -387,6 +387,9 @@
     <Compile Include="..\TeamCoding.v14\Documents\CaretInfoProvider.cs">
       <Link>Documents\CaretInfoProvider.cs</Link>
     </Compile>
+    <Compile Include="..\TeamCoding.v14\Documents\LineNumberTranslator.cs">
+      <Link>Documents\LineNumberTranslator.cs</Link>
+    </Compile>
     <Compile Include="..\TeamCoding.v14\Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs">
       <Link>Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs</Link>
     </Compile>

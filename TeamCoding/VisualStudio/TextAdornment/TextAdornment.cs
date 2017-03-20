@@ -113,11 +113,13 @@ namespace TeamCoding.VisualStudio.TextAdornment
         {
             if (RepoDocument != null && nodeData.RelativeToServerSource)
             {
-                var line = SourceControlRepo.GetLineNumber(View.TextBuffer.GetTextDocumentFilePath(), caretLineOffset, FileNumberBasis.Local);
+                var remoteFileText = SourceControlRepo.GetRemoteFileLines(View.TextBuffer.GetTextDocumentFilePath());
 
-                if(line != null)
+                if (remoteFileText != null)
                 {
-                    caretLineOffset = line.Value;
+                    string localFileText = View.TextSnapshot.GetText();
+
+                    caretLineOffset = LineNumberTranslator.GetLineNumber(localFileText.Split(new[] { "\r\n" }, StringSplitOptions.None), remoteFileText, caretLineOffset, FileNumberBasis.Local);
                 }
             }
 

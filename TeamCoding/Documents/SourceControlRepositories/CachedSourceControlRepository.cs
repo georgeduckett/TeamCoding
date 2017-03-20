@@ -41,15 +41,14 @@ namespace TeamCoding.Documents.SourceControlRepositories
 
             return null;
         }
-
-        public int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis)
+        public string[] GetRemoteFileLines(string fullFilePath)
         {
             if (string.IsNullOrEmpty(fullFilePath))
                 return null;
 
             foreach (var repository in Repositories)
             {
-                var data = repository.GetLineNumber(fullFilePath, fileLineNumber, targetBasis);
+                var data = repository.GetRemoteFileLines(fullFilePath);
                 if (data != null)
                 {
                     return data;
