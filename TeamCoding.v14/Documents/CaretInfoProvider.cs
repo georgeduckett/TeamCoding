@@ -77,11 +77,13 @@ namespace TeamCoding.Documents
 
             if (filePath != null && SourceControlRepository.GetRepoDocInfo(filePath) != null)
             {
-                var serverLineNumber = SourceControlRepository.GetLineNumber(filePath, textSnapshotLineNumber, FileNumberBasis.Server);
+                var remoteFileText = SourceControlRepository.GetRemoteFileLines(filePath);
 
-                if(serverLineNumber != null)
+                if (remoteFileText != null)
                 {
-                    textSnapshotLineNumber = serverLineNumber.Value;
+                    var localFileText = snapshotPoint.Snapshot.GetText().Split(new[] { "\r\n" }, StringSplitOptions.None);
+                    
+                    textSnapshotLineNumber = LineNumberTranslator.GetLineNumber(localFileText, remoteFileText, textSnapshotLineNumber, FileNumberBasis.Server);
                 }
             }
 

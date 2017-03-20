@@ -3,6 +3,6 @@
     public interface ISourceControlRepository
     {
         DocumentRepoMetaData GetRepoDocInfo(string fullFilePath);
-        int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis);
+        string[] GetRemoteFileLines(string fullFilePath);
     }
 }
