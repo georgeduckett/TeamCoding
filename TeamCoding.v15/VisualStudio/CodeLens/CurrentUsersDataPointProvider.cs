@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.Alm.Roslyn.Client.Features.WorkspaceUpdateManager;
+﻿using IWorkspaceUpdateManager = Microsoft.VisualStudio.Alm.Roslyn.Client.IVisualStudioIntegrationService;
 using Microsoft.VisualStudio.CodeSense.Roslyn;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
