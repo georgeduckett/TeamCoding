@@ -11,6 +11,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
     public abstract class RedisSessionSharerBase : IDisposable
     {
+        // TODO: Move all relevent session tracking info here (e.g. who we've invited, who's invited us, what session we're in etc).
         public const string SharedSessionHostChannel = "TeamCoding.RedisSessionSharer";
         private readonly string LocalModelId = LocalIDEModel.Id.Value;
         private readonly Task SubscribeTask;
