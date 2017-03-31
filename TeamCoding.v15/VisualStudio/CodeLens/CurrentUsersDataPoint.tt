@@ -5,10 +5,15 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <#@ import namespace="System.IO" #>
+using IWorkspaceUpdateManager = Microsoft.VisualStudio.Alm.Roslyn.Client.IVisualStudioIntegrationService;
+using WorkspaceChangesEventArgs = Microsoft.CodeAnalysis.WorkspaceChangeEventArgs;
 <#
     string absolutePath = Host.ResolvePath("..\\..\\..\\TeamCoding.v14\\VisualStudio\\CodeLens\\" + Path.GetFileNameWithoutExtension(Host.TemplateFile) + ".cs");
-    string contents = File.ReadAllText(absolutePath).Replace("CurrentUsersDataPoint", "CurrentUsersDataPointV15")
-													.Replace("CurrentUsersTemplateProvider", "CurrentUsersTemplateProviderV15");
+
+	string contents = File.ReadAllText(absolutePath).Replace("CurrentUsersDataPoint", "CurrentUsersDataPointV15")
+													.Replace("CurrentUsersTemplateProvider", "CurrentUsersTemplateProviderV15")
+													.Replace(@"using Microsoft.VisualStudio.Alm.Roslyn.Client.Features.WorkspaceUpdateManager;
+", "");
     // process file contents here, we'll simply dump it to the output here
     this.Write(contents); 
 #>
