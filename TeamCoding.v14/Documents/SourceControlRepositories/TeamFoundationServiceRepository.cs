@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamCoding.Extensions;
 
 namespace TeamCoding.Documents.SourceControlRepositories
 {
@@ -65,6 +66,51 @@ namespace TeamCoding.Documents.SourceControlRepositories
         public int? GetLineNumber(string fullFilePath, int fileLineNumber, FileNumberBasis targetBasis)
         {
             return null;
+        }
+
+        public string[] GetRemoteFileLines(string fullFilePath)
+        {
+            var workspaceInfo = Workstation.Current.GetLocalWorkspaceInfo(fullFilePath);
+            if (workspaceInfo == null) return null;
+
+            using (var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(workspaceInfo.ServerUri))
+            {
+                if (projectCollection == null) return null;
+                projectCollection.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
+                try
+                {
+                    projectCollection.EnsureAuthenticated();
+                }
+                catch (TeamFoundationServerUnauthorizedException ex)
+                {
+                    TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
+                    return null;
+                }
+
+                var serverWorkspace = workspaceInfo.GetWorkspace(projectCollection);
+                if (serverWorkspace == null) return null;
+                var versionControlServer = projectCollection.GetService<VersionControlServer>();
+                if (versionControlServer == null) return null;
+
+                try
+                {
+                    if (!versionControlServer.ServerItemExists(fullFilePath, ItemType.File)) return null;
+                }
+                catch (TeamFoundationServerUnauthorizedException ex)
+                {
+                    TeamCodingProjectTypeProvider.Get<ITeamCodingPackageProvider>().Logger.WriteError(ex);
+                    return null;
+                }
+
+                var serverVersion = versionControlServer.GetItem(fullFilePath);
+
+                if (serverVersion.ItemType != ItemType.File)
+                {
+                    return null;
+                }
+
+                return serverVersion.DownloadFile().ReadAlltext().Split(new[] { "\r\n" }, StringSplitOptions.None);
+            }
         }
     }
 }

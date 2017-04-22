@@ -28,6 +28,11 @@ namespace TeamCoding.Documents
             }
 
             var syntaxTree = await document.GetSyntaxTreeAsync();
+            if (syntaxTree == null)
+            {
+                return GetTextCaretAdornmentData(textSnapshot, caretMemberHashcodes);
+            }
+
             var rootNode = await syntaxTree.GetRootAsync();
             return GetRoslynCaretAdornmentData(caretMemberHashcodes, rootNode);
         }

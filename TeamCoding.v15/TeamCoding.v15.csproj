@@ -201,10 +201,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\v15\Microsoft.VisualStudio.Alm.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\v15\Microsoft.VisualStudio.Alm.Shared.CodeAnalysisClient.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.CodeSense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\v15\Microsoft.VisualStudio.CodeSense.dll</HintPath>
@@ -387,6 +383,9 @@
     <Compile Include="..\TeamCoding.v14\Documents\CaretInfoProvider.cs">
       <Link>Documents\CaretInfoProvider.cs</Link>
     </Compile>
+    <Compile Include="..\TeamCoding.v14\Documents\LineNumberTranslator.cs">
+      <Link>Documents\LineNumberTranslator.cs</Link>
+    </Compile>
     <Compile Include="..\TeamCoding.v14\Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs">
       <Link>Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs</Link>
     </Compile>
@@ -425,6 +424,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CurrentUsersDataPoint.tt</DependentUpon>
     </Compile>
+    <Compile Include="VisualStudio\CodeLens\VisualStudioIntegrationServiceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

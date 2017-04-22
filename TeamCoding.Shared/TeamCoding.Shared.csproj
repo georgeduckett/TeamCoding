@@ -81,6 +81,7 @@
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ITextBufferExtensions.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IdentityManagement\IUserIdentity.cs" />
     <Compile Include="IntArrayEqualityComparer.cs" />
