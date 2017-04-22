@@ -28,7 +28,7 @@ namespace TeamCoding.Documents
             var syntaxRoot = await document.GetSyntaxRootAsync();
             if (syntaxRoot == null)
             {
-                return null;
+                return GetTextCaretInfo(snapshotPoint);
             }
 
             return GetRoslynCaretInfo(syntaxRoot, snapshotPoint);
