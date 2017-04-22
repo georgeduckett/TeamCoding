@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Alm.Roslyn.Client.Features.WorkspaceUpdateManager;
+﻿using IWorkspaceUpdateManager = Microsoft.VisualStudio.Alm.Roslyn.Client.IVisualStudioIntegrationService;
+using WorkspaceChangesEventArgs = Microsoft.CodeAnalysis.WorkspaceChangeEventArgs;
 using Microsoft.VisualStudio.CodeSense;
 using Microsoft.VisualStudio.CodeSense.Roslyn;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,7 +25,7 @@ namespace TeamCoding.VisualStudio.CodeLens
             DataPointUpdater = dataPointUpdater;
             CodeElementDescriptor = codeElementDescriptor;
             WorkspaceUpdateManager = workspaceUpdateManager;
-            WorkspaceChangedTask = WorkspaceUpdateManager.AddWorkspaceChangedAsync(OnWorkspaceChanged);
+            WorkspaceChangedTask = WorkspaceUpdateManager?.AddWorkspaceChangedAsync(OnWorkspaceChanged);
         }
         public override Task<string> GetDataAsync()
         {
@@ -56,7 +57,7 @@ namespace TeamCoding.VisualStudio.CodeLens
                     {
                         if (disposing)
                         {
-                            WorkspaceUpdateManager.RemoveWorkspaceChangedAsync(new EventHandler<WorkspaceChangesEventArgs>(OnWorkspaceChanged)).FireAndForget();
+                            WorkspaceUpdateManager?.RemoveWorkspaceChangedAsync(new EventHandler<WorkspaceChangesEventArgs>(OnWorkspaceChanged)).FireAndForget();
                         }
                         Disposed = true;
                     }

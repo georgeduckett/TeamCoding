@@ -57,5 +57,9 @@ namespace TeamCoding.Documents.SourceControlRepositories
                 return fileLineNumber;
             }
         }
+        public string[] GetRemoteFileLines(string fullFilePath)
+        {
+            return File.ReadAllText(fullFilePath).Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        }
     }
 }

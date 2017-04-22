@@ -406,6 +406,7 @@
   <ItemGroup>
     <Compile Include="Documents\CaretAdornmentDataProvider.cs" />
     <Compile Include="Documents\CaretInfoProvider.cs" />
+    <Compile Include="Documents\LineNumberTranslator.cs" />
     <Compile Include="Documents\SourceControlRepositories\TeamFoundationServiceRepository.cs" />
     <Compile Include="Extensions\ParameterListSyntaxExtensions.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
