@@ -161,11 +161,19 @@ namespace TeamCoding.VisualStudio.Models
                 return OpenFiles.Values.ToArray();
             }
         }
+        /// <summary>
+        /// Shares a session with a user (they have to accept) with this IDE instance as the host
+        /// </summary>
+        /// <param name="userId"></param>
         public void ShareSessionWithUser(string userId)
         {
             _SharedSessionInvitedUsers.TryAdd(userId, false);
             ModelChangedInternal?.Invoke(this, EventArgs.Empty);
         }
+        /// <summary>
+        /// Cancels sharing a session with a user
+        /// </summary>
+        /// <param name="userId"></param>
         public void CancelShareSessionWithUser(string userId)
         {
             _SharedSessionInvitedUsers.TryRemove(userId, out _);
