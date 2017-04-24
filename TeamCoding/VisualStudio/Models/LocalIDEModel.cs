@@ -19,6 +19,9 @@ namespace TeamCoding.VisualStudio.Models
     /// </summary>
     public class LocalIDEModel
     {
+        /// <summary>
+        /// A unique id for this IDE instance
+        /// </summary>
         public static Lazy<string> Id = new Lazy<string>(() =>
         {
             string uuid = string.Empty;
@@ -34,31 +37,41 @@ namespace TeamCoding.VisualStudio.Models
                 return uuid + System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
             }
         }, false);
-
+        /// <summary>
+        /// Provides information for when a the file in focus changes
+        /// </summary>
         public class FileFocusChangedEventArgs : EventArgs
         {
             public string LostFocusFile { get; set; }
             public string GotFocusFile { get; set; }
         }
-
+        /// <summary>
+        /// The curent IDE model instance
+        /// </summary>
         private static LocalIDEModel Current = new LocalIDEModel();
 
         private object OpenFilesLock = new object();
         private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
 
         private DelayedEvent OpenViewsChangedInternal = new DelayedEvent(500);
+        /// <summary>
+        /// Occurs when the IDE changed the views that are open (after a 500ms delay)
+        /// </summary>
         public event EventHandler OpenViewsChanged { add { OpenViewsChangedInternal.Event += value; } remove { OpenViewsChangedInternal.Event -= value; } }
 
         private DelayedEvent<CaretPositionChangedEventArgs> CaretPositionChangedInternal = new DelayedEvent<CaretPositionChangedEventArgs>(500);
+        /// <summary>
+        /// Occurs when the caret position is changed (after a 500ms delay)
+        /// </summary>
         public event EventHandler<CaretPositionChangedEventArgs> CaretPositionChanged { add { CaretPositionChangedInternal.Event += value; } remove { CaretPositionChangedInternal.Event -= value; } }
-        
-        private DelayedEvent<TextContentChangedEventArgs> TextContentChangedInternal = new DelayedEvent<TextContentChangedEventArgs>(500);
-        public event EventHandler<TextContentChangedEventArgs> TextContentChanged { add { TextContentChangedInternal.Event += value; } remove { TextContentChangedInternal.Event -= value; } }
         
         private DelayedEvent<TextDocumentFileActionEventArgs> TextDocumentSavedInternal = new DelayedEvent<TextDocumentFileActionEventArgs>(500);
         public event EventHandler<TextDocumentFileActionEventArgs> TextDocumentSaved { add { TextDocumentSavedInternal.Event += value; } remove { TextDocumentSavedInternal.Event -= value; } }
 
         private DelayedEvent ModelChangedInternal = new DelayedEvent(500);
+        /// <summary>
+        /// Occurs when the IDE model is changed (after a 500ms delay)
+        /// </summary>
         public event EventHandler ModelChanged { add { ModelChangedInternal.Event += value; } remove { ModelChangedInternal.Event -= value; } }
         public LocalIDEModel()
         {
@@ -68,7 +81,6 @@ namespace TeamCoding.VisualStudio.Models
             // Hook up to the internal event as the model changed event is rate-limited anyway
             OpenViewsChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
             CaretPositionChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
-            TextContentChangedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
             TextDocumentSavedInternal.PassthroughEvent += ModelChangedInternal.Invoke;
         }
         public async System.Threading.Tasks.Task OnCaretPositionChangedAsync(CaretPositionChangedEventArgs e)
@@ -135,7 +147,10 @@ namespace TeamCoding.VisualStudio.Models
                 TextDocumentSavedInternal?.Invoke(textDocument, e);
             }
         }
-
+        /// <summary>
+        /// Gets an arrayt of currently open files
+        /// </summary>
+        /// <returns></returns>
         public DocumentRepoMetaData[] OpenDocs()
         {
             lock (OpenFilesLock)
@@ -161,8 +176,6 @@ namespace TeamCoding.VisualStudio.Models
                     OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
                 }
             }
-            
-            TextContentChangedInternal?.Invoke(textBuffer, e);
         }
 
         internal void OnFileGotFocus(string filePath)
