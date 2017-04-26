@@ -148,6 +148,9 @@
     <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceLocalModelPersister.cs" />
     <Compile Include="VisualStudio\Models\ChangePersisters\WindowsServicePersister\WinServiceRemoteModelPersister.cs" />
     <Compile Include="VisualStudio\Controls\CustomisableBoolToVisibilityCoverter.cs" />
+    <Compile Include="VisualStudio\Models\LocalIDEModel.ShareSessions.cs">
+      <DependentUpon>LocalIDEModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="VisualStudio\ToolWindows\OverviewWindow\Overview.cs" />
     <Compile Include="VisualStudio\ToolWindows\OverviewWindow\OverviewCommand.cs" />
     <Compile Include="VisualStudio\ToolWindows\OverviewWindow\OverviewControl.xaml.cs">

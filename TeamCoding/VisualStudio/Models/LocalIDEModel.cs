@@ -17,7 +17,7 @@ namespace TeamCoding.VisualStudio.Models
     /// <summary>
     /// Represents and maintains a model of the IDE, firing change events as appropriate
     /// </summary>
-    public class LocalIDEModel
+    public partial class LocalIDEModel
     {
         /// <summary>
         /// A unique id for this IDE instance
@@ -52,9 +52,6 @@ namespace TeamCoding.VisualStudio.Models
 
         private object OpenFilesLock = new object();
         private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
-        private readonly ConcurrentDictionary<string, bool> _SharedSessionInvitedUsers = new ConcurrentDictionary<string, bool>();
-
-        public IReadOnlyDictionary<string, bool> SharedSessionInvitedUsers() => _SharedSessionInvitedUsers;
 
         private DelayedEvent OpenViewsChangedInternal = new DelayedEvent(500);
         /// <summary>
@@ -67,7 +64,7 @@ namespace TeamCoding.VisualStudio.Models
         /// Occurs when the caret position is changed (after a 500ms delay)
         /// </summary>
         public event EventHandler<CaretPositionChangedEventArgs> CaretPositionChanged { add { CaretPositionChangedInternal.Event += value; } remove { CaretPositionChangedInternal.Event -= value; } }
-        
+
         private DelayedEvent<TextDocumentFileActionEventArgs> TextDocumentSavedInternal = new DelayedEvent<TextDocumentFileActionEventArgs>(500);
         public event EventHandler<TextDocumentFileActionEventArgs> TextDocumentSaved { add { TextDocumentSavedInternal.Event += value; } remove { TextDocumentSavedInternal.Event -= value; } }
 
@@ -76,6 +73,17 @@ namespace TeamCoding.VisualStudio.Models
         /// Occurs when the IDE model is changed (after a 500ms delay)
         /// </summary>
         public event EventHandler ModelChanged { add { ModelChangedInternal.Event += value; } remove { ModelChangedInternal.Event -= value; } }
+        /// <summary>
+        /// Gets an array of currently open files
+        /// </summary>
+        /// <returns></returns>
+        public DocumentRepoMetaData[] OpenDocs()
+        {
+            lock (OpenFilesLock)
+            {
+                return OpenFiles.Values.ToArray();
+            }
+        }
         public LocalIDEModel()
         {
             TeamCodingPackage.Current.Settings.UserSettings.UsernameChanged += (s, e) => OnUserIdentityChanged();
@@ -97,7 +105,7 @@ namespace TeamCoding.VisualStudio.Models
                 {
                     OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, d) => sourceControlInfo);
                 }
-                
+
                 OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
             }
             CaretPositionChangedInternal?.Invoke(this, e);
@@ -121,12 +129,10 @@ namespace TeamCoding.VisualStudio.Models
                 OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
             }
         }
-
         internal void OnUserIdentityChanged()
         {
             OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
         }
-
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
             lock (OpenFilesLock)
@@ -135,7 +141,6 @@ namespace TeamCoding.VisualStudio.Models
             }
             OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
         }
-
         internal void OnTextDocumentSaved(ITextDocument textDocument, TextDocumentFileActionEventArgs e)
         {
             TeamCodingPackage.Current.SourceControlRepo.RemoveCachedRepoData(textDocument.FilePath);
@@ -150,40 +155,11 @@ namespace TeamCoding.VisualStudio.Models
                 TextDocumentSavedInternal?.Invoke(textDocument, e);
             }
         }
-        /// <summary>
-        /// Gets an arrayt of currently open files
-        /// </summary>
-        /// <returns></returns>
-        public DocumentRepoMetaData[] OpenDocs()
-        {
-            lock (OpenFilesLock)
-            {
-                return OpenFiles.Values.ToArray();
-            }
-        }
-        /// <summary>
-        /// Shares a session with a user (they have to accept) with this IDE instance as the host
-        /// </summary>
-        /// <param name="userId"></param>
-        public void ShareSessionWithUser(string userId)
-        {
-            _SharedSessionInvitedUsers.TryAdd(userId, false);
-            ModelChangedInternal?.Invoke(this, EventArgs.Empty);
-        }
-        /// <summary>
-        /// Cancels sharing a session with a user
-        /// </summary>
-        /// <param name="userId"></param>
-        public void CancelShareSessionWithUser(string userId)
-        {
-            _SharedSessionInvitedUsers.TryRemove(userId, out _);
-            ModelChangedInternal?.Invoke(this, EventArgs.Empty);
-        }
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
         {
             var filePath = textBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            
+
             lock (OpenFilesLock)
             {
                 if (sourceControlInfo == null)
@@ -197,7 +173,6 @@ namespace TeamCoding.VisualStudio.Models
                 }
             }
         }
-
         internal void OnFileGotFocus(string filePath)
         {
             // Update this source control info to update the time
@@ -211,9 +186,9 @@ namespace TeamCoding.VisualStudio.Models
                 OpenViewsChangedInternal?.Invoke(this, new EventArgs());
             }
         }
-
         internal void OnFileLostFocus(string filePath)
         {
+
         }
     }
 }
