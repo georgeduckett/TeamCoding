@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TeamCoding.Extensions;
 using TeamCoding.IdentityManagement;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
 {
@@ -17,10 +18,19 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
     {
         private class TypedDataContext
         {
+            /// <summary>
+            /// The identity of this user
+            /// </summary>
             public IUserIdentity Identity { get; set; }
-            public bool LocalUserInvitedUs { get; set; }
+            public bool RemoteUserInvitedUs { get; set; }
             public bool WeInvitedRemoteUser { get; set; }
+            /// <summary>
+            /// This users avatar
+            /// </summary>
             public Controls.UserAvatarModel UserAvatarModel { get; set; }
+            /// <summary>
+            /// The documents this user has open
+            /// </summary>
             public Documents.IRemotelyAccessedDocumentData[] Documents { get; set; }
         }
         private HashSet<string> ExpandedItems = new HashSet<string>();
@@ -36,16 +46,18 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
 
         private void RemoteModelChangeManager_RemoteModelReceived(object sender, EventArgs e)
         {
-            var usersWhoSentAnInvite = TeamCodingPackage.Current.RemoteModelChangeManager.UserIdsWithSharedSessionInvitesToLocalUser().ToArray();
-            var localInvitesToRemoteUsers = TeamCodingPackage.Current.LocalIdeModel.SharedSessionInvitedUsers();
+            var usersWhoSentAnInvite = TeamCodingPackage.Current.RemoteModelChangeManager.UserIdsWithSharedSessionInteractionsToLocalUser().ToArray();
+            var localInvitesToRemoteUsers = TeamCodingPackage.Current.LocalIdeModel.SharedSessionInteractedUsers();
 
             tvUserDocs.DataContext = (from of in TeamCodingPackage.Current.RemoteModelChangeManager.GetOpenFiles()
                                       group of by of.IdeUserIdentity into ofg
                                       select new TypedDataContext
                                       {
                                           Identity = ofg.Key,
-                                          LocalUserInvitedUs = usersWhoSentAnInvite.Contains(ofg.Key.Id),
-                                          WeInvitedRemoteUser = localInvitesToRemoteUsers.ContainsKey(ofg.Key.Id),
+                                          RemoteUserInvitedUs = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id &&
+                                                                                              i.Interaction.ContainsInvite()),
+                                          WeInvitedRemoteUser = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id &&
+                                                                                                   i.Value.ContainsInvite()),
                                           UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key),
                                           Documents = ofg.ToArray()
                                       }).ToArray();
@@ -85,11 +97,13 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
         }
         private void AcceptInvite_Click(object sender, RoutedEventArgs e)
         {
-            
+            var dataContext = (TypedDataContext)((MenuItem)e.Source).DataContext;
+            TeamCodingPackage.Current.LocalIdeModel.AcceptSessionInvite(dataContext.Identity.Id);
         }
         private void DeclineInvite_Click(object sender, RoutedEventArgs e)
         {
-
+            var dataContext = (TypedDataContext)((MenuItem)e.Source).DataContext;
+            TeamCodingPackage.Current.LocalIdeModel.DeclineSessionInvite(dataContext.Identity.Id);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters
 {
@@ -14,6 +15,6 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
     {
         event EventHandler RemoteModelReceived;
         IEnumerable<IRemotelyAccessedDocumentData> GetOpenFiles();
-        IEnumerable<string> UserIdsWithSharedSessionInvitesToLocalUser();
+        IEnumerable<(string UserId, SessionInteractions Interaction)> UserIdsWithSharedSessionInteractionsToLocalUser();
     }
 }

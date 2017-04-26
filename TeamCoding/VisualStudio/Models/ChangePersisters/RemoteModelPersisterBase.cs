@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamCoding.Documents;
+using TeamCoding.VisualStudio.Models;
 using TeamCoding.Options;
 
 namespace TeamCoding.VisualStudio.Models.ChangePersisters
@@ -35,10 +36,11 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                 })).ToArray();
             }
         }
-        public IEnumerable<string> UserIdsWithSharedSessionInvitesToLocalUser() => from rm in RemoteModels.Values
-                                                                                   from invitedUserId in rm.SharedSessionInvitedUsers.Keys
-                                                                                   where invitedUserId == LocalIDEModel.Id.Value
-                                                                                   select rm.Id;
+        public IEnumerable<(string UserId, SessionInteractions Interaction)> UserIdsWithSharedSessionInteractionsToLocalUser() =>
+            from rm in RemoteModels.Values
+            from invitedUserId in rm.SharedSessionInteractedUsers
+            where invitedUserId.Key == LocalIDEModel.Id.Value
+            select (rm.Id, invitedUserId.Value);
 
         public void ClearRemoteModels()
         {
@@ -64,7 +66,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters
                         RemoteModelReceived?.Invoke(this, EventArgs.Empty);
                     }
                 }
-                else if (remoteModel.OpenFiles.Count == 0)
+                else if (remoteModel.OpenFiles.Count == 0 && remoteModel.SharedSessionInteractedUsers.Count == 0)
                 {
                     if (RemoteModels.ContainsKey(remoteModel.Id))
                     {

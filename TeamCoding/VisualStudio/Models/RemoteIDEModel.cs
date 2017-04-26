@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using TeamCoding.Documents;
 using TeamCoding.IdentityManagement;
+using TeamCoding.VisualStudio.Models;
 
 namespace TeamCoding.VisualStudio.Models
 {
@@ -25,12 +26,12 @@ namespace TeamCoding.VisualStudio.Models
             private set { _OpenFiles = value; }
         }
         [ProtoIgnore]
-        private Dictionary<string, bool> _SharedSessionInvitedUsers;
+        private Dictionary<string, SessionInteractions> _SharedSessionInteractedUsers;
         [ProtoMember(4)]
-        public Dictionary<string, bool> SharedSessionInvitedUsers
+        public Dictionary<string, SessionInteractions> SharedSessionInteractedUsers
         {
-            get { return _SharedSessionInvitedUsers ?? (_SharedSessionInvitedUsers = new Dictionary<string, bool>()); }
-            private set { _SharedSessionInvitedUsers = value; }
+            get { return _SharedSessionInteractedUsers ?? (_SharedSessionInteractedUsers = new Dictionary<string, SessionInteractions>()); }
+            private set { _SharedSessionInteractedUsers = value; }
         }
 
         public RemoteIDEModel() { } // For protobuf
@@ -39,7 +40,7 @@ namespace TeamCoding.VisualStudio.Models
             Id = LocalIDEModel.Id.Value;
             IDEUserIdentity = TeamCodingPackage.Current.IdentityProvider.GetIdentity();
             OpenFiles = new List<DocumentRepoMetaData>(localModel.OpenDocs());
-            SharedSessionInvitedUsers = localModel.SharedSessionInvitedUsers().ToDictionary(kv => kv.Key, kv => kv.Value);
+            SharedSessionInteractedUsers = localModel.SharedSessionInteractedUsers().ToDictionary(kv => kv.Key, kv => kv.Value);
         }
     }
 }

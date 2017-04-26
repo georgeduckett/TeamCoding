@@ -20,8 +20,8 @@
                             <ContextMenu>
                                 <MenuItem Name="InviteUser" Header="Invite User" Click="InviteUser_Click" Visibility="{Binding Path=WeInvitedRemoteUser, Converter={StaticResource NotBoolToVisibility}}" />
                                 <MenuItem Name="UninviteUser" Header="Uninvite User" Click="UninviteUser_Click" Visibility="{Binding Path=WeInvitedRemoteUser, Converter={StaticResource BoolToVisibility}}" />
-                                <MenuItem Name="AcceptInvite" Header="Accept Invite" Click="AcceptInvite_Click" Visibility="{Binding Path=LocalUserInvitedUs, Converter={StaticResource BoolToVisibility}}" />
-                                <MenuItem Name="DeclineInvite" Header="Decline Invite" Click="DeclineInvite_Click" Visibility="{Binding Path=LocalUserInvitedUs, Converter={StaticResource BoolToVisibility}}" />
+                                <MenuItem Name="AcceptInvite" Header="Accept Invite" Click="AcceptInvite_Click" Visibility="{Binding Path=RemoteUserInvitedUs, Converter={StaticResource BoolToVisibility}}" />
+                                <MenuItem Name="DeclineInvite" Header="Decline Invite" Click="DeclineInvite_Click" Visibility="{Binding Path=RemoteUserInvitedUs, Converter={StaticResource BoolToVisibility}}" />
                             </ContextMenu>
                         </TreeViewItem.ContextMenu>
                         <TreeViewItem.HeaderTemplate>
@@ -32,7 +32,7 @@
                                         <TextBlock.Style>
                                             <Style TargetType="{x:Type TextBlock}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DataContext.LocalUserInvitedUs, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
+                                                    <DataTrigger Binding="{Binding DataContext.RemoteUserInvitedUs, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
                                                         <Setter Property="FontWeight" Value="Bold"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding DataContext.WeInvitedRemoteUser, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
