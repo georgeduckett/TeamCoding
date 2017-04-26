@@ -23,7 +23,9 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
             /// </summary>
             public IUserIdentity Identity { get; set; }
             public bool RemoteUserInvitedUs { get; set; }
+            public bool RemoteUserAcceptedOurInvite { get; set; }
             public bool WeInvitedRemoteUser { get; set; }
+            public bool WeAcceptedRemoteUserInvite { get; set; }
             /// <summary>
             /// This users avatar
             /// </summary>
@@ -56,8 +58,12 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
                                           Identity = ofg.Key,
                                           RemoteUserInvitedUs = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id &&
                                                                                               i.Interaction.ContainsInvite()),
+                                          RemoteUserAcceptedOurInvite = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id && // TODO: Display this somewhere
+                                                                                                      i.Interaction.ContainsAccept()),
                                           WeInvitedRemoteUser = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id &&
                                                                                                    i.Value.ContainsInvite()),
+                                          WeAcceptedRemoteUserInvite = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id && // TODO: Display this somewhere
+                                                                                                          i.Value.ContainsAccept()),
                                           UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key),
                                           Documents = ofg.ToArray()
                                       }).ToArray();
