@@ -58,11 +58,11 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
                                           Identity = ofg.Key,
                                           RemoteUserInvitedUs = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id &&
                                                                                               i.Interaction.ContainsInvite()),
-                                          RemoteUserAcceptedOurInvite = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id && // TODO: Display this somewhere
+                                          RemoteUserAcceptedOurInvite = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id &&
                                                                                                       i.Interaction.ContainsAccept()),
                                           WeInvitedRemoteUser = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id &&
                                                                                                    i.Value.ContainsInvite()),
-                                          WeAcceptedRemoteUserInvite = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id && // TODO: Display this somewhere
+                                          WeAcceptedRemoteUserInvite = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id &&
                                                                                                           i.Value.ContainsAccept()),
                                           UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key),
                                           Documents = ofg.ToArray()
