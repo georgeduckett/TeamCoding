@@ -38,6 +38,12 @@
                                                     <DataTrigger Binding="{Binding DataContext.WeInvitedRemoteUser, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
                                                         <Setter Property="FontStyle" Value="Italic"/>
                                                     </DataTrigger>
+                                                    <DataTrigger Binding="{Binding DataContext.RemoteUserAcceptedOurInvite, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
+                                                        <Setter Property="FontSize" Value="15 px"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding DataContext.WeAcceptedRemoteUserInvite, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True">
+                                                        <Setter Property="FontSize" Value="15 px"/>
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
