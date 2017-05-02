@@ -57,13 +57,13 @@ namespace TeamCoding.VisualStudio.ToolWindows.OverviewWindow
                                       {
                                           Identity = ofg.Key,
                                           RemoteUserInvitedUs = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id &&
-                                                                                              i.Interaction.ContainsInvite()),
+                                                                                              i.Interaction.HasFlag(SessionInteractions.Invite)),
                                           RemoteUserAcceptedOurInvite = usersWhoSentAnInvite.Any(i => i.UserId == ofg.Key.Id &&
-                                                                                                      i.Interaction.ContainsAccept()),
+                                                                                                      i.Interaction.HasFlag(SessionInteractions.Accept)),
                                           WeInvitedRemoteUser = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id &&
-                                                                                                   i.Value.ContainsInvite()),
+                                                                                                   i.Value.HasFlag(SessionInteractions.Invite)),
                                           WeAcceptedRemoteUserInvite = localInvitesToRemoteUsers.Any(i => i.Key == ofg.Key.Id &&
-                                                                                                          i.Value.ContainsAccept()),
+                                                                                                          i.Value.HasFlag(SessionInteractions.Accept)),
                                           UserAvatarModel = TeamCodingPackage.Current.UserImages.CreateUserAvatarModel(ofg.Key),
                                           Documents = ofg.ToArray()
                                       }).ToArray();
