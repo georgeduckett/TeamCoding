@@ -12,7 +12,7 @@ namespace TeamCoding.VisualStudio.Models
     {
         private readonly ConcurrentDictionary<string, SessionInteractions> _SharedSessionInteractedUsers = new ConcurrentDictionary<string, SessionInteractions>();
         /// <summary>
-        /// Gets the users currently invited to a shared session (with a bool indicating acceptance)
+        /// Gets the users currently invited to a shared session (with an enum indicating status)
         /// </summary>
         /// <returns></returns>
         public IReadOnlyDictionary<string, SessionInteractions> SharedSessionInteractedUsers() => _SharedSessionInteractedUsers;
