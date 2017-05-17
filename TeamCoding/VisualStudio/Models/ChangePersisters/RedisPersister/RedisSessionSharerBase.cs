@@ -42,7 +42,7 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
                 TeamCodingPackage.Current.Redis.PublishAsync(SharedSessionHostChannel, ms.ToArray()).HandleException();
             }
         }
-        public void Dispose()
+        public virtual void Dispose()
         {
             Task.WaitAll(SubscribeTask);
         }

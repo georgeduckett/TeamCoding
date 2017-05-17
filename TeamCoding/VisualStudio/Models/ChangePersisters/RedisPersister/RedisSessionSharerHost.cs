@@ -10,7 +10,7 @@ using TeamCoding.Extensions;
 namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
 {
     /// <summary>
-    /// Acts has the host for sharing a session via Redis
+    /// Acts has the host for sharing document edits a session via Redis
     /// </summary>
     public class RedisSessionSharerHost : RedisSessionSharerBase
     {
@@ -18,26 +18,21 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
         {
             switch (sharingData.MessageType)
             {
-                case RedisSharingData.SharingDataType.AccceptingSession: HandleAcceptSession(sharingData); break;
-                case RedisSharingData.SharingDataType.DecliningSession: HandleDeclineSession(sharingData); break;
-                case RedisSharingData.SharingDataType.LeavingSession: HandleLeavingSession(sharingData); break;
+                case RedisSharingData.SharingDataType.HostEndingSession: break;
+                case RedisSharingData.SharingDataType.RequestingHostInitialisation: HandleRequestingHostInitialisation(sharingData); break;
             }
         }
-        public void EndSession()
+        private void HandleRequestingHostInitialisation(RedisSharingData sharingData)
         {
-            PublishSharingData(new RedisSharingData() { MessageType = RedisSharingData.SharingDataType.EndingSession });
-        }
-        public void HandleAcceptSession(RedisSharingData data)
-        {
+            // TODO: Persist the latest version of each changed file to redis if we haven't already
 
+            PublishSharingData(new RedisSharingData() { ToId = sharingData.ToId, MessageType = RedisSharingData.SharingDataType.HostInitialised });
         }
-        public void HandleDeclineSession(RedisSharingData data)
+        public override void Dispose()
         {
-
-        }
-        public void HandleLeavingSession(RedisSharingData data)
-        {
-
+            // TODO: Remove all persisted changed files from redis (if any)
+            PublishSharingData(new RedisSharingData() { MessageType = RedisSharingData.SharingDataType.HostEndingSession });
+            base.Dispose();
         }
     }
 }

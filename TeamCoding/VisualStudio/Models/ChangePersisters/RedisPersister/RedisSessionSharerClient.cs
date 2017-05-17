@@ -14,40 +14,31 @@ namespace TeamCoding.VisualStudio.Models.ChangePersisters.RedisPersister
     /// </summary>
     public class RedisSessionSharerClient : RedisSessionSharerBase
     {
+        public RedisSessionSharerClient()
+        {
+            TeamCodingPackage.Current.LocalIdeModel.AcceptedSharedSession += LocalIdeModel_AcceptedSharedSession;
+        }
+        private void LocalIdeModel_AcceptedSharedSession(object sender, LocalIDEModel.AcceptedSessionEventArgs e)
+        {
+            // We've accepted a session invite so send a message to the host requestion the session be initialised
+            PublishSharingData(new RedisSharingData() { ToId = e.UserId, MessageType = RedisSharingData.SharingDataType.RequestingHostInitialisation });
+        }
+
         protected override void HandleSharingData(RedisSharingData sharingData)
         {
             switch (sharingData.MessageType)
             {
-                case RedisSharingData.SharingDataType.RequestingSession: HandleRequestSession(sharingData); break;
-                case RedisSharingData.SharingDataType.CancelRequestingSession: HandleCancelRequestSession(sharingData); break;
-                case RedisSharingData.SharingDataType.EndingSession: HandleEndingSession(sharingData); break;
+                case RedisSharingData.SharingDataType.HostEndingSession: HandleHostEndingSession(sharingData); break;
+                case RedisSharingData.SharingDataType.HostInitialised: HandleHostInitialised(sharingData); break;
             }
         }
-        private void HandleRequestSession(RedisSharingData sharingData)
+        private void HandleHostInitialised(RedisSharingData sharingData)
         {
-
+            // TODO: Do something when we receive the host initialised message (get the host's versions of the files)
         }
-        private void HandleCancelRequestSession(RedisSharingData sharingData)
+        private void HandleHostEndingSession(RedisSharingData sharingData)
         {
-            // TODO: Check we're not in a session already then present a dialog (or something) to the user
-        }
-        private void HandleEndingSession(RedisSharingData sharingData)
-        {
-            // TODO: Tidy up the session
-            PublishSharingData(new RedisSharingData() { ToId = sharingData.FromId, MessageType = RedisSharingData.SharingDataType.EndingSession });
-        }
-        public void AcceptSession(string userId)
-        {
-            // TODO: Setup the session
-            PublishSharingData(new RedisSharingData() { ToId = userId, MessageType = RedisSharingData.SharingDataType.AccceptingSession });
-        }
-        public void DeclineSession(string userId)
-        {
-            PublishSharingData(new RedisSharingData() { ToId = userId, MessageType = RedisSharingData.SharingDataType.DecliningSession });
-        }
-        public void LeaveSession(string userId)
-        {
-            PublishSharingData(new RedisSharingData() { ToId = userId, MessageType = RedisSharingData.SharingDataType.LeavingSession });
+            TeamCodingPackage.Current.LocalIdeModel.MarkLeftSession(sharingData.FromId);
         }
     }
 }
