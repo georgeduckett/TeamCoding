@@ -46,21 +46,31 @@ namespace TeamCoding.Options
                 comboBox.LostKeyboardFocus += ComboBox_LostKeyboardFocus;
             }
 
+            string bindingPath;
             foreach(var textBox in grpPersistence.FindChildren<TextBox>())
             {
-                var bindingPath = (textBox).GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+                bindingPath = textBox.GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
                 
                 if(bindingPath != null)
                 {
                     TextBoxIsValidTaskCancelSources.Add(textBox, new CancellationTokenSource());
                     textBox.LostKeyboardFocus += PersistencePropertyBoundTextBox_KeyboardLostFocus;
-                    textBox.TextChanged += PersistencePropertyBoundTextBox_TextChanged;
+                    textBox.TextChanged += PropertyBoundTextBox_TextChanged;
                 }
+            }
+
+            bindingPath = txtUserImageUrl.GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+
+            if (bindingPath != null)
+            {
+                TextBoxIsValidTaskCancelSources.Add(txtUserImageUrl, new CancellationTokenSource());
+                txtUserImageUrl.LostKeyboardFocus += UserPropertyBoundTextBox_KeyboardLostFocus;
+                txtUserImageUrl.TextChanged += PropertyBoundTextBox_TextChanged;
             }
 
             Loaded += OptionsPage_Loaded;
         }
-        private void PersistencePropertyBoundTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void PropertyBoundTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
             var bindingPath = textBox.GetBindingExpression(TextBox.TextProperty).ParentBinding.Path.Path;
@@ -72,10 +82,15 @@ namespace TeamCoding.Options
         private void PersistencePropertyBoundTextBox_KeyboardLostFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
-            ReEvaluateTextboxSetting(textBox);
+            ReEvaluateTextboxSetting(textBox, TeamCodingPackage.Current.Settings.SharedSettings);
+        }
+        private void UserPropertyBoundTextBox_KeyboardLostFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            ReEvaluateTextboxSetting(textBox, TeamCodingPackage.Current.Settings.UserSettings);
         }
 
-        private void ReEvaluateTextboxSetting(TextBox textBox)
+        private void ReEvaluateTextboxSetting(TextBox textBox, object settingsObject)
         {
             // Cancel any existing tasks to see if the new setting property is valid (since we're changing it anyway)
             TextBoxIsValidTaskCancelSources[textBox].Cancel();
@@ -93,7 +108,7 @@ namespace TeamCoding.Options
                 textBlock.Foreground = Brushes.Black;
                 textBlock.Text = "⏳";
                 textBlock.ToolTip = "Checking configuration value...";
-                var settingProperty = (SettingProperty<string>)typeof(SharedSettings).GetField(bindingPath + "Property").GetValue(TeamCodingPackage.Current.Settings.SharedSettings);
+                var settingProperty = (SettingProperty<string>)settingsObject.GetType().GetField(bindingPath + "Property", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).GetValue(settingsObject);
 
                 // Add a new token to the dictionary to use with this task we're about to create
                 TextBoxIsValidTaskCancelSources[textBox] = new CancellationTokenSource();
@@ -137,15 +152,25 @@ namespace TeamCoding.Options
 
             chkUsingJsonSettings.IsChecked = loadedFromFile;
 
+            string bindingPath;
+
             foreach (var textBox in grpPersistence.FindChildren<TextBox>())
             {
-                var bindingPath = textBox.GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+                bindingPath = textBox.GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
 
                 if (bindingPath != null)
                 {
                     textBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-                    ReEvaluateTextboxSetting(textBox);
+                    ReEvaluateTextboxSetting(textBox, TeamCodingPackage.Current.Settings.SharedSettings);
                 }
+            }
+
+            bindingPath = txtUserImageUrl.GetBindingExpression(TextBox.TextProperty)?.ParentBinding?.Path?.Path;
+
+            if (bindingPath != null)
+            {
+                txtUserImageUrl.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+                ReEvaluateTextboxSetting(txtUserImageUrl, TeamCodingPackage.Current.Settings.UserSettings);
             }
         }
         private void Control_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
