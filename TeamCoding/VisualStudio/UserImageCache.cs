@@ -12,6 +12,7 @@ using TeamCoding.Extensions;
 using Microsoft.VisualStudio.Shell;
 using TeamCoding.Options;
 using TeamCoding.VisualStudio.Controls;
+using System.Threading.Tasks;
 
 namespace TeamCoding.VisualStudio
 {
@@ -113,10 +114,7 @@ namespace TeamCoding.VisualStudio
                         {
                             try
                             {
-                                var request = await TeamCodingPackage.Current.HttpClient.GetAsync(userIdentity.ImageUrl);
-                                if (!request.IsSuccessStatusCode) return;
-                                var imageStream = await request.Content.ReadAsStreamAsync();
-                                context.AvatarImageSource = UrlImages[userIdentity.ImageUrl] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                                context.AvatarImageSource = await GetImageFromUrl(userIdentity.ImageUrl);
                             }
                             catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                             {
@@ -130,6 +128,14 @@ namespace TeamCoding.VisualStudio
             {
                 context.AvatarImageSource = null;
             }
+        }
+        public async Task<ImageSource> GetImageFromUrl(string url)
+        {
+            var request = await TeamCodingPackage.Current.HttpClient.GetAsync(url);
+            request.EnsureSuccessStatusCode();
+
+            var imageStream = await request.Content.ReadAsStreamAsync();
+            return UrlImages[url] = BitmapFrame.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
         }
         /// <summary>
         /// Sets properties specific to a user control in a document tab

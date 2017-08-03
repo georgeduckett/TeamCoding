@@ -48,7 +48,7 @@ namespace TeamCoding.Options
             UsernameProperty = new SettingProperty<string>(this);
             UsernameProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(Username)}: {Username}");
 
-            UserImageUrlProperty = new SettingProperty<string>(this);
+            UserImageUrlProperty = new SettingProperty<string>(this, CheckUserImageUrl);
             UserImageUrlProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(UserImageUrl)}: {UserImageUrl}");
 
             UserCodeDisplayProperty = new SettingProperty<UserDisplaySetting>(this);
@@ -59,6 +59,12 @@ namespace TeamCoding.Options
 
             ShowAllBranchesProperty = new SettingProperty<bool>(this, null);
             ShowAllBranchesProperty.Changed += (s, e) => TeamCodingPackage.Current.Logger.WriteInformation($"Changing setting {nameof(ShowAllBranches)}: {ShowAllBranches}");
+        }
+
+        private async Task<string> CheckUserImageUrl(string imageUrl)
+        {
+            var url = await TeamCodingPackage.Current.UserImages.GetImageFromUrl(imageUrl);
+            return null;
         }
     }
 }

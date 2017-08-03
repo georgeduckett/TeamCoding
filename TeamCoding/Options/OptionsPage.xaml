@@ -12,7 +12,10 @@
                 <Grid>
                     <TextBox x:Name="txtUsername" Margin="111,10,109,0" Height="26" VerticalAlignment="Top" Text="{Binding Username, Mode=TwoWay}" ToolTip="Set a custom username. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUsername, Mode=OneWay}"/>
                     <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" VerticalAlignment="Top" Target="{Binding ElementName=txtUsername, Mode=OneWay}" Margin="0,10,0,0"/>
-                    <TextBox x:Name="txtUserImageUrl" Margin="111,44,0,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}" ToolTip="Set a custom image url. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUserImageUrl, Mode=OneWay}"/>
+                    <TextBox x:Name="txtUserImageUrl" Margin="111,44,28,0" Height="23" VerticalAlignment="Top" Text="{Binding UserImageUrl}" ToolTip="Set a custom image url. Blank to auto-calculate" AutomationProperties.LabeledBy="{Binding ElementName=lblUserImageUrl, Mode=OneWay}"/>
+                    <Viewbox Stretch="Uniform" Margin="0,44,0,0" HorizontalAlignment="Right" Width="23" Height="23" VerticalAlignment="Top">
+                        <TextBlock x:Name="tbUserImageUrl" />
+                    </Viewbox>
                     <Label x:Name="lblUserImageUrl" Content="User Url" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,41,0,0" Target="{Binding ElementName=txtUserImageUrl, Mode=OneWay}"/>
                     <ComboBox x:Name="txtUserTabDisplay" Margin="111,72,0,0" Height="23" VerticalAlignment="Top" ItemsSource="{Binding UserDisplaySettings}" SelectedValue="{Binding UserTabDisplay}" ToolTip="How to display other users in document tabs." AutomationProperties.LabeledBy="{Binding ElementName=lblUserTabDisplay, Mode=OneWay}"/>
                     <Label x:Name="lblUserTabDisplay" Content="User Tab Display" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,69,0,0" Target="{Binding ElementName=txtUserTabDisplay, Mode=OneWay}"/>
