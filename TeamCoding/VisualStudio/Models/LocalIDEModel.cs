@@ -50,7 +50,6 @@ namespace TeamCoding.VisualStudio.Models
         /// </summary>
         private static LocalIDEModel Current = new LocalIDEModel();
 
-        private object OpenFilesLock = new object();
         private readonly ConcurrentDictionary<string, DocumentRepoMetaData> OpenFiles = new ConcurrentDictionary<string, DocumentRepoMetaData>();
 
         private DelayedEvent OpenViewsChangedInternal = new DelayedEvent(500);
@@ -90,10 +89,7 @@ namespace TeamCoding.VisualStudio.Models
             sourceControlInfo.CaretPositionInfo = await TeamCodingPackage.Current.CaretInfoProvider.GetCaretInfoAsync(e.NewPosition.BufferPosition);
             if (sourceControlInfo != null)
             {
-                lock (OpenFilesLock)
-                {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, d) => sourceControlInfo);
-                }
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, d) => sourceControlInfo);
                 
                 OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
             }
@@ -108,12 +104,9 @@ namespace TeamCoding.VisualStudio.Models
 
             if (sourceControlInfo != null)
             {
-                lock (OpenFilesLock)
+                if (!OpenFiles.ContainsKey(filePath))
                 {
-                    if (!OpenFiles.ContainsKey(filePath))
-                    {
-                        OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => sourceControlInfo);
-                    }
+                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, e) => sourceControlInfo);
                 }
                 OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
             }
@@ -126,10 +119,8 @@ namespace TeamCoding.VisualStudio.Models
 
         internal void OnTextDocumentDisposed(ITextDocument textDocument, TextDocumentEventArgs e)
         {
-            lock (OpenFilesLock)
-            {
-                OpenFiles.TryRemove(textDocument.FilePath, out var tmp);
-            }
+            OpenFiles.TryRemove(textDocument.FilePath, out var tmp);
+
             OpenViewsChangedInternal?.Invoke(this, EventArgs.Empty);
         }
 
@@ -139,10 +130,7 @@ namespace TeamCoding.VisualStudio.Models
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(textDocument.FilePath);
             if (sourceControlInfo != null)
             {
-                lock (OpenFilesLock)
-                {
-                    OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
-                }
+                OpenFiles.AddOrUpdate(textDocument.FilePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
 
                 TextDocumentSavedInternal?.Invoke(textDocument, e);
             }
@@ -153,28 +141,22 @@ namespace TeamCoding.VisualStudio.Models
         /// <returns></returns>
         public DocumentRepoMetaData[] OpenDocs()
         {
-            lock (OpenFilesLock)
-            {
-                return OpenFiles.Values.ToArray();
-            }
+            return OpenFiles.Values.ToArray();
         }
 
         internal void OnTextBufferChanged(ITextBuffer textBuffer, TextContentChangedEventArgs e)
         {
             var filePath = textBuffer.GetTextDocumentFilePath();
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
-            
-            lock (OpenFilesLock)
+
+            if (sourceControlInfo == null)
             {
-                if (sourceControlInfo == null)
-                {
-                    // The file could have just been put on the ignore list, so remove it from the list
-                    OpenFiles.TryRemove(filePath, out sourceControlInfo);
-                }
-                else
-                {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
-                }
+                // The file could have just been put on the ignore list, so remove it from the list
+                OpenFiles.TryRemove(filePath, out sourceControlInfo);
+            }
+            else
+            {
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
             }
         }
 
@@ -184,10 +166,8 @@ namespace TeamCoding.VisualStudio.Models
             var sourceControlInfo = TeamCodingPackage.Current.SourceControlRepo.GetRepoDocInfo(filePath);
             if (sourceControlInfo != null)
             {
-                lock (OpenFilesLock)
-                {
-                    OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
-                }
+                OpenFiles.AddOrUpdate(filePath, sourceControlInfo, (v, r) => { sourceControlInfo.CaretPositionInfo = r.CaretPositionInfo; return sourceControlInfo; });
+
                 OpenViewsChangedInternal?.Invoke(this, new EventArgs());
             }
         }

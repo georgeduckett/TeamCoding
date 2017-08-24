@@ -33,14 +33,13 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         private void OnWorkspaceChanged(object sender, WorkspaceChangesEventArgs e)
         {
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                object obj = DisposedLock;
-                lock (obj)
+                await Task.Delay(2000);
+                lock (DisposedLock)
                 {
                     if (!Disposed)
                     {
-                        System.Threading.Thread.Sleep(2000);
                         Invalidate();
                     }
                 }
@@ -48,10 +47,9 @@ namespace TeamCoding.VisualStudio.CodeLens
         }
         protected override void Dispose(bool disposing)
         {
-            object obj = DisposedLock;
             if (!Disposed)
             {
-                lock (obj)
+                lock (DisposedLock)
                 {
                     if (!Disposed)
                     {
