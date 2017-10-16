@@ -89,7 +89,7 @@ WHEN NOT MATCHED THEN
 
                     try
                     {
-                        if(con.Execute(MergeQuery, new { Id = id, Model = (byte[])null, DateTime.UtcNow }) != 1)
+                        if(con.Execute(MergeQuery, new { Id = id, Model = (byte[])null, LastUpdated = DateTime.UtcNow }) != 1)
                         {
                             return "Failed to create an entry in the table; execute command didn't add a single row";
                         }
