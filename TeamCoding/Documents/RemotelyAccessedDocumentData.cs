@@ -40,7 +40,7 @@ namespace TeamCoding.Documents
             return Repository == other.Repository &&
                    RepositoryBranch == other.RepositoryBranch &&
                    RelativePath == other.RelativePath &&
-                   IdeUserIdentity.Id == IdeUserIdentity.Id &&
+                   IdeUserIdentity.Id == other.IdeUserIdentity.Id &&
                    BeingEdited == other.BeingEdited &&
                    HasFocus == other.HasFocus &&
                    CaretPositionInfo?.LeafMemberCaretOffset == other.CaretPositionInfo?.LeafMemberCaretOffset &&
