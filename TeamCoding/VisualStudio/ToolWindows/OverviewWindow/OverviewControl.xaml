@@ -22,7 +22,20 @@
                         </TreeViewItem.HeaderTemplate>
                         <TreeViewItem.ItemTemplate>
                             <DataTemplate>
-                                <TreeViewItem Header="{Binding RelativePath}" Foreground="{DynamicResource VsBrush.WindowText}" />
+                                <TreeViewItem Header="{Binding RelativePath}" Foreground="{DynamicResource VsBrush.WindowText}">
+                                    <TreeViewItem.Style>
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasFocus}" Value="False">
+                                                    <Setter Property="FontWeight" Value="Normal" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding HasFocus}" Value="True">
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TreeViewItem.Style>
+                                </TreeViewItem>
                             </DataTemplate>
                         </TreeViewItem.ItemTemplate>
                     </TreeViewItem>
