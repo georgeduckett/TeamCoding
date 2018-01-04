@@ -23,7 +23,7 @@ namespace TeamCoding.Documents
             if (!string.IsNullOrEmpty(RepositoryBranch))
                 hash = hash * 31 + RepositoryBranch.GetHashCode();
 
-            hash = hash * 31 + IdeUserIdentity.GetHashCode();
+            hash = hash * 31 + IdeUserIdentity.Id.GetHashCode();
             hash = hash * 31 + BeingEdited.GetHashCode();
             hash = hash * 31 + HasFocus.GetHashCode();
             hash = hash * 31 + (CaretPositionInfo?.LeafMemberCaretOffset.GetHashCode() ?? 0);
