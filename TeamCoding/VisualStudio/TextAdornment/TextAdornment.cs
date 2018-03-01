@@ -111,6 +111,11 @@ namespace TeamCoding.VisualStudio.TextAdornment
 
         private void CreateVisual(CaretAdornmentData nodeData, int caretLineOffset, int caretOffset, IUserIdentity userIdentity)
         {
+            if (View.IsClosed)
+            {
+                return;
+            }
+
             if (RepoDocument != null && nodeData.RelativeToServerSource)
             {
                 var remoteFileText = SourceControlRepo.GetRemoteFileLines(View.TextBuffer.GetTextDocumentFilePath());
